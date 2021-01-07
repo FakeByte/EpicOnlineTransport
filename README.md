@@ -5,6 +5,7 @@ This is our [Epic Online Services](https://dev.epicgames.com/en-US/services) (EO
 
 ## Dependencies
 -Mirror
+
 -Epic Online Service C# SDK
 
 ## Installation
