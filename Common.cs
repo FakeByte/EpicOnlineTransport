@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace Mirror.Eos {
+namespace EpicTransport {
     public abstract class Common {
 
         public const string SOCKET_ID = "Test";

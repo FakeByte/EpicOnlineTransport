@@ -50,7 +50,7 @@ using System.Collections.Generic;
 /// MIT License
 /// </summary>
 
-namespace Mirror.Eos {
+namespace EpicTransport {
 
     public class BidirectionalDictionary<T1, T2> : IEnumerable {
         private Dictionary<T1, T2> t1ToT2Dict = new Dictionary<T1, T2>();

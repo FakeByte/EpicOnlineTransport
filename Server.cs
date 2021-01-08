@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Mirror.Eos {
+namespace EpicTransport {
     public class Server : Common {
         private event Action<int> OnConnected;
         private event Action<int, byte[], int> OnReceivedData;

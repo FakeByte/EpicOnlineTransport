@@ -4,8 +4,9 @@ using System.IO;
 using UnityEngine;
 using Epic.OnlineServices.P2P;
 using Epic.OnlineServices;
+using Mirror;
 
-namespace Mirror.Eos {
+namespace EpicTransport {
 
     /// <summary>
     /// EOS Transport following the Mirror transport standard
@@ -107,7 +108,6 @@ namespace Mirror.Eos {
             if (!ServerActive()) {
                 Debug.Log("Starting server.");
                 // TODO: Allow turning off of the relay
-                //SteamNetworking.AllowP2PPacketRelay(AllowSteamRelay);
                 server = Server.CreateServer(this, NetworkManager.singleton.maxConnections);
                 activeNode = server;
             } else {
