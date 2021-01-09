@@ -17,7 +17,7 @@ namespace EpicTransport {
 
         private TimeSpan ConnectionTimeout;
 
-        private ProductUserId hostSteamID = null;
+        private ProductUserId hostProductId = null;
         private TaskCompletionSource<Task> connectedComplete;
         private CancellationTokenSource cancelToken;
 
@@ -46,30 +46,30 @@ namespace EpicTransport {
             cancelToken = new CancellationTokenSource();
 
             try {
-                hostSteamID = ProductUserId.FromString(host);
+                hostProductId = ProductUserId.FromString(host);
                 connectedComplete = new TaskCompletionSource<Task>();
 
                 OnConnected += SetConnectedComplete;
 
-                SendInternal(hostSteamID, InternalMessages.CONNECT);
+                SendInternal(hostProductId, InternalMessages.CONNECT);
 
                 Task connectedCompleteTask = connectedComplete.Task;
 
                 if (await Task.WhenAny(connectedCompleteTask, Task.Delay(ConnectionTimeout, cancelToken.Token)) != connectedCompleteTask) {
                     Debug.LogError($"Connection to {host} timed out.");
                     OnConnected -= SetConnectedComplete;
-                    OnConnectionFailed(hostSteamID);
+                    OnConnectionFailed(hostProductId);
                 }
 
                 OnConnected -= SetConnectedComplete;
             } catch (FormatException) {
-                Debug.LogError($"Connection string was not in the right format. Did you enter a SteamId?");
+                Debug.LogError($"Connection string was not in the right format. Did you enter a ProductId?");
                 Error = true;
-                OnConnectionFailed(hostSteamID);
+                OnConnectionFailed(hostProductId);
             } catch (Exception ex) {
                 Debug.LogError(ex.Message);
                 Error = true;
-                OnConnectionFailed(hostSteamID);
+                OnConnectionFailed(hostProductId);
             } finally {
                 if (Error) {
                     OnConnectionFailed(null);
@@ -80,17 +80,17 @@ namespace EpicTransport {
 
         public void Disconnect() {
             Debug.Log("Sending Disconnect message");
-            SendInternal(hostSteamID, InternalMessages.DISCONNECT);
+            SendInternal(hostProductId, InternalMessages.DISCONNECT);
             Dispose();
             cancelToken?.Cancel();
 
-            WaitForClose(hostSteamID);
+            WaitForClose(hostProductId);
         }
 
         private void SetConnectedComplete() => connectedComplete.SetResult(connectedComplete.Task);
 
         protected override void OnReceiveData(byte[] data, ProductUserId clientUserId, int channel) {
-            if (clientUserId != hostSteamID) {
+            if (clientUserId != hostProductId) {
                 Debug.LogError("Received a message from an unknown");
                 return;
             }
@@ -99,7 +99,7 @@ namespace EpicTransport {
         }
 
         protected override void OnNewConnection(OnIncomingConnectionRequestInfo result) {
-            if (hostSteamID == result.RemoteUserId) {
+            if (hostProductId == result.RemoteUserId) {
                 EOSSDKComponent.EOS.GetP2PInterface().AcceptConnection(
                     new AcceptConnectionOptions() {
                         LocalUserId = EOSSDKComponent.localUserProductId,
@@ -129,7 +129,7 @@ namespace EpicTransport {
             }
         }
 
-        public void Send(byte[] data, int channelId) => Send(hostSteamID, data, (byte) channelId);
+        public void Send(byte[] data, int channelId) => Send(hostProductId, data, (byte) channelId);
 
         protected override void OnConnectionFailed(ProductUserId remoteId) => OnDisconnected.Invoke();
     }

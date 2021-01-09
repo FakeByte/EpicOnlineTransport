@@ -98,7 +98,7 @@ namespace EpicTransport {
                                         localUserProductIdString = productIdString;
                                         localUserProductId = loginCallbackInfo.LocalUserId;
                                     }
-
+                                    
                                     Initialized = true;
                                     IsConnecting = false;
                                 } else {

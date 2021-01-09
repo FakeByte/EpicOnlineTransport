@@ -24,8 +24,6 @@ namespace EpicTransport {
         
         [Tooltip("Timeout for connecting in seconds.")]
         public int Timeout = 25;
-        [Tooltip("Allow or disallow P2P connections to fall back to being relayed through the Epic servers if a direct connection or NAT-traversal cannot be established.")]
-        public bool AllowEpicRelay = true; //TODO: Implement this
  
         [Header("Info")]
         [Tooltip("This will display your Epic Account ID when you start or connect to a server.")]
@@ -61,8 +59,6 @@ namespace EpicTransport {
             if (!ClientActive() || client.Error) {
                 Debug.Log($"Starting client, target address {address}.");
 
-                // TODO: Allow turning off of the relay
-                //SteamNetworking.AllowP2PPacketRelay(AllowSteamRelay);
                 client = Client.CreateClient(this, address);
                 activeNode = client;
             } else {
@@ -107,7 +103,7 @@ namespace EpicTransport {
 
             if (!ServerActive()) {
                 Debug.Log("Starting server.");
-                // TODO: Allow turning off of the relay
+
                 server = Server.CreateServer(this, NetworkManager.singleton.maxConnections);
                 activeNode = server;
             } else {

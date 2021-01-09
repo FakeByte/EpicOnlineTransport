@@ -80,8 +80,12 @@ namespace EpicTransport {
                 OnReceivedData.Invoke(connectionId, data, channel);
             } else {
                 CloseP2PSessionWithUser(clientUserId);
-                Debug.LogError("Data received from steam client thats not known " + clientUserId);
-                OnReceivedError.Invoke(-1, new Exception("ERROR Unknown SteamID"));
+
+                string productId;
+                clientUserId.ToString(out productId);
+
+                Debug.LogError("Data received from epic client thats not known " + productId);
+                OnReceivedError.Invoke(-1, new Exception("ERROR Unknown product ID"));
             }
         }
 
