@@ -39,7 +39,7 @@ Note: In the editor after logging in with the dev auth tool you cant change the 
 
 You need the epic online product id to connect to another user, you can get it by calling:
 
-    EOSSDKComponent.localUserProductId
+    EOSSDKComponent.LocalUserProductId
     or
-    EOSSDKComponent.localUserProductIdString
+    EOSSDKComponent.LocalUserProductIdString
 The string variant can be sent to other users to connect.
