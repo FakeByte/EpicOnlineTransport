@@ -25,7 +25,7 @@ Even if your game doesn't use epic accounts you will need them for testing.
 2. Choose 'Developer' as Auth Interface Credential Type
 3. Choose 'Epic' as Connect Interface Credential Type
 4. Open the epic transport folder with a file explorer and go into the DevAuthTool folder
-5. Create a folder that ends with '~' e.g. 'Tool~', this makes unity ignore this folder
+5. Create a folder that ends with ~ e.g. Tool~, this makes unity ignore this folder
 6. Unzip the dev auth tool for your OS (Mac/Win) into the folder you created in step 5.
 7. Run the dev auth tool 
 8. Enter a port in the dev auth tool
