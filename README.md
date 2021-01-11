@@ -20,6 +20,7 @@ This is our [Epic Online Services](https://dev.epicgames.com/en-US/services) (EO
 Running multiple instances of your game on one device for testing requires you to have multiple epic accounts.
 Even if your game doesn't use epic accounts you will need them for testing.
 
+0. Add all epic accounts you want to test with to your organization in the dev portal
 1. On the EOSSDKComponent under User Login set Auth Interface Login to true
 2. Choose 'Developer' as Auth Interface Credential Type
 3. Choose 'Epic' as Connect Interface Credential Type
