@@ -16,6 +16,24 @@ This is our [Epic Online Services](https://dev.epicgames.com/en-US/services) (EO
 5. Attach the EosTransport component to  the same gameobject as the NetworkManager
 6. Move the EosTransport reference into the 'Transport' slot on the NetworkManager
 
+## Testing multiplayer on one device
+Running multiple instances of your game on one device for testing requires you to have multiple epic accounts.
+Even if your game doesn't use epic accounts you will need them for testing.
+
+1. On the EOSSDKComponent under User Login set Auth Interface Login to true
+2. Choose 'Developer' as Auth Interface Credential Type
+3. Choose 'Epic' as Connect Interface Credential Type
+4. Open the epic transport folder with a file explorer and go into the DevAuthTool folder
+5. Create a folder that ends with '~' e.g. 'Tool~', this makes unity ignore this folder
+6. Unzip the dev auth tool for your OS (Mac/Win) into the folder you created in step 5.
+7. Run the dev auth tool 
+8. Enter a port in the dev auth tool
+9. Login to your epic account and give the credential a name
+10. Repeat step 9 for as many accounts you want to use
+11. On the EOSSDKComponent set the port to the one you used in the dev auth tool
+12. On the EOSSDKCOmponent set Dev Auth Tool Credential Name to the named you chose in the tool
+
+Note: In the editor after logging in with the dev auth tool you cant change the credential name as the sdk stays initialized even after finish playing. You either have to restart unity or the dev auth tool. For builds it is useful to set delayed initialization on the EOSSDKComponent to true and then provide a user input field to set the dev tool credential name and then calling EOSSDKComponent.Initialize().
 
 ## Connecting to other users
 
