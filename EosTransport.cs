@@ -5,6 +5,7 @@ using UnityEngine;
 using Epic.OnlineServices.P2P;
 using Epic.OnlineServices;
 using Mirror;
+using Epic.OnlineServices.Metrics;
 
 namespace EpicTransport {
 
@@ -61,6 +62,21 @@ namespace EpicTransport {
 
                 client = Client.CreateClient(this, address);
                 activeNode = client;
+
+                if (EOSSDKComponent.CollectPlayerMetrics) {
+                    // Start Metrics colletion session
+                    BeginPlayerSessionOptions sessionOptions = new BeginPlayerSessionOptions();
+                    sessionOptions.AccountId = EOSSDKComponent.LocalUserAccountId;
+                    sessionOptions.ControllerType = UserControllerType.Unknown;
+                    sessionOptions.DisplayName = EOSSDKComponent.DisplayName;
+                    sessionOptions.GameSessionId = null;
+                    sessionOptions.ServerIp = null;
+                    Result result = EOSSDKComponent.GetMetricsInterface().BeginPlayerSession(sessionOptions);
+
+                    if(result == Result.Success) {
+                        Debug.Log("Started Metric Session");
+                    }
+                }
             } else {
                 Debug.LogError("Client already running!");
             }
@@ -106,6 +122,21 @@ namespace EpicTransport {
 
                 server = Server.CreateServer(this, NetworkManager.singleton.maxConnections);
                 activeNode = server;
+
+                if (EOSSDKComponent.CollectPlayerMetrics) {
+                    // Start Metrics colletion session
+                    BeginPlayerSessionOptions sessionOptions = new BeginPlayerSessionOptions();
+                    sessionOptions.AccountId = EOSSDKComponent.LocalUserAccountId;
+                    sessionOptions.ControllerType = UserControllerType.Unknown;
+                    sessionOptions.DisplayName = EOSSDKComponent.DisplayName;
+                    sessionOptions.GameSessionId = null;
+                    sessionOptions.ServerIp = null;
+                    Result result = EOSSDKComponent.GetMetricsInterface().BeginPlayerSession(sessionOptions);
+
+                    if (result == Result.Success) {
+                        Debug.Log("Started Metric Session");
+                    }
+                }
             } else {
                 Debug.LogError("Server already started!");
             }
@@ -114,7 +145,7 @@ namespace EpicTransport {
         public override Uri ServerUri() {
             UriBuilder epicBuilder = new UriBuilder { 
                 Scheme = EPIC_SCHEME,
-                Host = EOSSDKComponent.localUserProductIdString
+                Host = EOSSDKComponent.LocalUserProductIdString
             };
 
             return epicBuilder.Uri;
@@ -136,6 +167,17 @@ namespace EpicTransport {
         }
 
         public override void Shutdown() {
+            if (EOSSDKComponent.CollectPlayerMetrics) {
+                // Stop Metrics collection session
+                EndPlayerSessionOptions endSessionOptions = new EndPlayerSessionOptions();
+                endSessionOptions.AccountId = EOSSDKComponent.LocalUserAccountId;
+                Result result = EOSSDKComponent.GetMetricsInterface().EndPlayerSession(endSessionOptions);
+
+                if (result == Result.Success) {
+                    Debug.LogError("Stopped Metric Session");
+                }
+            }
+
             server?.Shutdown();
             client?.Disconnect();
 
@@ -159,7 +201,7 @@ namespace EpicTransport {
 
         private void FetchEpicAccountId() {
             if (EOSSDKComponent.Initialized) {
-                productUserId = EOSSDKComponent.localUserProductId;
+                productUserId = EOSSDKComponent.LocalUserProductId;
             }
         }
 

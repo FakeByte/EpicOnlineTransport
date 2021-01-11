@@ -100,9 +100,9 @@ namespace EpicTransport {
 
         protected override void OnNewConnection(OnIncomingConnectionRequestInfo result) {
             if (hostProductId == result.RemoteUserId) {
-                EOSSDKComponent.EOS.GetP2PInterface().AcceptConnection(
+                EOSSDKComponent.GetP2PInterface().AcceptConnection(
                     new AcceptConnectionOptions() {
-                        LocalUserId = EOSSDKComponent.localUserProductId,
+                        LocalUserId = EOSSDKComponent.LocalUserProductId,
                         RemoteUserId = result.RemoteUserId,
                         SocketId = new SocketId() { SocketName = SOCKET_ID }
                     });

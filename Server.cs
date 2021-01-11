@@ -36,9 +36,9 @@ namespace EpicTransport {
             nextConnectionID = 1;
         }
 
-        protected override void OnNewConnection(OnIncomingConnectionRequestInfo result) => EOSSDKComponent.EOS.GetP2PInterface().AcceptConnection(
+        protected override void OnNewConnection(OnIncomingConnectionRequestInfo result) => EOSSDKComponent.GetP2PInterface().AcceptConnection(
             new AcceptConnectionOptions() {
-                LocalUserId = EOSSDKComponent.localUserProductId,
+                LocalUserId = EOSSDKComponent.LocalUserProductId,
                 RemoteUserId = result.RemoteUserId,
                 SocketId = new SocketId() { SocketName = SOCKET_ID }
             });

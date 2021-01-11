@@ -28,7 +28,7 @@ namespace EpicTransport {
             channels = transport.Channels;
             
             AddNotifyPeerConnectionRequestOptions addNotifyPeerConnectionRequestOptions = new AddNotifyPeerConnectionRequestOptions();
-            addNotifyPeerConnectionRequestOptions.LocalUserId = EOSSDKComponent.localUserProductId;
+            addNotifyPeerConnectionRequestOptions.LocalUserId = EOSSDKComponent.LocalUserProductId;
             SocketId socketId = new SocketId();
             socketId.SocketName = SOCKET_ID;
             addNotifyPeerConnectionRequestOptions.SocketId = socketId;
@@ -36,14 +36,14 @@ namespace EpicTransport {
             OnIncomingConnectionRequest += OnNewConnection;
             OnRemoteConnectionClosed += OnConnectFail;
 
-            EOSSDKComponent.EOS.GetP2PInterface().AddNotifyPeerConnectionRequest(addNotifyPeerConnectionRequestOptions,
+            EOSSDKComponent.GetP2PInterface().AddNotifyPeerConnectionRequest(addNotifyPeerConnectionRequestOptions,
                 null, OnIncomingConnectionRequest);
 
             AddNotifyPeerConnectionClosedOptions addNotifyPeerConnectionClosedOptions = new AddNotifyPeerConnectionClosedOptions();
-            addNotifyPeerConnectionClosedOptions.LocalUserId = EOSSDKComponent.localUserProductId;
+            addNotifyPeerConnectionClosedOptions.LocalUserId = EOSSDKComponent.LocalUserProductId;
             addNotifyPeerConnectionClosedOptions.SocketId = socketId;
 
-            EOSSDKComponent.EOS.GetP2PInterface().AddNotifyPeerConnectionClosed(addNotifyPeerConnectionClosedOptions,
+            EOSSDKComponent.GetP2PInterface().AddNotifyPeerConnectionClosed(addNotifyPeerConnectionClosedOptions,
                 null, OnRemoteConnectionClosed);
 
             this.transport = transport;
@@ -87,11 +87,11 @@ namespace EpicTransport {
         }
 
         protected void SendInternal(ProductUserId target, InternalMessages type) =>
-            EOSSDKComponent.EOS.GetP2PInterface().SendPacket(new SendPacketOptions() {
+            EOSSDKComponent.GetP2PInterface().SendPacket(new SendPacketOptions() {
                 AllowDelayedDelivery = true,
                 Channel = (byte)internal_ch,
                 Data = new byte[] { (byte) type },
-                LocalUserId = EOSSDKComponent.localUserProductId,
+                LocalUserId = EOSSDKComponent.LocalUserProductId,
                 Reliability = PacketReliability.ReliableOrdered,
                 RemoteUserId = target,
                 SocketId = new SocketId() { SocketName = SOCKET_ID }
@@ -99,11 +99,11 @@ namespace EpicTransport {
 
 
         protected void Send(ProductUserId host, byte[] msgBuffer, byte channel) =>
-            EOSSDKComponent.EOS.GetP2PInterface().SendPacket(new SendPacketOptions() {
+            EOSSDKComponent.GetP2PInterface().SendPacket(new SendPacketOptions() {
                 AllowDelayedDelivery = true,
                 Channel = channel,
                 Data = msgBuffer,
-                LocalUserId = EOSSDKComponent.localUserProductId,
+                LocalUserId = EOSSDKComponent.LocalUserProductId,
                 Reliability = channels[channel],
                 RemoteUserId = host,
                 SocketId = new SocketId() { SocketName = SOCKET_ID }
@@ -114,8 +114,8 @@ namespace EpicTransport {
 
             SocketId socketId = new SocketId();
 
-            Result result = EOSSDKComponent.EOS.GetP2PInterface().ReceivePacket(new ReceivePacketOptions() {
-                LocalUserId = EOSSDKComponent.localUserProductId,
+            Result result = EOSSDKComponent.GetP2PInterface().ReceivePacket(new ReceivePacketOptions() {
+                LocalUserId = EOSSDKComponent.LocalUserProductId,
                 MaxDataSizeBytes = P2PInterface.MaxPacketSize,
                 RequestedChannel = channel
             }, out clientProductUserId, out socketId, out channel, out receiveBuffer);
@@ -129,9 +129,9 @@ namespace EpicTransport {
             return false;
         }
 
-        protected void CloseP2PSessionWithUser(ProductUserId clientUserID) => EOSSDKComponent.EOS.GetP2PInterface().CloseConnection(
+        protected void CloseP2PSessionWithUser(ProductUserId clientUserID) => EOSSDKComponent.GetP2PInterface().CloseConnection(
             new CloseConnectionOptions() {
-                LocalUserId = EOSSDKComponent.localUserProductId,
+                LocalUserId = EOSSDKComponent.LocalUserProductId,
                 RemoteUserId = clientUserID,
                 SocketId = new SocketId() { SocketName = SOCKET_ID}
             });
