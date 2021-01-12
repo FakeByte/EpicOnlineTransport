@@ -55,7 +55,7 @@ namespace EpicTransport {
 
                 Task connectedCompleteTask = connectedComplete.Task;
 
-                if (await Task.WhenAny(connectedCompleteTask, Task.Delay(ConnectionTimeout, cancelToken.Token)) != connectedCompleteTask) {
+                if (await Task.WhenAny(connectedCompleteTask, Task.Delay(ConnectionTimeout/*, cancelToken.Token*/)) != connectedCompleteTask) {
                     Debug.LogError($"Connection to {host} timed out.");
                     OnConnected -= SetConnectedComplete;
                     OnConnectionFailed(hostProductId);

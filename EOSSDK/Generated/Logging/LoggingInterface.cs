@@ -17,7 +17,7 @@ namespace Epic.OnlineServices.Logging
 		public static Result SetCallback(LogMessageFunc callback)
 		{
 			var callbackInternal = new LogMessageFuncInternal(LogMessageFuncInternalImplementation);
-			Helper.AddStaticCallback("LogMessageFunc", callback, callbackInternal);
+			Helper.AddStaticCallback("LogMessageFuncInternalImplementation", callback, callbackInternal);
 
 			var funcResult = EOS_Logging_SetCallback(callbackInternal);
 

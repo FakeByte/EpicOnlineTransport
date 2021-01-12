@@ -26,6 +26,7 @@ namespace EpicTransport {
         public string epicClientSecret = "";
 
         [Header("User Login")]
+        public bool autoLogoutInEditor = false;
         public bool authInterfaceLogin = false;
         public Epic.OnlineServices.Auth.LoginCredentialType authInterfaceCredentialType = Epic.OnlineServices.Auth.LoginCredentialType.AccountPortal;
         public uint devAuthToolPort = 7878;
@@ -155,7 +156,6 @@ namespace EpicTransport {
         }
 
         protected void InitializeImplementation() {
-
             isConnecting = true;
 
             var initializeOptions = new InitializeOptions() {
@@ -171,12 +171,20 @@ namespace EpicTransport {
                 throw new System.Exception("Failed to initialize platform: " + initializeResult);
             }
 
+            LoggingInterface.SetLogLevel(LogCategory.AllCategories, LogLevel.Verbose);
+            LoggingInterface.SetCallback(message => DebugLogger.EpicDebugLog(message));
+
             // The SDK outputs lots of information that is useful for debugging.
             // Make sure to set up the logging interface as early as possible: after initializing.
-            LoggingInterface.SetLogLevel(LogCategory.AllCategories, LogLevel.VeryVerbose);
-            LoggingInterface.SetCallback((LogMessage logMessage) => {
-                Debug.Log(logMessage.Message);
-            });
+            /* if (LoggingInterface.SetLogLevel(LogCategory.AllCategories, LogLevel.VeryVerbose) != Result.Success) {
+                 Debug.LogError("Error while setting log level");
+             }
+             Result setLogResult = LoggingInterface.SetCallback((LogMessage logMessage) => {
+                 Debug.Log(logMessage.Message);
+             });
+             if (setLogResult != Result.Success) {
+                 Debug.LogError("Error while setting log callback: " + setLogResult);
+             }*/
 
             var options = new Options() {
                 ProductId = epicProductId,
@@ -224,7 +232,7 @@ namespace EpicTransport {
                         Id = authInterfaceLoginCredentialId,
                         Token = authInterfaceCredentialToken
                     },
-                    ScopeFlags = Epic.OnlineServices.Auth.AuthScopeFlags.BasicProfile
+                    ScopeFlags = Epic.OnlineServices.Auth.AuthScopeFlags.BasicProfile | Epic.OnlineServices.Auth.AuthScopeFlags.FriendsList | Epic.OnlineServices.Auth.AuthScopeFlags.Presence
                 };
 
                 EOS.GetAuthInterface().Login(loginOptions, null, OnAuthInterfaceLogin);
@@ -324,6 +332,10 @@ namespace EpicTransport {
             }
         }
 
+        private void OnAuthInterfaceLogout(Epic.OnlineServices.Auth.LogoutCallbackInfo logoutCallbackInfo) {
+
+        }
+
         // Calling tick on a regular interval is required for callbacks to work.
         private void Update() {
             if (EOS != null) {
@@ -341,10 +353,53 @@ namespace EpicTransport {
         // If you are working in editor, it is advised you do not release and shutdown the SDK
         // as you would be required to restart Unity to initialize the SDK again.
         private void OnDestroy() {
-            if (!Application.isEditor && EOS != null) {
+            if (EOS == null) {
+                return;
+            }
+
+            if (Application.isEditor) {
+                if (autoLogoutInEditor) {
+                    Epic.OnlineServices.Auth.LogoutOptions logoutOptions = new Epic.OnlineServices.Auth.LogoutOptions();
+                    logoutOptions.LocalUserId = LocalUserAccountId;
+
+                    // Callback might not be called since we call Logout in OnDestroy()
+                    EOS.GetAuthInterface().Logout(logoutOptions, null, OnAuthInterfaceLogout);
+                }
+            } else {
                 EOS.Release();
                 EOS = null;
                 PlatformInterface.Shutdown();
+            }
+
+
+        }
+    }
+
+    public static class DebugLogger {
+        /// <summary>
+        ///     Convert epic services logger to unity debug logger.
+        /// </summary>
+        /// <param name="message"></param>
+        //[Conditional("UNITY_EDITOR")]
+        public static void EpicDebugLog(LogMessage message) {
+            switch (message.Level) {
+                case LogLevel.Info:
+                    Debug.Log($"Epic Manager: Category - {message.Category} Message - {message.Message}");
+                    break;
+                case LogLevel.Error:
+                    Debug.LogError($"Epic Manager: Category - {message.Category} Message - {message.Message}");
+                    break;
+                case LogLevel.Warning:
+                    Debug.LogWarning($"Epic Manager: Category - {message.Category} Message - {message.Message}");
+                    break;
+                case LogLevel.Fatal:
+                    //Debug.LogException(
+                    //new Exception($"Epic Manager: Category - {message.Category} Message - {message.Message}"));
+                    break;
+                default:
+                    Debug.Log(
+                        $"Epic Manager: Unknown log processing. Category - {message.Category} Message - {message.Message}");
+                    break;
             }
         }
     }
