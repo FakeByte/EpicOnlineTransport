@@ -8,7 +8,7 @@ using UnityEngine;
 namespace EpicTransport {
     public abstract class Common {
 
-        public const string SOCKET_ID = "SOCKET_ID";
+        public const string SOCKET_ID = "SOCKETID";
 
         private PacketReliability[] channels;
         private int internal_ch => channels.Length;
