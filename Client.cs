@@ -1,5 +1,6 @@
 ﻿using Epic.OnlineServices;
 using Epic.OnlineServices.P2P;
+using Mirror;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,50 +9,52 @@ using UnityEngine;
 namespace EpicTransport {
     public class Client : Common {
 
+        public SocketId socketId;
+        public ProductUserId serverId;
+
         public bool Connected { get; private set; }
         public bool Error { get; private set; }
 
         private event Action<byte[], int> OnReceivedData;
         private event Action OnConnected;
-        private event Action OnDisconnected;
+        public event Action OnDisconnected;
 
         private TimeSpan ConnectionTimeout;
 
+        public bool isConnecting = false;
+        public string hostAddress = "";
         private ProductUserId hostProductId = null;
         private TaskCompletionSource<Task> connectedComplete;
         private CancellationTokenSource cancelToken;
 
         private Client(EosTransport transport) : base(transport) {
-            ConnectionTimeout = TimeSpan.FromSeconds(Math.Max(1, transport.Timeout));
+            ConnectionTimeout = TimeSpan.FromSeconds(Math.Max(1, transport.timeout));
         }
 
         public static Client CreateClient(EosTransport transport, string host) {
             Client c = new Client(transport);
 
+            c.hostAddress = host;
+            c.socketId = new SocketId() { SocketName = RandomString.Generate(20) };
+
             c.OnConnected += () => transport.OnClientConnected.Invoke();
             c.OnDisconnected += () => transport.OnClientDisconnected.Invoke();
             c.OnReceivedData += (data, channel) => transport.OnClientDataReceived.Invoke(new ArraySegment<byte>(data), channel);
 
-            if (EOSSDKComponent.Initialized) {
-                c.Connect(host);
-            } else {
-                Debug.LogError("EOS not initialized");
-                c.OnConnectionFailed(null);
-            }
-
             return c;
         }
 
-        private async void Connect(string host) {
+        public async void Connect(string host) {
             cancelToken = new CancellationTokenSource();
 
             try {
                 hostProductId = ProductUserId.FromString(host);
+                serverId = hostProductId;
                 connectedComplete = new TaskCompletionSource<Task>();
 
                 OnConnected += SetConnectedComplete;
 
-                SendInternal(hostProductId, InternalMessages.CONNECT);
+                SendInternal(hostProductId, socketId, InternalMessages.CONNECT);
 
                 Task connectedCompleteTask = connectedComplete.Task;
 
@@ -79,17 +82,29 @@ namespace EpicTransport {
         }
 
         public void Disconnect() {
-            Debug.Log("Sending Disconnect message");
-            SendInternal(hostProductId, InternalMessages.DISCONNECT);
+            if (serverId != null) {
+                CloseP2PSessionWithUser(serverId, socketId);
+
+                serverId = null;
+            } else {
+                return;
+            }
+
+            SendInternal(hostProductId, socketId, InternalMessages.DISCONNECT);
+
             Dispose();
             cancelToken?.Cancel();
 
-            WaitForClose(hostProductId);
+            WaitForClose(hostProductId, socketId);
         }
 
         private void SetConnectedComplete() => connectedComplete.SetResult(connectedComplete.Task);
 
         protected override void OnReceiveData(byte[] data, ProductUserId clientUserId, int channel) {
+            if (ignoreAllMessages) {
+                return;
+            }
+
             if (clientUserId != hostProductId) {
                 Debug.LogError("Received a message from an unknown");
                 return;
@@ -99,19 +114,32 @@ namespace EpicTransport {
         }
 
         protected override void OnNewConnection(OnIncomingConnectionRequestInfo result) {
+            if (ignoreAllMessages) {
+                return;
+            }
+
+            if (deadSockets.Contains(result.SocketId.SocketName)) {
+                Debug.LogError("Received incoming connection request from dead socket");
+                return;
+            }
+
             if (hostProductId == result.RemoteUserId) {
                 EOSSDKComponent.GetP2PInterface().AcceptConnection(
                     new AcceptConnectionOptions() {
                         LocalUserId = EOSSDKComponent.LocalUserProductId,
                         RemoteUserId = result.RemoteUserId,
-                        SocketId = new SocketId() { SocketName = SOCKET_ID }
+                        SocketId = result.SocketId
                     });
             } else {
                 Debug.LogError("P2P Acceptance Request from unknown host ID.");
             }
         }
 
-        protected override void OnReceiveInternalData(InternalMessages type, ProductUserId clientUserId) {
+        protected override void OnReceiveInternalData(InternalMessages type, ProductUserId clientUserId, SocketId socketId) {
+            if (ignoreAllMessages) {
+                return;
+            }
+
             switch (type) {
                 case InternalMessages.ACCEPT_CONNECT:
                     Connected = true;
@@ -121,6 +149,7 @@ namespace EpicTransport {
                 case InternalMessages.DISCONNECT:
                     Connected = false;
                     Debug.Log("Disconnected.");
+
                     OnDisconnected.Invoke();
                     break;
                 default:
@@ -129,8 +158,9 @@ namespace EpicTransport {
             }
         }
 
-        public void Send(byte[] data, int channelId) => Send(hostProductId, data, (byte) channelId);
+        public void Send(byte[] data, int channelId) => Send(hostProductId, socketId, data, (byte) channelId);
 
         protected override void OnConnectionFailed(ProductUserId remoteId) => OnDisconnected.Invoke();
+        public void EosNotInitialized() => OnDisconnected.Invoke();
     }
 }
