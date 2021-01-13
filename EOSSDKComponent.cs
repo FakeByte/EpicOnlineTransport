@@ -59,6 +59,7 @@ namespace EpicTransport
 
         public bool checkForEpicLauncherAndRestart = false;
         public bool delayedInitialization = false;
+        public bool toggleEpicLogger = false;
         public uint tickBudgetInMilliseconds = 0;
 
         // End Unity Inspector shown variables
@@ -203,10 +204,15 @@ namespace EpicTransport
 
             // The SDK outputs lots of information that is useful for debugging.
             // Make sure to set up the logging interface as early as possible: after initializing.
-            LoggingInterface.SetLogLevel(LogCategory.AllCategories, LogLevel.VeryVerbose);
-            LoggingInterface.SetCallback((LogMessage logMessage) => {
-                Debug.Log(logMessage.Message);
-            });
+
+            if (toggleEpicLogger == true)
+            {
+                LoggingInterface.SetLogLevel(LogCategory.AllCategories, LogLevel.VeryVerbose);
+                LoggingInterface.SetCallback((LogMessage logMessage) =>
+                {
+                    Debug.Log(logMessage.Message);
+                });
+            }
 
             var options = new Options()
             {
