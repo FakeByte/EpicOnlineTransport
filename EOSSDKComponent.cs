@@ -370,7 +370,7 @@ namespace EpicTransport {
                 EOS = null;
                 PlatformInterface.Shutdown();
             }
-
+            
 
         }
     }
@@ -384,7 +384,7 @@ namespace EpicTransport {
         public static void EpicDebugLog(LogMessage message) {
             switch (message.Level) {
                 case LogLevel.Info:
-                    Debug.Log($"Epic Manager: Category - {message.Category} Message - {message.Message}");
+                    //Debug.Log($"Epic Manager: Category - {message.Category} Message - {message.Message}");
                     break;
                 case LogLevel.Error:
                     Debug.LogError($"Epic Manager: Category - {message.Category} Message - {message.Message}");
@@ -397,6 +397,7 @@ namespace EpicTransport {
                     //new Exception($"Epic Manager: Category - {message.Category} Message - {message.Message}"));
                     break;
                 default:
+                    if(message.Category == "LogEOSP2P")
                     Debug.Log(
                         $"Epic Manager: Unknown log processing. Category - {message.Category} Message - {message.Message}");
                     break;

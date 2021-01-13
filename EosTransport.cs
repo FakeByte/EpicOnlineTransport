@@ -24,8 +24,11 @@ namespace EpicTransport {
         public PacketReliability[] Channels = new PacketReliability[1] { PacketReliability.ReliableOrdered };
         
         [Tooltip("Timeout for connecting in seconds.")]
-        public int Timeout = 25;
- 
+        public int timeout = 25;
+
+        public float ignoreCachedMessagesAtStartUpInSeconds = 2.0f;
+        private float ignoreCachedMessagesTimer = 0.0f;
+
         [Header("Info")]
         [Tooltip("This will display your Epic Account ID when you start or connect to a server.")]
         public ProductUserId productUserId;
@@ -36,7 +39,28 @@ namespace EpicTransport {
             Invoke(nameof(FetchEpicAccountId), 1f);
         }
 
+
         private void LateUpdate() {
+            if (activeNode != null) {
+                ignoreCachedMessagesTimer += Time.deltaTime;
+
+                if (ignoreCachedMessagesTimer <= ignoreCachedMessagesAtStartUpInSeconds) {
+                    activeNode.ignoreAllMessages = true;
+                } else {
+                    activeNode.ignoreAllMessages = false;
+
+                    if(client != null && !client.isConnecting) {
+                        if (EOSSDKComponent.Initialized) {
+                            client.Connect(client.hostAddress);
+                        } else {
+                            Debug.LogError("EOS not initialized");
+                            client.EosNotInitialized();
+                        }
+                        client.isConnecting = true;
+                    }
+                }
+            }
+
             if (enabled) {
                 activeNode?.ReceiveData();
             }
@@ -203,6 +227,10 @@ namespace EpicTransport {
             if (EOSSDKComponent.Initialized) {
                 productUserId = EOSSDKComponent.LocalUserProductId;
             }
+        }
+
+        public void ResetIgnoreMessagesAtStartUpTimer() {
+            ignoreCachedMessagesTimer = 0;
         }
 
         private void OnDestroy() {
