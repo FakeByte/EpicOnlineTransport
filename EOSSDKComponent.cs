@@ -44,6 +44,8 @@ namespace EpicTransport {
         }
 
         [Header("Misc")]
+        public LogLevel epicLoggerLevel = LogLevel.Error;
+
         [SerializeField] private bool collectPlayerMetrics = true;
         public static bool CollectPlayerMetrics {
             get {
@@ -171,7 +173,7 @@ namespace EpicTransport {
                 throw new System.Exception("Failed to initialize platform: " + initializeResult);
             }
 
-            LoggingInterface.SetLogLevel(LogCategory.AllCategories, LogLevel.Verbose);
+            LoggingInterface.SetLogLevel(LogCategory.AllCategories, epicLoggerLevel);
             LoggingInterface.SetCallback(message => DebugLogger.EpicDebugLog(message));
 
             // The SDK outputs lots of information that is useful for debugging.
