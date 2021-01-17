@@ -55,6 +55,8 @@ namespace EpicTransport {
 
         public bool checkForEpicLauncherAndRestart = false;
         public bool delayedInitialization = false;
+        public float platformTickIntervalInSeconds = 0.0f;
+        private float platformTickTimer = 0f;
         public uint tickBudgetInMilliseconds = 0;
 
         // End Unity Inspector shown variables
@@ -66,9 +68,6 @@ namespace EpicTransport {
         public static void SetAuthInterfaceCredentialToken(string credentialToken) => Instance.authInterfaceCredentialToken = credentialToken;
         private string connectInterfaceCredentialToken = null;
         public static void SetConnectInterfaceCredentialToken(string credentialToken) => Instance.connectInterfaceCredentialToken = credentialToken;
-
-        private const float PLATFORM_TICK_INTERVAL = 0.1f;
-        private float platformTickTimer = 0f;
 
         private PlatformInterface EOS;
 
@@ -173,20 +172,10 @@ namespace EpicTransport {
                 throw new System.Exception("Failed to initialize platform: " + initializeResult);
             }
 
-            LoggingInterface.SetLogLevel(LogCategory.AllCategories, epicLoggerLevel);
-            LoggingInterface.SetCallback(message => DebugLogger.EpicDebugLog(message));
-
             // The SDK outputs lots of information that is useful for debugging.
             // Make sure to set up the logging interface as early as possible: after initializing.
-            /* if (LoggingInterface.SetLogLevel(LogCategory.AllCategories, LogLevel.VeryVerbose) != Result.Success) {
-                 Debug.LogError("Error while setting log level");
-             }
-             Result setLogResult = LoggingInterface.SetCallback((LogMessage logMessage) => {
-                 Debug.Log(logMessage.Message);
-             });
-             if (setLogResult != Result.Success) {
-                 Debug.LogError("Error while setting log callback: " + setLogResult);
-             }*/
+            LoggingInterface.SetLogLevel(LogCategory.AllCategories, epicLoggerLevel);
+            LoggingInterface.SetCallback(message => Logger.EpicDebugLog(message));
 
             var options = new Options() {
                 ProductId = epicProductId,
@@ -321,7 +310,7 @@ namespace EpicTransport {
                     localUserProductIdString = productIdString;
                     localUserProductId = loginCallbackInfo.LocalUserId;
                 }
-
+                
                 initialized = true;
                 isConnecting = false;
             } else {
@@ -343,7 +332,7 @@ namespace EpicTransport {
             if (EOS != null) {
                 platformTickTimer += Time.deltaTime;
 
-                if (platformTickTimer >= PLATFORM_TICK_INTERVAL) {
+                if (platformTickTimer >= platformTickIntervalInSeconds) {
                     platformTickTimer = 0;
                     EOS.Tick();
                 }
@@ -374,36 +363,6 @@ namespace EpicTransport {
             }
             
 
-        }
-    }
-
-    public static class DebugLogger {
-        /// <summary>
-        ///     Convert epic services logger to unity debug logger.
-        /// </summary>
-        /// <param name="message"></param>
-        //[Conditional("UNITY_EDITOR")]
-        public static void EpicDebugLog(LogMessage message) {
-            switch (message.Level) {
-                case LogLevel.Info:
-                    //Debug.Log($"Epic Manager: Category - {message.Category} Message - {message.Message}");
-                    break;
-                case LogLevel.Error:
-                    Debug.LogError($"Epic Manager: Category - {message.Category} Message - {message.Message}");
-                    break;
-                case LogLevel.Warning:
-                    Debug.LogWarning($"Epic Manager: Category - {message.Category} Message - {message.Message}");
-                    break;
-                case LogLevel.Fatal:
-                    //Debug.LogException(
-                    //new Exception($"Epic Manager: Category - {message.Category} Message - {message.Message}"));
-                    break;
-                default:
-                    if(message.Category == "LogEOSP2P")
-                    Debug.Log(
-                        $"Epic Manager: Unknown log processing. Category - {message.Category} Message - {message.Message}");
-                    break;
-            }
         }
     }
 }

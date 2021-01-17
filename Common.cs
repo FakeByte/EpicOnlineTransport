@@ -156,19 +156,6 @@ namespace EpicTransport {
             } else {
                 deadSockets.Add(socketId.SocketName);
             }
-            return;
-
-            //Not needed
-            Result result = EOSSDKComponent.GetP2PInterface().CloseConnection(
-                new CloseConnectionOptions() {
-                LocalUserId = EOSSDKComponent.LocalUserProductId,
-                RemoteUserId = clientUserID,
-                SocketId = socketId
-                });
-
-            if (result != Result.Success) {
-                Debug.LogError("ERROR WHILE CLOSING");
-            }
         }
 
 

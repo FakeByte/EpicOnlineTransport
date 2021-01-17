@@ -6,6 +6,7 @@ using Epic.OnlineServices.P2P;
 using Epic.OnlineServices;
 using Mirror;
 using Epic.OnlineServices.Metrics;
+using System.Collections;
 
 namespace EpicTransport {
 
@@ -29,6 +30,8 @@ namespace EpicTransport {
         public float ignoreCachedMessagesAtStartUpInSeconds = 2.0f;
         private float ignoreCachedMessagesTimer = 0.0f;
 
+        public RelayControl relayControl = RelayControl.AllowRelays;
+
         [Header("Info")]
         [Tooltip("This will display your Epic Account ID when you start or connect to a server.")]
         public ProductUserId productUserId;
@@ -36,9 +39,9 @@ namespace EpicTransport {
         private void Awake() {
             Debug.Assert(Channels != null && Channels.Length > 0, "No channel configured for EOS Transport.");
 
-            Invoke(nameof(FetchEpicAccountId), 1f);
+            StartCoroutine("FetchEpicAccountId");
+            StartCoroutine("ChangeRelayStatus");
         }
-
 
         private void LateUpdate() {
             if (activeNode != null) {
@@ -74,7 +77,7 @@ namespace EpicTransport {
                 return;
             }
 
-            FetchEpicAccountId();
+            StartCoroutine("FetchEpicAccountId");
 
             if (ServerActive()) {
                 Debug.LogError("Transport already running as server!");
@@ -134,7 +137,7 @@ namespace EpicTransport {
                 return;
             }
 
-            FetchEpicAccountId();
+            StartCoroutine("FetchEpicAccountId");
 
             if (ClientActive()) {
                 Debug.LogError("Transport already running as client!");
@@ -223,10 +226,23 @@ namespace EpicTransport {
             }
         }
 
-        private void FetchEpicAccountId() {
-            if (EOSSDKComponent.Initialized) {
-                productUserId = EOSSDKComponent.LocalUserProductId;
+        private IEnumerator FetchEpicAccountId() {
+            while (!EOSSDKComponent.Initialized) {
+                yield return null;
             }
+
+            productUserId = EOSSDKComponent.LocalUserProductId;
+        }
+
+        private IEnumerator ChangeRelayStatus() {
+            while (!EOSSDKComponent.Initialized) {
+                yield return null;
+            }
+
+            SetRelayControlOptions setRelayControlOptions = new SetRelayControlOptions();
+            setRelayControlOptions.RelayControl = relayControl;
+
+            EOSSDKComponent.GetP2PInterface().SetRelayControl(setRelayControlOptions);
         }
 
         public void ResetIgnoreMessagesAtStartUpTimer() {
