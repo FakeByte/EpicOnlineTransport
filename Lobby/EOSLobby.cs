@@ -1,6 +1,5 @@
 ﻿using EpicTransport;
 using Epic.OnlineServices.Lobby;
-using System.Collections;
 using UnityEngine;
 using Epic.OnlineServices;
 using System.Collections.Generic;
@@ -14,7 +13,7 @@ public class EOSLobby : MonoBehaviour
     private bool isOwner = false;
 
     //creates a lobby
-    private void StartLobby(uint maxConnections, LobbyPermissionLevel permissionLevel, bool presenceEnabled, AttributeData[] lobbyData = null)
+    public virtual void StartLobby(uint maxConnections, LobbyPermissionLevel permissionLevel, bool presenceEnabled, AttributeData[] lobbyData = null)
     {
         EOSSDKComponent.GetLobbyInterface().CreateLobby(new CreateLobbyOptions 
         { 
@@ -63,7 +62,7 @@ public class EOSLobby : MonoBehaviour
     }
 
     //find lobbies
-    private List<LobbyDetails> FindLobbies(uint maxResults, LobbySearchSetParameterOptions[] lobbySearchSetParameterOptions)
+    public virtual List<LobbyDetails> FindLobbies(uint maxResults, LobbySearchSetParameterOptions[] lobbySearchSetParameterOptions)
     {
         //create search handle and list of lobby details
         LobbySearch search = new LobbySearch();
@@ -101,7 +100,7 @@ public class EOSLobby : MonoBehaviour
     }
 
     //join lobby
-    private List<Attribute> JoinLobby(LobbyDetails lobbyToJoin, bool presenceEnabled = false)
+    public virtual List<Attribute> JoinLobby(LobbyDetails lobbyToJoin, bool presenceEnabled = false)
     {
         List<Attribute> dataToReturn = new List<Attribute>();
 
@@ -129,7 +128,7 @@ public class EOSLobby : MonoBehaviour
     }
 
     //leave lobby
-    private void LeaveLobby()
+    public virtual void LeaveLobby()
     {
         //if we are the owner of the lobby
         if(isOwner)
