@@ -35,6 +35,8 @@ public class EOSLobby : MonoBehaviour
             PresenceEnabled = presenceEnabled,
         }, null, (CreateLobbyCallbackInfo callback) => 
         {
+            List<Attribute> lobbyReturnData = new List<Attribute>();
+
             //if the result of CreateLobby is not successful, log and error and return
             if(callback.ResultCode != Result.Success)
             {
@@ -61,6 +63,7 @@ public class EOSLobby : MonoBehaviour
                 foreach (AttributeData data in lobbyData)
                 {
                     modHandle.AddAttribute(new LobbyModificationAddAttributeOptions { Attribute = data, Visibility = LobbyAttributeVisibility.Public });
+                    lobbyReturnData.Add(new Attribute { Data = data, Visibility = LobbyAttributeVisibility.Public });
                 }
             }
 
@@ -71,6 +74,9 @@ public class EOSLobby : MonoBehaviour
             ConnectedToLobby = true;
             EOSSDKComponent.GetLobbyInterface().CopyLobbyDetailsHandle(new CopyLobbyDetailsHandleOptions { LobbyId = callback.LobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out ConnectedLobbyDetails);
             currentLobbyId = callback.LobbyId;
+
+            //invoke event
+            JoinLobbyComplete.Invoke(lobbyReturnData);
         });
     }
 
@@ -111,6 +117,7 @@ public class EOSLobby : MonoBehaviour
                 foundLobbies.Add(lobbyInformation);
             }
 
+            //invoke event
             FindLobbiesComplete.Invoke(foundLobbies);
         });
     }
@@ -146,6 +153,10 @@ public class EOSLobby : MonoBehaviour
             EOSSDKComponent.GetLobbyInterface().CopyLobbyDetailsHandle(new CopyLobbyDetailsHandleOptions { LobbyId = callback.LobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out ConnectedLobbyDetails);
             currentLobbyId = callback.LobbyId;
 
+            //remove null data
+            lobbyData.RemoveAll((x) => x == null);
+
+            //invoke event
             JoinLobbyComplete.Invoke(lobbyData);
         });
     }
@@ -165,6 +176,8 @@ public class EOSLobby : MonoBehaviour
                     Debug.LogError("There was an error while destroying the lobby. Error: " + callback.ResultCode);
                     return;
                 }
+
+                ConnectedToLobby = false;
             });
         }
         //if we are a member of the lobby
@@ -178,9 +191,9 @@ public class EOSLobby : MonoBehaviour
                     Debug.LogError("There was an error while leaving the lobby. Error: " + callback.ResultCode);
                     return;
                 }
+
+                ConnectedToLobby = false;
             });
         }
-
-        ConnectedToLobby = false;
     }
 }

@@ -13,38 +13,81 @@ public class EOSLobbyUI : EOSLobby
     };
 
     private string lobbyName = "My Lobby";
+    private bool showLobbyList = false;
+    private bool showPlayerList = false;
+
+    private List<LobbyDetails> foundLobbies = new List<LobbyDetails>();
+    private List<Attribute> lobbyData = new List<Attribute>();
     
     private void Start()
     {
-        EOSSDKComponent.Initialize();
+        if(!EOSSDKComponent.Initialized)
+        {
+            EOSSDKComponent.Initialize();
+        }
     }
 
+    //register events
     private void OnEnable()
     {
         //subscribe to events
-        JoinLobbyComplete += DrawLobbyMenu;
-        FindLobbiesComplete += DrawLobbyList;
+        JoinLobbyComplete += OnJoinLobbyComplete;
+        FindLobbiesComplete += OnFindLobbiesComplete;
     }
 
+    //deregister events
     private void OnDisable()
     {
         //unsubscribe from events
-        JoinLobbyComplete -= DrawLobbyMenu;
-        FindLobbiesComplete -= DrawLobbyList;
+        JoinLobbyComplete -= OnJoinLobbyComplete;
+        FindLobbiesComplete -= OnFindLobbiesComplete;
+    }
+
+    //callback for JoinLobbyComplete
+    private void OnJoinLobbyComplete(List<Attribute> attributes)
+    {
+        lobbyData = attributes;
+        showPlayerList = true;
+        showLobbyList = false;
+    }
+
+    //callback for FindLobbiesComplete
+    private void OnFindLobbiesComplete(List<LobbyDetails> lobbiesFound)
+    {
+        foundLobbies = lobbiesFound;
+        showPlayerList = false;
+        showLobbyList = true;
     }
 
     private void OnGUI()
     {
+        //if the component is not initialized then dont continue
         if (!EOSSDKComponent.Initialized)
         {
             return;
         }
 
+        //start UI
         GUILayout.BeginHorizontal();
 
+        //draw side buttons
         DrawMenuButtons();
 
-        //player list and lobby list drawing is handled by events
+        //draw scroll view
+        GUILayout.BeginScrollView(Vector2.zero, GUILayout.MaxHeight(400));
+
+        //runs when we want to show the lobby list
+        if(showLobbyList && !showPlayerList)
+        {
+            DrawLobbyList();
+        }
+        //runs when we want to show the player list and we are connected to a lobby
+        else if(!showLobbyList && showPlayerList && ConnectedToLobby)
+        {
+            DrawLobbyMenu();
+        }
+
+        GUILayout.EndScrollView();
 
         GUILayout.EndHorizontal();
     }
@@ -68,7 +111,7 @@ public class EOSLobbyUI : EOSLobby
             CreateLobby(4, LobbyPermissionLevel.Publicadvertised, false, new AttributeData[] { new AttributeData { Key = attributeKeys[0], Value = lobbyName}, });
         }
 
-        lobbyName = GUILayout.TextField(lobbyName, 40, new GUILayoutOption[] { GUILayout.Width(200)});
+        lobbyName = GUILayout.TextField(lobbyName, 40, GUILayout.Width(200));
 
         GUILayout.EndHorizontal();
 
@@ -101,23 +144,32 @@ public class EOSLobbyUI : EOSLobby
         GUILayout.EndVertical();
     }
 
-    private void DrawLobbyList(List<LobbyDetails> lobbiesFound)
+    private void DrawLobbyList()
     {
-        //set bool to allow OnGUI method to draw this?
-        GUILayout.Label("Lobby Name    /    Player Count");
+        //draw labels
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Lobby Name", GUILayout.Width(220));
+        GUILayout.Label("Player Count");
+        GUILayout.EndHorizontal();
 
-        foreach (LobbyDetails lobby in lobbiesFound)
+        //draw lobbies
+        foreach (LobbyDetails lobby in foundLobbies)
         {
+            //get lobby name
             Attribute lobbyNameAttribute = new Attribute();
             lobby.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = attributeKeys[0] }, out lobbyNameAttribute);
 
-            GUILayout.BeginHorizontal();
-            GUILayout.Label(lobbyNameAttribute.Data.Value.AsUtf8);
+            //draw the lobby result
+            GUILayout.BeginHorizontal(GUILayout.Width(400), GUILayout.MaxWidth(400));
+            //draw lobby name
+            GUILayout.Label(lobbyNameAttribute.Data.Value.AsUtf8.Length > 30 ? lobbyNameAttribute.Data.Value.AsUtf8.Substring(0, 27).Trim() + "..." : lobbyNameAttribute.Data.Value.AsUtf8, GUILayout.Width(175));
             GUILayout.Space(75);
+            //draw player count
             GUILayout.Label(lobby.GetMemberCount(new LobbyDetailsGetMemberCountOptions { }).ToString());
             GUILayout.Space(75);
 
-            if (GUILayout.Button("Join"))
+            //draw join button
+            if (GUILayout.Button("Join", GUILayout.ExpandWidth(false)))
             {
                 JoinLobby(lobby, attributeKeys);
             }
@@ -126,21 +178,15 @@ public class EOSLobbyUI : EOSLobby
         }
     }
 
-    private void DrawLobbyMenu(List<Attribute> lobbyData)
+    private void DrawLobbyMenu()
     {
-        GUILayout.BeginScrollView(Vector2.zero, new GUILayoutOption[] { GUILayout.MaxHeight(400) });
+        //draws the lobby name
+        GUILayout.Label("Name: " + lobbyData.Find((x) => x.Data.Key == attributeKeys[0]).Data.Value.AsUtf8);
 
-        Debug.Log("Drew menu");
-        if(lobbyData.Count != 0)
-        {
-            GUILayout.Label("Name: " + lobbyData[1].Data.Value.AsUtf8);
-        }
-
+        //draws players
         for (uint i = 0; i < ConnectedLobbyDetails.GetMemberCount(new LobbyDetailsGetMemberCountOptions { }); i++)
         {
             GUILayout.Label(ConnectedLobbyDetails.GetMemberByIndex(new LobbyDetailsGetMemberByIndexOptions { MemberIndex = i }).ToString());
         }
-
-        GUILayout.EndScrollView();
     }
 }
