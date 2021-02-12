@@ -11,7 +11,7 @@ public class EOSLobby : MonoBehaviour
     public LobbyDetails ConnectedLobbyDetails = new LobbyDetails();
 
     public static string DefaultAttributeKey = "default";
-    private static string hostAddressKey = string.Empty;
+    private static string hostAddressKey = "host_address";
 
     private string currentLobbyId = string.Empty;
     private bool isLobbyOwner = false;
@@ -152,9 +152,6 @@ public class EOSLobby : MonoBehaviour
             ConnectedToLobby = true;
             EOSSDKComponent.GetLobbyInterface().CopyLobbyDetailsHandle(new CopyLobbyDetailsHandleOptions { LobbyId = callback.LobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out ConnectedLobbyDetails);
             currentLobbyId = callback.LobbyId;
-
-            //remove null data
-            lobbyData.RemoveAll((x) => x == null);
 
             //invoke event
             JoinLobbyComplete.Invoke(lobbyData);
