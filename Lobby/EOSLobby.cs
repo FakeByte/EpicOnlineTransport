@@ -6,14 +6,25 @@ using System.Collections.Generic;
 
 public class EOSLobby : MonoBehaviour
 {
-    private static string defaultAttributeKey = "default";
+    [HideInInspector]
+    public bool ConnectedToLobby = false;
+    public LobbyDetails ConnectedLobbyDetails = new LobbyDetails();
+
+    public static string DefaultAttributeKey = "default";
     private static string hostAddressKey = string.Empty;
 
     private string currentLobbyId = string.Empty;
-    private bool isOwner = false;
+    private bool isLobbyOwner = false;
+
+    //events
+    public delegate void JoinLobbyHandler(List<Attribute> attributes);
+    public event JoinLobbyHandler JoinLobbyComplete;
+
+    public delegate void FindLobbiesHandler(List<LobbyDetails> foundLobbies);
+    public event FindLobbiesHandler FindLobbiesComplete;
 
     //creates a lobby
-    public virtual void StartLobby(uint maxConnections, LobbyPermissionLevel permissionLevel, bool presenceEnabled, AttributeData[] lobbyData = null)
+    public virtual void CreateLobby(uint maxConnections, LobbyPermissionLevel permissionLevel, bool presenceEnabled, AttributeData[] lobbyData = null)
     {
         EOSSDKComponent.GetLobbyInterface().CreateLobby(new CreateLobbyOptions 
         { 
@@ -33,7 +44,7 @@ public class EOSLobby : MonoBehaviour
 
             //create mod handle and lobby data
             LobbyModification modHandle = new LobbyModification();
-            AttributeData defaultData = new AttributeData { Key = defaultAttributeKey, Value = defaultAttributeKey };
+            AttributeData defaultData = new AttributeData { Key = DefaultAttributeKey, Value = DefaultAttributeKey };
             AttributeData hostAddressData = new AttributeData { Key = hostAddressKey, Value = EOSSDKComponent.LocalUserProductIdString };
 
             //set the mod handle
@@ -45,7 +56,7 @@ public class EOSLobby : MonoBehaviour
             modHandle.AddAttribute(new LobbyModificationAddAttributeOptions { Attribute = hostAddressData, Visibility = LobbyAttributeVisibility.Public });
 
             //add user attributes
-            if(lobbyData.Length != 0)
+            if (lobbyData != null)
             {
                 foreach (AttributeData data in lobbyData)
                 {
@@ -56,17 +67,18 @@ public class EOSLobby : MonoBehaviour
             //update the lobby
             EOSSDKComponent.GetLobbyInterface().UpdateLobby(new UpdateLobbyOptions { LobbyModificationHandle = modHandle }, null, (UpdateLobbyCallbackInfo _) => { });
 
+            isLobbyOwner = true;
+            ConnectedToLobby = true;
+            EOSSDKComponent.GetLobbyInterface().CopyLobbyDetailsHandle(new CopyLobbyDetailsHandleOptions { LobbyId = callback.LobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out ConnectedLobbyDetails);
             currentLobbyId = callback.LobbyId;
-            isOwner = true;
         });
     }
 
     //find lobbies
-    public virtual List<LobbyDetails> FindLobbies(uint maxResults, LobbySearchSetParameterOptions[] lobbySearchSetParameterOptions)
+    public virtual void FindLobbies(uint maxResults, LobbySearchSetParameterOptions[] lobbySearchSetParameterOptions)
     {
         //create search handle and list of lobby details
         LobbySearch search = new LobbySearch();
-        List<LobbyDetails> details = new List<LobbyDetails>();
 
         //set the search handle
         EOSSDKComponent.GetLobbyInterface().CreateLobbySearch(new CreateLobbySearchOptions { MaxResults =  maxResults}, out search);
@@ -80,33 +92,37 @@ public class EOSLobby : MonoBehaviour
         //find lobbies
         search.Find(new LobbySearchFindOptions { LocalUserId = EOSSDKComponent.LocalUserProductId }, null, (LobbySearchFindCallbackInfo callback) => 
         {
+            List<LobbyDetails> foundLobbies = new List<LobbyDetails>();
+
             //if the search was unsuccessful, log an error and return
-            if(callback.ResultCode != Result.Success)
+            if (callback.ResultCode != Result.Success)
             {
                 Debug.LogError("There was an error while finding lobbies. Error: " + callback.ResultCode);
                 return;
             }
 
+            foundLobbies.Clear();
+
             //for each lobby found, add data to details
-            for (int i = 0; i < details.Count; i++)
+            for (int i = 0; i < search.GetSearchResultCount(new LobbySearchGetSearchResultCountOptions { }); i++)
             {
                 LobbyDetails lobbyInformation;
-                search.CopySearchResultByIndex(new LobbySearchCopySearchResultByIndexOptions { }, out lobbyInformation);
-                details.Add(lobbyInformation);
+                search.CopySearchResultByIndex(new LobbySearchCopySearchResultByIndexOptions { LobbyIndex = (uint)i }, out lobbyInformation);
+                foundLobbies.Add(lobbyInformation);
             }
+
+            FindLobbiesComplete.Invoke(foundLobbies);
         });
-        
-        return details;
     }
 
     //join lobby
-    public virtual List<Attribute> JoinLobby(LobbyDetails lobbyToJoin, bool presenceEnabled = false)
+    public virtual void JoinLobby(LobbyDetails lobbyToJoin, string[] attributeKeys, bool presenceEnabled = false)
     {
-        List<Attribute> dataToReturn = new List<Attribute>();
-
         //join lobby
         EOSSDKComponent.GetLobbyInterface().JoinLobby(new JoinLobbyOptions { LobbyDetailsHandle = lobbyToJoin, LocalUserId = EOSSDKComponent.LocalUserProductId, PresenceEnabled = presenceEnabled }, null, (JoinLobbyCallbackInfo callback) => 
         {
+            List<Attribute> lobbyData = new List<Attribute>();
+
             //if the result was not a success, log error and return
             if(callback.ResultCode != Result.Success)
             {
@@ -114,24 +130,31 @@ public class EOSLobby : MonoBehaviour
                 return;
             }
 
-            //TODO
-            //add other data that host may have added in StartLobby()
             Attribute hostAddress = new Attribute();
-            lobbyToJoin.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { }, out hostAddress);
-            dataToReturn.Add(hostAddress);
+            lobbyToJoin.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = hostAddressKey }, out hostAddress);
+            lobbyData.Add(hostAddress);
 
+            foreach (string key in attributeKeys)
+            {
+                Attribute attribute = new Attribute();
+                lobbyToJoin.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = key }, out attribute);
+                lobbyData.Add(attribute);
+            }
+
+            isLobbyOwner = false;
+            ConnectedToLobby = true;
+            EOSSDKComponent.GetLobbyInterface().CopyLobbyDetailsHandle(new CopyLobbyDetailsHandleOptions { LobbyId = callback.LobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out ConnectedLobbyDetails);
             currentLobbyId = callback.LobbyId;
-        });
 
-        isOwner = false;
-        return dataToReturn;
+            JoinLobbyComplete.Invoke(lobbyData);
+        });
     }
 
     //leave lobby
     public virtual void LeaveLobby()
     {
         //if we are the owner of the lobby
-        if(isOwner)
+        if(isLobbyOwner)
         {
             //Destroy lobby
             EOSSDKComponent.GetLobbyInterface().DestroyLobby(new DestroyLobbyOptions { LobbyId = currentLobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, null, (DestroyLobbyCallbackInfo callback) => 
@@ -157,5 +180,7 @@ public class EOSLobby : MonoBehaviour
                 }
             });
         }
+
+        ConnectedToLobby = false;
     }
 }
