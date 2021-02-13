@@ -6,12 +6,6 @@ using EpicTransport;
 
 public class EOSLobbyUI : EOSLobby
 {
-    [SerializeField]
-    private string[] attributeKeys = new string[] 
-    { 
-        "lobby_name"
-    };
-
     private string lobbyName = "My Lobby";
     private bool showLobbyList = false;
     private bool showPlayerList = false;
@@ -108,7 +102,7 @@ public class EOSLobbyUI : EOSLobby
         //create lobby button
         if(GUILayout.Button("Create Lobby"))
         {
-            CreateLobby(4, LobbyPermissionLevel.Publicadvertised, false, new AttributeData[] { new AttributeData { Key = attributeKeys[0], Value = lobbyName}, });
+            CreateLobby(4, LobbyPermissionLevel.Publicadvertised, false, new AttributeData[] { new AttributeData { Key = AttributeKeys[0], Value = lobbyName}, });
         }
 
         lobbyName = GUILayout.TextField(lobbyName, 40, GUILayout.Width(200));
@@ -157,7 +151,7 @@ public class EOSLobbyUI : EOSLobby
         {
             //get lobby name
             Attribute lobbyNameAttribute = new Attribute();
-            lobby.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = attributeKeys[0] }, out lobbyNameAttribute);
+            lobby.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = AttributeKeys[0] }, out lobbyNameAttribute);
 
             //draw the lobby result
             GUILayout.BeginHorizontal(GUILayout.Width(400), GUILayout.MaxWidth(400));
@@ -171,7 +165,7 @@ public class EOSLobbyUI : EOSLobby
             //draw join button
             if (GUILayout.Button("Join", GUILayout.ExpandWidth(false)))
             {
-                JoinLobby(lobby, attributeKeys);
+                JoinLobby(lobby, AttributeKeys);
             }
 
             GUILayout.EndHorizontal();
@@ -181,7 +175,7 @@ public class EOSLobbyUI : EOSLobby
     private void DrawLobbyMenu()
     {
         //draws the lobby name
-        GUILayout.Label("Name: " + lobbyData.Find((x) => x.Data.Key == attributeKeys[0]).Data.Value.AsUtf8);
+        GUILayout.Label("Name: " + lobbyData.Find((x) => x.Data.Key == AttributeKeys[0]).Data.Value.AsUtf8);
 
         //draws players
         for (int i = 0; i < ConnectedLobbyDetails.GetMemberCount(new LobbyDetailsGetMemberCountOptions { }); i++)

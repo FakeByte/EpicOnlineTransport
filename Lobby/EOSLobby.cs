@@ -6,9 +6,10 @@ using System.Collections.Generic;
 
 public class EOSLobby : MonoBehaviour
 {
-    [HideInInspector]
-    public bool ConnectedToLobby = false;
+    [HideInInspector] public bool ConnectedToLobby = false;
     public LobbyDetails ConnectedLobbyDetails = new LobbyDetails();
+    
+    [SerializeField] public string[] AttributeKeys = new string[0];
 
     public static string DefaultAttributeKey = "default";
     private static string hostAddressKey = "host_address";
