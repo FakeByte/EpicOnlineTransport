@@ -184,9 +184,9 @@ public class EOSLobbyUI : EOSLobby
         GUILayout.Label("Name: " + lobbyData.Find((x) => x.Data.Key == attributeKeys[0]).Data.Value.AsUtf8);
 
         //draws players
-        for (uint i = 0; i < ConnectedLobbyDetails.GetMemberCount(new LobbyDetailsGetMemberCountOptions { }); i++)
+        for (int i = 0; i < ConnectedLobbyDetails.GetMemberCount(new LobbyDetailsGetMemberCountOptions { }); i++)
         {
-            GUILayout.Label(ConnectedLobbyDetails.GetMemberByIndex(new LobbyDetailsGetMemberByIndexOptions { MemberIndex = i }).ToString());
+            GUILayout.Label("Player " + i);
         }
     }
 }
