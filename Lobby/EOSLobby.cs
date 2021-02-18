@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class EOSLobby : MonoBehaviour
 {
     [HideInInspector] public bool ConnectedToLobby { get; private set; }
-    public LobbyDetails ConnectedLobbyDetails = new LobbyDetails();
+    public LobbyDetails ConnectedLobbyDetails { get; private set;}
 
     [SerializeField] public string[] AttributeKeys = new string[0];
 
@@ -137,9 +137,12 @@ public class EOSLobby : MonoBehaviour
                     return;
                 }
 
+                LobbyDetails details;
+                EOSSDKComponent.GetLobbyInterface().CopyLobbyDetailsHandle(new CopyLobbyDetailsHandleOptions { LobbyId = callback.LobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out details);
+                
+                ConnectedLobbyDetails = details;
                 isLobbyOwner = true;
                 ConnectedToLobby = true;
-                EOSSDKComponent.GetLobbyInterface().CopyLobbyDetailsHandle(new CopyLobbyDetailsHandleOptions { LobbyId = callback.LobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out ConnectedLobbyDetails);
                 currentLobbyId = callback.LobbyId;
 
                 //invoke event
@@ -228,9 +231,12 @@ public class EOSLobby : MonoBehaviour
                 }
             }
 
+            LobbyDetails details;
+            EOSSDKComponent.GetLobbyInterface().CopyLobbyDetailsHandle(new CopyLobbyDetailsHandleOptions { LobbyId = callback.LobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out details);
+
+            ConnectedLobbyDetails = details;
             isLobbyOwner = false;
             ConnectedToLobby = true;
-            EOSSDKComponent.GetLobbyInterface().CopyLobbyDetailsHandle(new CopyLobbyDetailsHandleOptions { LobbyId = callback.LobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out ConnectedLobbyDetails);
             currentLobbyId = callback.LobbyId;
 
             //invoke event
