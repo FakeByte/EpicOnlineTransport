@@ -51,7 +51,7 @@ The string variant can be sent to other users to connect.
 
 You can quickly add lobbies to your game using the pre-built EOSLobbyUI script. The EOSLobbyUI extends the EOSLobby script which has methods for handling lobby creation, joining, finding, and leaving and has many events that you can subscribe to. To make the EOSLobbyUI work, create a GameObject, and add the script. If you don't have an EOSSDKComponent present in the scene, make sure to add it to the GameObject. If you prefer to create your own UI for lobbies, you can reference the EOSLobbyUI script.
 
-**NOTE:** The EOSLobby script creates lobbies with the host address predefined. You can get the host address from the ``JoinLobbySuceeded`` event so you can establish a connection using Mirror.
+**NOTE:** The EOSLobby script creates lobbies with the host address predefined. You can get the host address from the ``JoinLobbySucceeded`` event so you can establish a connection using Mirror.
 
 ### EOSLobbyUI Features
 
