@@ -12,41 +12,51 @@ public class EOSLobbyUI : EOSLobby
 
     private List<LobbyDetails> foundLobbies = new List<LobbyDetails>();
     private List<Attribute> lobbyData = new List<Attribute>();
-    
-    private void Start()
+
+    public override void Start()
     {
         if(!EOSSDKComponent.Initialized)
         {
             EOSSDKComponent.Initialize();
         }
+
+        //make sure to call this
+        //this runs important code
+        base.Start();
     }
 
     //register events
     private void OnEnable()
     {
         //subscribe to events
-        JoinLobbyComplete += OnJoinLobbyComplete;
-        FindLobbiesComplete += OnFindLobbiesComplete;
+        CreateLobbySucceeded += OnJoinLobbySuccess;
+        JoinLobbySucceeded += OnJoinLobbySuccess;
+        FindLobbiesSucceeded += OnFindLobbiesSuccess;
     }
 
     //deregister events
-    private void OnDisable()
+    public override void OnDisable()
     {
         //unsubscribe from events
-        JoinLobbyComplete -= OnJoinLobbyComplete;
-        FindLobbiesComplete -= OnFindLobbiesComplete;
+        CreateLobbySucceeded -= OnJoinLobbySuccess;
+        JoinLobbySucceeded -= OnJoinLobbySuccess;
+        FindLobbiesSucceeded -= OnFindLobbiesSuccess;
+
+        //make sure to call this
+        //this runs important code
+        base.OnDisable();
     }
 
-    //callback for JoinLobbyComplete
-    private void OnJoinLobbyComplete(List<Attribute> attributes)
+    //callback for JoinLobbySucceeded and CreateLobbySucceeded
+    private void OnJoinLobbySuccess(List<Attribute> attributes)
     {
         lobbyData = attributes;
         showPlayerList = true;
         showLobbyList = false;
     }
 
-    //callback for FindLobbiesComplete
-    private void OnFindLobbiesComplete(List<LobbyDetails> lobbiesFound)
+    //callback for FindLobbiesSucceeded
+    private void OnFindLobbiesSuccess(List<LobbyDetails> lobbiesFound)
     {
         foundLobbies = lobbiesFound;
         showPlayerList = false;
@@ -114,14 +124,7 @@ public class EOSLobbyUI : EOSLobby
         //find lobby button
         if (GUILayout.Button("Find Lobbies"))
         {
-            FindLobbies(100, new LobbySearchSetParameterOptions[]
-            {
-                new LobbySearchSetParameterOptions
-                {
-                    ComparisonOp = ComparisonOp.Equal,
-                    Parameter = new AttributeData { Key = DefaultAttributeKey, Value = DefaultAttributeKey }
-                },
-            });
+            FindLobbies();
         }
 
         //decide if we should enable the leave lobby button

@@ -3,26 +3,92 @@ using Epic.OnlineServices.Lobby;
 using UnityEngine;
 using Epic.OnlineServices;
 using System.Collections.Generic;
+using System.Collections;
 
 public class EOSLobby : MonoBehaviour
 {
-    [HideInInspector] public bool ConnectedToLobby = false;
+    [HideInInspector] public bool ConnectedToLobby { get; private set; }
     public LobbyDetails ConnectedLobbyDetails = new LobbyDetails();
-    
+
     [SerializeField] public string[] AttributeKeys = new string[0];
 
-    public static string DefaultAttributeKey = "default";
-    private static string hostAddressKey = "host_address";
+    public const string DefaultAttributeKey = "default";
+    private const string hostAddressKey = "host_address";
 
     private string currentLobbyId = string.Empty;
     private bool isLobbyOwner = false;
+    private List<LobbyDetails> foundLobbies = new List<LobbyDetails>();
+    private List<Attribute> lobbyData = new List<Attribute>();
 
-    //events
-    public delegate void JoinLobbyHandler(List<Attribute> attributes);
-    public event JoinLobbyHandler JoinLobbyComplete;
+    //create lobby events
+    public delegate void CreateLobbySuccess(List<Attribute> attributes);
+    public event CreateLobbySuccess CreateLobbySucceeded;
 
-    public delegate void FindLobbiesHandler(List<LobbyDetails> foundLobbies);
-    public event FindLobbiesHandler FindLobbiesComplete;
+    public delegate void CreateLobbyFailure(string errorMessage);
+    public event CreateLobbyFailure CreateLobbyFailed;
+
+    //join lobby events
+    public delegate void JoinLobbySuccess(List<Attribute> attributes);
+    public event JoinLobbySuccess JoinLobbySucceeded;
+
+    public delegate void JoinLobbyFailure(string errorMessage);
+    public event JoinLobbyFailure JoinLobbyFailed;
+
+    //find lobby events
+    public delegate void FindLobbiesSuccess(List<LobbyDetails> foundLobbies);
+    public event FindLobbiesSuccess FindLobbiesSucceeded;
+
+    public delegate void FindLobbiesFailure(string errorMessage);
+    public event FindLobbiesFailure FindLobbiesFailed;
+
+    //leave lobby events
+    public delegate void LeaveLobbySuccess();
+    public event LeaveLobbySuccess LeaveLobbySucceeded;
+
+    public delegate void LeaveLobbyFailure(string errorMessage);
+    public event LeaveLobbyFailure LeaveLobbyFailed;
+
+    //lobby update events
+    private ulong lobbyMemberStatusNotifyId = 0;
+    private ulong lobbyAttributeUpdateNotifyId = 0;
+
+    public delegate void LobbyMemberStatusUpdate(LobbyMemberStatusReceivedCallbackInfo callback);
+    public event LobbyMemberStatusUpdate LobbyMemberStatusUpdated;
+
+    public delegate void LobbyAttributeUpdate(LobbyUpdateReceivedCallbackInfo callback);
+    public event LobbyAttributeUpdate LobbyAttributeUpdated;
+
+    public virtual void Start()
+    {
+        lobbyMemberStatusNotifyId = EOSSDKComponent.GetLobbyInterface().AddNotifyLobbyMemberStatusReceived(new AddNotifyLobbyMemberStatusReceivedOptions { }, null,
+        (LobbyMemberStatusReceivedCallbackInfo callback) =>
+        {
+            if (LobbyMemberStatusUpdated != null)
+            {
+                LobbyMemberStatusUpdated.Invoke(callback);
+            }
+
+            if (callback.CurrentStatus == LobbyMemberStatus.Closed)
+            {
+                LeaveLobby();
+            }
+        });
+
+        lobbyAttributeUpdateNotifyId = EOSSDKComponent.GetLobbyInterface().AddNotifyLobbyUpdateReceived(new AddNotifyLobbyUpdateReceivedOptions { }, null,
+        (LobbyUpdateReceivedCallbackInfo callback) =>
+        {
+            if (LobbyAttributeUpdated != null)
+            {
+                LobbyAttributeUpdated.Invoke(callback);
+            }
+        });
+    }
+
+    public virtual void OnDisable()
+    {
+        EOSSDKComponent.GetLobbyInterface().RemoveNotifyLobbyMemberStatusReceived(lobbyMemberStatusNotifyId);
+        EOSSDKComponent.GetLobbyInterface().RemoveNotifyLobbyUpdateReceived(lobbyAttributeUpdateNotifyId);
+    }
 
     //creates a lobby
     public virtual void CreateLobby(uint maxConnections, LobbyPermissionLevel permissionLevel, bool presenceEnabled, AttributeData[] lobbyData = null)
@@ -38,10 +104,13 @@ public class EOSLobby : MonoBehaviour
         {
             List<Attribute> lobbyReturnData = new List<Attribute>();
 
-            //if the result of CreateLobby is not successful, log and error and return
-            if(callback.ResultCode != Result.Success)
+            //if the result of CreateLobby is not successful, invoke an error event and return
+            if (callback.ResultCode != Result.Success)
             {
-                Debug.LogError("There was an error while creating a lobby. Error: " + callback.ResultCode);
+                if(CreateLobbyFailed != null)
+                {
+                    CreateLobbyFailed.Invoke("There was an error while creating a lobby. Error: " + callback.ResultCode);
+                }
                 return;
             }
 
@@ -69,20 +138,34 @@ public class EOSLobby : MonoBehaviour
             }
 
             //update the lobby
-            EOSSDKComponent.GetLobbyInterface().UpdateLobby(new UpdateLobbyOptions { LobbyModificationHandle = modHandle }, null, (UpdateLobbyCallbackInfo _) => { });
+            EOSSDKComponent.GetLobbyInterface().UpdateLobby(new UpdateLobbyOptions { LobbyModificationHandle = modHandle }, null, (UpdateLobbyCallbackInfo updateCallback) => 
+            {
+                //if there was an error while updating the lobby, invoke an error event and return
+                if (updateCallback.ResultCode != Result.Success)
+                {
+                    if(CreateLobbyFailed != null)
+                    {
+                        CreateLobbyFailed.Invoke("There was an error while updating the lobby. Error: " + updateCallback.ResultCode);
+                    }
+                    return;
+                }
 
-            isLobbyOwner = true;
-            ConnectedToLobby = true;
-            EOSSDKComponent.GetLobbyInterface().CopyLobbyDetailsHandle(new CopyLobbyDetailsHandleOptions { LobbyId = callback.LobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out ConnectedLobbyDetails);
-            currentLobbyId = callback.LobbyId;
+                isLobbyOwner = true;
+                ConnectedToLobby = true;
+                EOSSDKComponent.GetLobbyInterface().CopyLobbyDetailsHandle(new CopyLobbyDetailsHandleOptions { LobbyId = callback.LobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out ConnectedLobbyDetails);
+                currentLobbyId = callback.LobbyId;
 
-            //invoke event
-            JoinLobbyComplete.Invoke(lobbyReturnData);
+                //invoke event
+                if(CreateLobbySucceeded != null)
+                {
+                    CreateLobbySucceeded.Invoke(lobbyReturnData);
+                }
+            });
         });
     }
 
     //find lobbies
-    public virtual void FindLobbies(uint maxResults, LobbySearchSetParameterOptions[] lobbySearchSetParameterOptions)
+    public virtual void FindLobbies(uint maxResults = 100, LobbySearchSetParameterOptions[] lobbySearchSetParameterOptions = null)
     {
         //create search handle and list of lobby details
         LobbySearch search = new LobbySearch();
@@ -91,20 +174,32 @@ public class EOSLobby : MonoBehaviour
         EOSSDKComponent.GetLobbyInterface().CreateLobbySearch(new CreateLobbySearchOptions { MaxResults =  maxResults}, out search);
 
         //set search parameters
-        foreach (LobbySearchSetParameterOptions searchOption in lobbySearchSetParameterOptions)
+        if(lobbySearchSetParameterOptions != null)
         {
-            search.SetParameter(searchOption);
+            foreach (LobbySearchSetParameterOptions searchOption in lobbySearchSetParameterOptions)
+            {
+                search.SetParameter(searchOption);
+            }
+        }
+        else
+        {
+            search.SetParameter(new LobbySearchSetParameterOptions
+            {
+                ComparisonOp = ComparisonOp.Equal,
+                Parameter = new AttributeData { Key = DefaultAttributeKey, Value = DefaultAttributeKey }
+            });
         }
         
         //find lobbies
         search.Find(new LobbySearchFindOptions { LocalUserId = EOSSDKComponent.LocalUserProductId }, null, (LobbySearchFindCallbackInfo callback) => 
         {
-            List<LobbyDetails> foundLobbies = new List<LobbyDetails>();
-
-            //if the search was unsuccessful, log an error and return
+            //if the search was unsuccessful, invoke an error event and return
             if (callback.ResultCode != Result.Success)
             {
-                Debug.LogError("There was an error while finding lobbies. Error: " + callback.ResultCode);
+                if (FindLobbiesFailed != null)
+                {
+                    FindLobbiesFailed.Invoke("There was an error while finding lobbies. Error: " + callback.ResultCode);
+                }
                 return;
             }
 
@@ -119,34 +214,43 @@ public class EOSLobby : MonoBehaviour
             }
 
             //invoke event
-            FindLobbiesComplete.Invoke(foundLobbies);
+            if(FindLobbiesSucceeded != null)
+            {
+                FindLobbiesSucceeded.Invoke(foundLobbies);
+            }
         });
     }
 
     //join lobby
-    public virtual void JoinLobby(LobbyDetails lobbyToJoin, string[] attributeKeys, bool presenceEnabled = false)
+    public virtual void JoinLobby(LobbyDetails lobbyToJoin, string[] attributeKeys = null, bool presenceEnabled = false)
     {
         //join lobby
         EOSSDKComponent.GetLobbyInterface().JoinLobby(new JoinLobbyOptions { LobbyDetailsHandle = lobbyToJoin, LocalUserId = EOSSDKComponent.LocalUserProductId, PresenceEnabled = presenceEnabled }, null, (JoinLobbyCallbackInfo callback) => 
         {
-            List<Attribute> lobbyData = new List<Attribute>();
-
-            //if the result was not a success, log error and return
-            if(callback.ResultCode != Result.Success)
+            //if the result was not a success, invoke an error event and return
+            if (callback.ResultCode != Result.Success)
             {
-                Debug.LogError("There was an error while joining a lobby. Error: " + callback.ResultCode);
+                if(JoinLobbyFailed != null)
+                {
+                    JoinLobbyFailed.Invoke("There was an error while joining a lobby. Error: " + callback.ResultCode);
+                }
                 return;
             }
+
+            lobbyData.Clear();
 
             Attribute hostAddress = new Attribute();
             lobbyToJoin.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = hostAddressKey }, out hostAddress);
             lobbyData.Add(hostAddress);
 
-            foreach (string key in attributeKeys)
+            if(attributeKeys != null)
             {
-                Attribute attribute = new Attribute();
-                lobbyToJoin.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = key }, out attribute);
-                lobbyData.Add(attribute);
+                foreach (string key in attributeKeys)
+                {
+                    Attribute attribute = new Attribute();
+                    lobbyToJoin.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = key }, out attribute);
+                    lobbyData.Add(attribute);
+                }
             }
 
             isLobbyOwner = false;
@@ -155,11 +259,54 @@ public class EOSLobby : MonoBehaviour
             currentLobbyId = callback.LobbyId;
 
             //invoke event
-            JoinLobbyComplete.Invoke(lobbyData);
+            if (JoinLobbySucceeded != null)
+            {
+                JoinLobbySucceeded.Invoke(lobbyData);
+            }
         });
     }
 
+    //TODO: Needs to be implemented
+    //public virtual void JoinLobby(string lobbyId, string[] attributeKeys = null, bool presenceEnabled = false)
+    //{
+    //    //join lobby
+    //    EOSSDKComponent.GetLobbyInterface().JoinLobby(new JoinLobbyOptions { LobbyDetailsHandle = lobbyToJoin, LocalUserId = EOSSDKComponent.LocalUserProductId, PresenceEnabled = presenceEnabled }, null, (JoinLobbyCallbackInfo callback) =>
+    //    {
+    //        List<Attribute> lobbyData = new List<Attribute>();
+
+    //        //if the result was not a success, invoke an error event and return
+    //        if (callback.ResultCode != Result.Success)
+    //        {
+    //            JoinLobbyFailed.Invoke("There was an error while joining a lobby. Error: " + callback.ResultCode);
+    //            return;
+    //        }
+
+    //        Attribute hostAddress = new Attribute();
+    //        lobbyToJoin.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = hostAddressKey }, out hostAddress);
+    //        lobbyData.Add(hostAddress);
+
+    //        if (attributeKeys != null)
+    //        {
+    //            foreach (string key in attributeKeys)
+    //            {
+    //                Attribute attribute = new Attribute();
+    //                lobbyToJoin.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = key }, out attribute);
+    //                lobbyData.Add(attribute);
+    //            }
+    //        }
+
+    //        isLobbyOwner = false;
+    //        ConnectedToLobby = true;
+    //        EOSSDKComponent.GetLobbyInterface().CopyLobbyDetailsHandle(new CopyLobbyDetailsHandleOptions { LobbyId = callback.LobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out ConnectedLobbyDetails);
+    //        currentLobbyId = callback.LobbyId;
+
+    //        //invoke event
+    //        JoinLobbySucceeded.Invoke(lobbyData);
+    //    });
+    //}
+
     //leave lobby
+    
     public virtual void LeaveLobby()
     {
         //if we are the owner of the lobby
@@ -171,11 +318,19 @@ public class EOSLobby : MonoBehaviour
                 //if the result was not a success, log error and return
                 if (callback.ResultCode != Result.Success)
                 {
-                    Debug.LogError("There was an error while destroying the lobby. Error: " + callback.ResultCode);
+                    if (LeaveLobbyFailed != null)
+                    {
+                        LeaveLobbyFailed.Invoke("There was an error while destroying the lobby. Error: " + callback.ResultCode);
+                    }
                     return;
                 }
 
                 ConnectedToLobby = false;
+
+                if(LeaveLobbySucceeded != null)
+                {
+                    LeaveLobbySucceeded.Invoke();
+                }
             });
         }
         //if we are a member of the lobby
@@ -184,13 +339,20 @@ public class EOSLobby : MonoBehaviour
             EOSSDKComponent.GetLobbyInterface().LeaveLobby(new LeaveLobbyOptions { LobbyId = currentLobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, null, (LeaveLobbyCallbackInfo callback) => 
             {
                 //if the result was not a success, log error and return
-                if (callback.ResultCode != Result.Success)
+                if (callback.ResultCode != Result.Success && callback.ResultCode != Result.NotFound)
                 {
-                    Debug.LogError("There was an error while leaving the lobby. Error: " + callback.ResultCode);
+                    if (LeaveLobbyFailed != null)
+                    {
+                        LeaveLobbyFailed.Invoke("There was an error while leaving the lobby. Error: " + callback.ResultCode);
+                    }
                     return;
                 }
 
                 ConnectedToLobby = false;
+                if (LeaveLobbySucceeded != null)
+                {
+                    LeaveLobbySucceeded.Invoke();
+                }
             });
         }
     }
