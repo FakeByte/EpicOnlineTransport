@@ -11,7 +11,7 @@ public class EOSLobby : MonoBehaviour
 
     [SerializeField] public string[] AttributeKeys = new string[0];
 
-    public const string DefaultAttributeKey = "default";
+    private const string DefaultAttributeKey = "default";
     private const string hostAddressKey = "host_address";
 
     private string currentLobbyId = string.Empty;
