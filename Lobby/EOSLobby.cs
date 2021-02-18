@@ -62,10 +62,7 @@ public class EOSLobby : MonoBehaviour
         lobbyMemberStatusNotifyId = EOSSDKComponent.GetLobbyInterface().AddNotifyLobbyMemberStatusReceived(new AddNotifyLobbyMemberStatusReceivedOptions { }, null,
         (LobbyMemberStatusReceivedCallbackInfo callback) =>
         {
-            if (LobbyMemberStatusUpdated != null)
-            {
-                LobbyMemberStatusUpdated.Invoke(callback);
-            }
+            LobbyMemberStatusUpdated?.Invoke(callback);
 
             if (callback.CurrentStatus == LobbyMemberStatus.Closed)
             {
@@ -76,10 +73,7 @@ public class EOSLobby : MonoBehaviour
         lobbyAttributeUpdateNotifyId = EOSSDKComponent.GetLobbyInterface().AddNotifyLobbyUpdateReceived(new AddNotifyLobbyUpdateReceivedOptions { }, null,
         (LobbyUpdateReceivedCallbackInfo callback) =>
         {
-            if (LobbyAttributeUpdated != null)
-            {
-                LobbyAttributeUpdated.Invoke(callback);
-            }
+            LobbyAttributeUpdated?.Invoke(callback);
         });
     }
 
@@ -106,10 +100,7 @@ public class EOSLobby : MonoBehaviour
             //if the result of CreateLobby is not successful, invoke an error event and return
             if (callback.ResultCode != Result.Success)
             {
-                if(CreateLobbyFailed != null)
-                {
-                    CreateLobbyFailed.Invoke("There was an error while creating a lobby. Error: " + callback.ResultCode);
-                }
+                CreateLobbyFailed?.Invoke("There was an error while creating a lobby. Error: " + callback.ResultCode);
                 return;
             }
 
@@ -142,10 +133,7 @@ public class EOSLobby : MonoBehaviour
                 //if there was an error while updating the lobby, invoke an error event and return
                 if (updateCallback.ResultCode != Result.Success)
                 {
-                    if(CreateLobbyFailed != null)
-                    {
-                        CreateLobbyFailed.Invoke("There was an error while updating the lobby. Error: " + updateCallback.ResultCode);
-                    }
+                    CreateLobbyFailed?.Invoke("There was an error while updating the lobby. Error: " + updateCallback.ResultCode);
                     return;
                 }
 
@@ -155,10 +143,7 @@ public class EOSLobby : MonoBehaviour
                 currentLobbyId = callback.LobbyId;
 
                 //invoke event
-                if(CreateLobbySucceeded != null)
-                {
-                    CreateLobbySucceeded.Invoke(lobbyReturnData);
-                }
+                CreateLobbySucceeded?.Invoke(lobbyReturnData);
             });
         });
     }
@@ -195,10 +180,7 @@ public class EOSLobby : MonoBehaviour
             //if the search was unsuccessful, invoke an error event and return
             if (callback.ResultCode != Result.Success)
             {
-                if (FindLobbiesFailed != null)
-                {
-                    FindLobbiesFailed.Invoke("There was an error while finding lobbies. Error: " + callback.ResultCode);
-                }
+                FindLobbiesFailed?.Invoke("There was an error while finding lobbies. Error: " + callback.ResultCode);
                 return;
             }
 
@@ -213,10 +195,7 @@ public class EOSLobby : MonoBehaviour
             }
 
             //invoke event
-            if(FindLobbiesSucceeded != null)
-            {
-                FindLobbiesSucceeded.Invoke(foundLobbies);
-            }
+            FindLobbiesSucceeded?.Invoke(foundLobbies);
         });
     }
 
@@ -229,10 +208,7 @@ public class EOSLobby : MonoBehaviour
             //if the result was not a success, invoke an error event and return
             if (callback.ResultCode != Result.Success)
             {
-                if(JoinLobbyFailed != null)
-                {
-                    JoinLobbyFailed.Invoke("There was an error while joining a lobby. Error: " + callback.ResultCode);
-                }
+                JoinLobbyFailed?.Invoke("There was an error while joining a lobby. Error: " + callback.ResultCode);
                 return;
             }
 
@@ -258,54 +234,11 @@ public class EOSLobby : MonoBehaviour
             currentLobbyId = callback.LobbyId;
 
             //invoke event
-            if (JoinLobbySucceeded != null)
-            {
-                JoinLobbySucceeded.Invoke(lobbyData);
-            }
+            JoinLobbySucceeded?.Invoke(lobbyData);
         });
     }
 
-    //TODO: Needs to be implemented
-    //public virtual void JoinLobby(string lobbyId, string[] attributeKeys = null, bool presenceEnabled = false)
-    //{
-    //    //join lobby
-    //    EOSSDKComponent.GetLobbyInterface().JoinLobby(new JoinLobbyOptions { LobbyDetailsHandle = lobbyToJoin, LocalUserId = EOSSDKComponent.LocalUserProductId, PresenceEnabled = presenceEnabled }, null, (JoinLobbyCallbackInfo callback) =>
-    //    {
-    //        List<Attribute> lobbyData = new List<Attribute>();
-
-    //        //if the result was not a success, invoke an error event and return
-    //        if (callback.ResultCode != Result.Success)
-    //        {
-    //            JoinLobbyFailed.Invoke("There was an error while joining a lobby. Error: " + callback.ResultCode);
-    //            return;
-    //        }
-
-    //        Attribute hostAddress = new Attribute();
-    //        lobbyToJoin.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = hostAddressKey }, out hostAddress);
-    //        lobbyData.Add(hostAddress);
-
-    //        if (attributeKeys != null)
-    //        {
-    //            foreach (string key in attributeKeys)
-    //            {
-    //                Attribute attribute = new Attribute();
-    //                lobbyToJoin.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = key }, out attribute);
-    //                lobbyData.Add(attribute);
-    //            }
-    //        }
-
-    //        isLobbyOwner = false;
-    //        ConnectedToLobby = true;
-    //        EOSSDKComponent.GetLobbyInterface().CopyLobbyDetailsHandle(new CopyLobbyDetailsHandleOptions { LobbyId = callback.LobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out ConnectedLobbyDetails);
-    //        currentLobbyId = callback.LobbyId;
-
-    //        //invoke event
-    //        JoinLobbySucceeded.Invoke(lobbyData);
-    //    });
-    //}
-
     //leave lobby
-    
     public virtual void LeaveLobby()
     {
         //if we are the owner of the lobby
@@ -317,19 +250,12 @@ public class EOSLobby : MonoBehaviour
                 //if the result was not a success, log error and return
                 if (callback.ResultCode != Result.Success)
                 {
-                    if (LeaveLobbyFailed != null)
-                    {
-                        LeaveLobbyFailed.Invoke("There was an error while destroying the lobby. Error: " + callback.ResultCode);
-                    }
+                    LeaveLobbyFailed?.Invoke("There was an error while destroying the lobby. Error: " + callback.ResultCode);
                     return;
                 }
 
                 ConnectedToLobby = false;
-
-                if(LeaveLobbySucceeded != null)
-                {
-                    LeaveLobbySucceeded.Invoke();
-                }
+                LeaveLobbySucceeded?.Invoke();
             });
         }
         //if we are a member of the lobby
@@ -340,18 +266,12 @@ public class EOSLobby : MonoBehaviour
                 //if the result was not a success, log error and return
                 if (callback.ResultCode != Result.Success && callback.ResultCode != Result.NotFound)
                 {
-                    if (LeaveLobbyFailed != null)
-                    {
-                        LeaveLobbyFailed.Invoke("There was an error while leaving the lobby. Error: " + callback.ResultCode);
-                    }
+                    LeaveLobbyFailed?.Invoke("There was an error while leaving the lobby. Error: " + callback.ResultCode);
                     return;
                 }
 
                 ConnectedToLobby = false;
-                if (LeaveLobbySucceeded != null)
-                {
-                    LeaveLobbySucceeded.Invoke();
-                }
+                LeaveLobbySucceeded?.Invoke();
             });
         }
     }
