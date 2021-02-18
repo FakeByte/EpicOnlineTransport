@@ -1,5 +1,4 @@
 ﻿using Epic.OnlineServices.Lobby;
-using Epic.OnlineServices;
 using UnityEngine;
 using System.Collections.Generic;
 using EpicTransport;

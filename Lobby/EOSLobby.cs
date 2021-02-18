@@ -3,7 +3,6 @@ using Epic.OnlineServices.Lobby;
 using UnityEngine;
 using Epic.OnlineServices;
 using System.Collections.Generic;
-using System.Collections;
 
 public class EOSLobby : MonoBehaviour
 {
