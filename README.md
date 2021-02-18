@@ -46,3 +46,18 @@ You need the epic online product id to connect to another user, you can get it b
     or
     EOSSDKComponent.LocalUserProductIdString
 The string variant can be sent to other users to connect.
+
+## Lobbies
+
+You can quickly add lobbies to your game using the pre-built EOSLobbyUI script. The EOSLobbyUI extends the EOSLobby script which has methods for handling lobby creation, joining, finding, and leaving and has many events that you can subscribe to. To make the EOSLobbyUI work, create a GameObject, and add the script. If you don't have an EOSSDKComponent present in the scene, make sure to add it to the GameObject. If you prefer to create your own UI for lobbies, you can reference the EOSLobbyUI script.
+
+**NOTE:** The EOSLobby script creates lobbies with the host address predefined. You can get the host address from the ``JoinLobbySucceeded`` event so you can establish a connection using Mirror.
+
+### EOSLobbyUI Features
+
+The EOSLobbyUI allows for a fast implementation of lobbies in your project and it is also an example of what you can do.
+Here are the features:
+- Creating a lobby with a name
+- Lobby list that displays the name and player count
+- Joining
+- Leaving (If the owner of the lobby leaves, then the lobby will be destroyed)
