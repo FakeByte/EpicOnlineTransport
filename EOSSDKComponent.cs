@@ -240,7 +240,7 @@ namespace EpicTransport {
 
         }
         public static void Initialize() {
-            if (Instance.initialized) {
+            if (Instance.initialized || Instance.isConnecting) {
                 return;
             }
 
