@@ -61,3 +61,6 @@ Here are the features:
 - Lobby list that displays the name and player count
 - Joining
 - Leaving (If the owner of the lobby leaves, then the lobby will be destroyed)
+
+## Credits
+Big thanks to erikas-taroza aka TypicalEgg for his help in improving and extending this transport!
