@@ -47,6 +47,13 @@ public class EOSLobby : MonoBehaviour
     public delegate void LeaveLobbyFailure(string errorMessage);
     public event LeaveLobbyFailure LeaveLobbyFailed;
 
+    //update attribute events
+    public delegate void UpdateAttributeSuccess(string key);
+    public event UpdateAttributeSuccess AttributeUpdateSucceeded;
+
+    public delegate void UpdateAttributeFailure(string key, string errorMessage);
+    public event UpdateAttributeFailure AttributeUpdateFailed;
+
     //lobby update events
     private ulong lobbyMemberStatusNotifyId = 0;
     private ulong lobbyAttributeUpdateNotifyId = 0;
@@ -280,5 +287,77 @@ public class EOSLobby : MonoBehaviour
                 LeaveLobbySucceeded?.Invoke();
             });
         }
+    }
+
+    //removes the attribute
+    public virtual void RemoveAttribute(string key)
+    {
+        LobbyModification modHandle = new LobbyModification();
+
+        EOSSDKComponent.GetLobbyInterface().UpdateLobbyModification(new UpdateLobbyModificationOptions
+        { LobbyId = currentLobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out modHandle);
+
+        modHandle.RemoveAttribute(new LobbyModificationRemoveAttributeOptions { Key = key });
+
+        EOSSDKComponent.GetLobbyInterface().UpdateLobby(new UpdateLobbyOptions { LobbyModificationHandle = modHandle }, null, (UpdateLobbyCallbackInfo callback) =>
+        {
+            if (callback.ResultCode != Result.Success)
+            {
+                AttributeUpdateFailed?.Invoke(key, $"There was an error while updating attribute \"{ key }\". Error: " + callback.ResultCode);
+                return;
+            }
+
+            AttributeUpdateSucceeded?.Invoke(key);
+        });
+    }
+
+    //updates the attribute
+    private void UpdateAttribute(AttributeData attribute)
+    {
+        LobbyModification modHandle = new LobbyModification();
+
+        EOSSDKComponent.GetLobbyInterface().UpdateLobbyModification(new UpdateLobbyModificationOptions
+        { LobbyId = currentLobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out modHandle);
+
+        modHandle.AddAttribute(new LobbyModificationAddAttributeOptions { Attribute = attribute, Visibility = LobbyAttributeVisibility.Public });
+
+        EOSSDKComponent.GetLobbyInterface().UpdateLobby(new UpdateLobbyOptions { LobbyModificationHandle = modHandle }, null, (UpdateLobbyCallbackInfo callback) =>
+        {
+            if (callback.ResultCode != Result.Success)
+            {
+                AttributeUpdateFailed?.Invoke(attribute.Key, $"There was an error while updating attribute \"{ attribute.Key }\". Error: " + callback.ResultCode);
+                return;
+            }
+
+            AttributeUpdateSucceeded?.Invoke(attribute.Key);
+        });
+    }
+
+    //update a boolean attribute
+    public void UpdateLobbyAttribute(string key, bool newValue)
+    {
+        AttributeData data = new AttributeData { Key = key, Value = newValue };
+        UpdateAttribute(data);
+    }
+
+    //update an integer attribute
+    public void UpdateLobbyAttribute(string key, int newValue)
+    {
+        AttributeData data = new AttributeData { Key = key, Value = newValue };
+        UpdateAttribute(data);
+    }
+
+    //update a double attribute
+    public void UpdateLobbyAttribute(string key, double newValue)
+    {
+        AttributeData data = new AttributeData { Key = key, Value = newValue };
+        UpdateAttribute(data);
+    }
+
+    //update a string attribute
+    public void UpdateLobbyAttribute(string key, string newValue)
+    {
+        AttributeData data = new AttributeData { Key = key, Value = newValue };
+        UpdateAttribute(data);
     }
 }
