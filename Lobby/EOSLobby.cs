@@ -48,10 +48,10 @@ public class EOSLobby : MonoBehaviour
     public event LeaveLobbyFailure LeaveLobbyFailed;
 
     //update attribute events
-    public delegate void UpdateAttributeSuccess();
+    public delegate void UpdateAttributeSuccess(string key);
     public event UpdateAttributeSuccess AttributeUpdateSucceeded;
 
-    public delegate void UpdateAttributeFailure(string errorMessage);
+    public delegate void UpdateAttributeFailure(string key, string errorMessage);
     public event UpdateAttributeFailure AttributeUpdateFailed;
 
     //lobby update events
@@ -302,11 +302,11 @@ public class EOSLobby : MonoBehaviour
         {
             if (callback.ResultCode != Result.Success)
             {
-                AttributeUpdateFailed?.Invoke($"There was an error while updating attribute \"{ attribute.Key }\". Error: " + callback.ResultCode);
+                AttributeUpdateFailed?.Invoke(attribute.Key, $"There was an error while updating attribute \"{ attribute.Key }\". Error: " + callback.ResultCode);
                 return;
             }
 
-            AttributeUpdateSucceeded?.Invoke();
+            AttributeUpdateSucceeded?.Invoke(attribute.Key);
         });
     }
 
