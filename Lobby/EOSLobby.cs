@@ -289,6 +289,29 @@ public class EOSLobby : MonoBehaviour
         }
     }
 
+    //removes the attribute
+    public virtual void RemoveAttribute(string key)
+    {
+        LobbyModification modHandle = new LobbyModification();
+
+        EOSSDKComponent.GetLobbyInterface().UpdateLobbyModification(new UpdateLobbyModificationOptions
+        { LobbyId = currentLobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out modHandle);
+
+        modHandle.RemoveAttribute(new LobbyModificationRemoveAttributeOptions { Key = key });
+
+        EOSSDKComponent.GetLobbyInterface().UpdateLobby(new UpdateLobbyOptions { LobbyModificationHandle = modHandle }, null, (UpdateLobbyCallbackInfo callback) =>
+        {
+            if (callback.ResultCode != Result.Success)
+            {
+                AttributeUpdateFailed?.Invoke(key, $"There was an error while updating attribute \"{ key }\". Error: " + callback.ResultCode);
+                return;
+            }
+
+            AttributeUpdateSucceeded?.Invoke(key);
+        });
+    }
+
+    //updates the attribute
     private void UpdateAttribute(AttributeData attribute)
     {
         LobbyModification modHandle = new LobbyModification();
