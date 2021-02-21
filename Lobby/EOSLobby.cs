@@ -12,10 +12,10 @@ public class EOSLobby : MonoBehaviour
     public LobbyDetails ConnectedLobbyDetails { get; private set;}
 
     ///<value>The available keys assigned by the user.</value>
-    [SerializeField] public string[] AttributeKeys = new string[0];
+    [SerializeField] public string[] AttributeKeys = new string[] { "lobby_name" };
 
     private const string DefaultAttributeKey = "default";
-    private const string hostAddressKey = "host_address";
+    public const string hostAddressKey = "host_address";
 
     private string currentLobbyId = string.Empty;
     private bool isLobbyOwner = false;

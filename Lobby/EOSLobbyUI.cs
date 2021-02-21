@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using EpicTransport;
+using Mirror;
 
 public class EOSLobbyUI : EOSLobby
 {
@@ -16,26 +17,42 @@ public class EOSLobbyUI : EOSLobby
     private void OnEnable()
     {
         //subscribe to events
-        CreateLobbySucceeded += OnJoinLobbySuccess;
+        CreateLobbySucceeded += OnCreateLobbySuccess;
         JoinLobbySucceeded += OnJoinLobbySuccess;
         FindLobbiesSucceeded += OnFindLobbiesSuccess;
+        LeaveLobbySucceeded += OnLeaveLobbySuccess;
     }
 
     //deregister events
     private void OnDisable()
     {
         //unsubscribe from events
-        CreateLobbySucceeded -= OnJoinLobbySuccess;
+        CreateLobbySucceeded -= OnCreateLobbySuccess;
         JoinLobbySucceeded -= OnJoinLobbySuccess;
         FindLobbiesSucceeded -= OnFindLobbiesSuccess;
+        LeaveLobbySucceeded -= OnLeaveLobbySuccess;
     }
 
-    //callback for JoinLobbySucceeded and CreateLobbySucceeded
+    //when the lobby is successfully created, start the host
+    private void OnCreateLobbySuccess(List<Attribute> attributes)
+    {
+        lobbyData = attributes;
+        showPlayerList = true;
+        showLobbyList = false;
+
+        GetComponent<NetworkManager>().StartHost();
+    }
+
+    //when the user joined the lobby successfully, set network address and connect
     private void OnJoinLobbySuccess(List<Attribute> attributes)
     {
         lobbyData = attributes;
         showPlayerList = true;
         showLobbyList = false;
+
+        NetworkManager netManager = GetComponent<NetworkManager>();
+        netManager.networkAddress = attributes.Find((x) => x.Data.Key == hostAddressKey).Data.Value.AsUtf8;
+        netManager.StartClient();
     }
 
     //callback for FindLobbiesSucceeded
@@ -44,6 +61,14 @@ public class EOSLobbyUI : EOSLobby
         foundLobbies = lobbiesFound;
         showPlayerList = false;
         showLobbyList = true;
+    }
+
+    //when the lobby was left successfully, stop the host/client
+    private void OnLeaveLobbySuccess()
+    {
+        NetworkManager netManager = GetComponent<NetworkManager>();
+        netManager.StopHost();
+        netManager.StopClient();
     }
 
     private void OnGUI()
