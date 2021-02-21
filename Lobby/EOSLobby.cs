@@ -99,12 +99,6 @@ public class EOSLobby : MonoBehaviour
         });
     }
 
-    public virtual void OnDisable()
-    {
-        EOSSDKComponent.GetLobbyInterface().RemoveNotifyLobbyMemberStatusReceived(lobbyMemberStatusNotifyId);
-        EOSSDKComponent.GetLobbyInterface().RemoveNotifyLobbyUpdateReceived(lobbyAttributeUpdateNotifyId);
-    }
-
     /// <summary>
     /// Creates a lobby based on given parameters using Epic Online Services.
     /// <para>You can get the data that was added to the lobby by subscribing to the <see cref="CreateLobbySucceeded"/> event which gives you a list of <see cref="Attribute"/>.</para>
@@ -327,6 +321,11 @@ public class EOSLobby : MonoBehaviour
                 LeaveLobbySucceeded?.Invoke();
             });
         }
+
+        //when the player leaves the lobby, remove notifications
+        //will be useless when not connected to lobby
+        EOSSDKComponent.GetLobbyInterface().RemoveNotifyLobbyMemberStatusReceived(lobbyMemberStatusNotifyId);
+        EOSSDKComponent.GetLobbyInterface().RemoveNotifyLobbyUpdateReceived(lobbyAttributeUpdateNotifyId);
     }
 
     /// <summary>
