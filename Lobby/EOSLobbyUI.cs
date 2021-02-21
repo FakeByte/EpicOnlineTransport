@@ -12,18 +12,6 @@ public class EOSLobbyUI : EOSLobby
     private List<LobbyDetails> foundLobbies = new List<LobbyDetails>();
     private List<Attribute> lobbyData = new List<Attribute>();
 
-    public override void Start()
-    {
-        if(!EOSSDKComponent.Initialized)
-        {
-            EOSSDKComponent.Initialize();
-        }
-
-        //make sure to call this
-        //this runs important code
-        base.Start();
-    }
-
     //register events
     private void OnEnable()
     {
@@ -34,16 +22,12 @@ public class EOSLobbyUI : EOSLobby
     }
 
     //deregister events
-    public override void OnDisable()
+    private void OnDisable()
     {
         //unsubscribe from events
         CreateLobbySucceeded -= OnJoinLobbySuccess;
         JoinLobbySucceeded -= OnJoinLobbySuccess;
         FindLobbiesSucceeded -= OnFindLobbiesSuccess;
-
-        //make sure to call this
-        //this runs important code
-        base.OnDisable();
     }
 
     //callback for JoinLobbySucceeded and CreateLobbySucceeded
