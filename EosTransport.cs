@@ -22,7 +22,7 @@ namespace EpicTransport {
         private Common activeNode;
 
         [SerializeField]
-        public PacketReliability[] Channels = new PacketReliability[1] { PacketReliability.ReliableOrdered };
+        public PacketReliability[] Channels = new PacketReliability[2] { PacketReliability.ReliableOrdered, PacketReliability.UnreliableUnordered };
         
         [Tooltip("Timeout for connecting in seconds.")]
         public int timeout = 25;
