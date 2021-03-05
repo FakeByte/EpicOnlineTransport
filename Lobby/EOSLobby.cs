@@ -354,6 +354,37 @@ public class EOSLobby : MonoBehaviour
     }
 
     /// <summary>
+    /// Set an attribute of the lobby to be equal to the provided value.
+    /// </summary>
+    /// <param name="attribute">The attribute key.</param>
+    /// <param name="value">The value to set.</param>
+    public virtual void SetAttribute(string attribute, AttributeDataValue value)
+    {
+        if (!isLobbyOwner)
+            return;
+
+        AttributeData data = new AttributeData { Key = attribute, Value = value };
+        if (EOSSDKComponent.GetLobbyInterface().UpdateLobbyModification(new UpdateLobbyModificationOptions { LobbyId = currentLobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out LobbyModification handle) == Result.Success)
+        {
+            handle.AddAttribute(new LobbyModificationAddAttributeOptions { Attribute = data, Visibility = LobbyAttributeVisibility.Public });
+
+            EOSSDKComponent.GetLobbyInterface().UpdateLobby(new UpdateLobbyOptions { LobbyModificationHandle = handle }, null, (UpdateLobbyCallbackInfo callback) =>
+            {
+                if (callback.ResultCode != Result.Success)
+                {
+                    CreateLobbyFailed?.Invoke("There was an error while updating attribute for the lobby. Error: " + callback.ResultCode);
+                    return;
+                }
+
+                EOSSDKComponent.GetLobbyInterface().CopyLobbyDetailsHandle(new CopyLobbyDetailsHandleOptions { LobbyId = callback.LobbyId, LocalUserId = EOSSDKComponent.LocalUserProductId }, out LobbyDetails details);
+                ConnectedLobbyDetails = details;
+
+                handle.Release();
+            });
+        }
+    }
+
+    /// <summary>
     /// Update an attribute that is attached to the lobby.
     /// </summary>
     /// <param name="attribute">The new data to apply.</param>
