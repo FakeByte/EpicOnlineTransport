@@ -143,12 +143,16 @@ namespace EpicTransport {
         }
 
         protected virtual void CloseP2PSessionWithUser(ProductUserId clientUserID, SocketId socketId) {
-            if(socketId == null) {
-                Debug.LogError("Socket ID == null | " + ignoreAllMessages);
+            if (socketId == null)
+            {
+                Debug.LogWarning("Socket ID == null | " + ignoreAllMessages);
+                return;
             }
 
-            if(deadSockets == null) {
-                Debug.LogError("DeadSockets == null");
+            if (deadSockets == null)
+            {
+                Debug.LogWarning("DeadSockets == null");
+                return;
             }
 
             if (deadSockets.Contains(socketId.SocketName)) {
