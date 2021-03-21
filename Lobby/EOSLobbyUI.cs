@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using EpicTransport;
 using Mirror;
 
-public class EOSLobbyUI : EOSLobby
-{
+public class EOSLobbyUI : EOSLobby {
     private string lobbyName = "My Lobby";
     private bool showLobbyList = false;
     private bool showPlayerList = false;
@@ -14,8 +13,7 @@ public class EOSLobbyUI : EOSLobby
     private List<Attribute> lobbyData = new List<Attribute>();
 
     //register events
-    private void OnEnable()
-    {
+    private void OnEnable() {
         //subscribe to events
         CreateLobbySucceeded += OnCreateLobbySuccess;
         JoinLobbySucceeded += OnJoinLobbySuccess;
@@ -24,8 +22,7 @@ public class EOSLobbyUI : EOSLobby
     }
 
     //deregister events
-    private void OnDisable()
-    {
+    private void OnDisable() {
         //unsubscribe from events
         CreateLobbySucceeded -= OnCreateLobbySuccess;
         JoinLobbySucceeded -= OnJoinLobbySuccess;
@@ -34,8 +31,7 @@ public class EOSLobbyUI : EOSLobby
     }
 
     //when the lobby is successfully created, start the host
-    private void OnCreateLobbySuccess(List<Attribute> attributes)
-    {
+    private void OnCreateLobbySuccess(List<Attribute> attributes) {
         lobbyData = attributes;
         showPlayerList = true;
         showLobbyList = false;
@@ -44,8 +40,7 @@ public class EOSLobbyUI : EOSLobby
     }
 
     //when the user joined the lobby successfully, set network address and connect
-    private void OnJoinLobbySuccess(List<Attribute> attributes)
-    {
+    private void OnJoinLobbySuccess(List<Attribute> attributes) {
         lobbyData = attributes;
         showPlayerList = true;
         showLobbyList = false;
@@ -56,26 +51,22 @@ public class EOSLobbyUI : EOSLobby
     }
 
     //callback for FindLobbiesSucceeded
-    private void OnFindLobbiesSuccess(List<LobbyDetails> lobbiesFound)
-    {
+    private void OnFindLobbiesSuccess(List<LobbyDetails> lobbiesFound) {
         foundLobbies = lobbiesFound;
         showPlayerList = false;
         showLobbyList = true;
     }
 
     //when the lobby was left successfully, stop the host/client
-    private void OnLeaveLobbySuccess()
-    {
+    private void OnLeaveLobbySuccess() {
         NetworkManager netManager = GetComponent<NetworkManager>();
         netManager.StopHost();
         netManager.StopClient();
     }
 
-    private void OnGUI()
-    {
+    private void OnGUI() {
         //if the component is not initialized then dont continue
-        if (!EOSSDKComponent.Initialized)
-        {
+        if (!EOSSDKComponent.Initialized) {
             return;
         }
 
@@ -89,13 +80,11 @@ public class EOSLobbyUI : EOSLobby
         GUILayout.BeginScrollView(Vector2.zero, GUILayout.MaxHeight(400));
 
         //runs when we want to show the lobby list
-        if(showLobbyList && !showPlayerList)
-        {
+        if (showLobbyList && !showPlayerList) {
             DrawLobbyList();
         }
         //runs when we want to show the player list and we are connected to a lobby
-        else if(!showLobbyList && showPlayerList && ConnectedToLobby)
-        {
+        else if (!showLobbyList && showPlayerList && ConnectedToLobby) {
             DrawLobbyMenu();
         }
 
@@ -104,8 +93,7 @@ public class EOSLobbyUI : EOSLobby
         GUILayout.EndHorizontal();
     }
 
-    private void DrawMenuButtons()
-    {
+    private void DrawMenuButtons() {
         //start button column
         GUILayout.BeginVertical();
 
@@ -118,9 +106,8 @@ public class EOSLobbyUI : EOSLobby
         GUILayout.BeginHorizontal();
 
         //create lobby button
-        if(GUILayout.Button("Create Lobby"))
-        {
-            CreateLobby(4, LobbyPermissionLevel.Publicadvertised, false, new AttributeData[] { new AttributeData { Key = AttributeKeys[0], Value = lobbyName}, });
+        if (GUILayout.Button("Create Lobby")) {
+            CreateLobby(4, LobbyPermissionLevel.Publicadvertised, false, new AttributeData[] { new AttributeData { Key = AttributeKeys[0], Value = lobbyName }, });
         }
 
         lobbyName = GUILayout.TextField(lobbyName, 40, GUILayout.Width(200));
@@ -130,8 +117,7 @@ public class EOSLobbyUI : EOSLobby
         #endregion
 
         //find lobby button
-        if (GUILayout.Button("Find Lobbies"))
-        {
+        if (GUILayout.Button("Find Lobbies")) {
             FindLobbies();
         }
 
@@ -139,8 +125,7 @@ public class EOSLobbyUI : EOSLobby
         //only enabled when the user is connected to a lobby
         GUI.enabled = ConnectedToLobby;
 
-        if(GUILayout.Button("Leave Lobby"))
-        {
+        if (GUILayout.Button("Leave Lobby")) {
             LeaveLobby();
         }
 
@@ -149,8 +134,7 @@ public class EOSLobbyUI : EOSLobby
         GUILayout.EndVertical();
     }
 
-    private void DrawLobbyList()
-    {
+    private void DrawLobbyList() {
         //draw labels
         GUILayout.BeginHorizontal();
         GUILayout.Label("Lobby Name", GUILayout.Width(220));
@@ -158,8 +142,7 @@ public class EOSLobbyUI : EOSLobby
         GUILayout.EndHorizontal();
 
         //draw lobbies
-        foreach (LobbyDetails lobby in foundLobbies)
-        {
+        foreach (LobbyDetails lobby in foundLobbies) {
             //get lobby name
             Attribute lobbyNameAttribute = new Attribute();
             lobby.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = AttributeKeys[0] }, out lobbyNameAttribute);
@@ -174,8 +157,7 @@ public class EOSLobbyUI : EOSLobby
             GUILayout.Space(75);
 
             //draw join button
-            if (GUILayout.Button("Join", GUILayout.ExpandWidth(false)))
-            {
+            if (GUILayout.Button("Join", GUILayout.ExpandWidth(false))) {
                 JoinLobby(lobby, AttributeKeys);
             }
 
@@ -183,14 +165,12 @@ public class EOSLobbyUI : EOSLobby
         }
     }
 
-    private void DrawLobbyMenu()
-    {
+    private void DrawLobbyMenu() {
         //draws the lobby name
         GUILayout.Label("Name: " + lobbyData.Find((x) => x.Data.Key == AttributeKeys[0]).Data.Value.AsUtf8);
 
         //draws players
-        for (int i = 0; i < ConnectedLobbyDetails.GetMemberCount(new LobbyDetailsGetMemberCountOptions { }); i++)
-        {
+        for (int i = 0; i < ConnectedLobbyDetails.GetMemberCount(new LobbyDetailsGetMemberCountOptions { }); i++) {
             GUILayout.Label("Player " + i);
         }
     }

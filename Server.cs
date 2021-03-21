@@ -75,7 +75,6 @@ namespace EpicTransport {
                     int connectionId = nextConnectionID++;
                     epicToMirrorIds.Add(clientUserId, connectionId);
                     epicToSocketIds.Add(clientUserId, socketId);
-                    Debug.LogError("Adding new connection with ID: " + connectionId);
                     OnConnected.Invoke(connectionId);
 
                     string clientUserIdString;
@@ -88,7 +87,7 @@ namespace EpicTransport {
                         //CloseP2PSessionWithUser(clientUserId, socketId);
                         epicToMirrorIds.Remove(clientUserId);
                         epicToSocketIds.Remove(clientUserId);
-                        Debug.LogError($"Client with Product User ID {clientUserId} disconnected.");
+                        Debug.Log($"Client with Product User ID {clientUserId} disconnected.");
                     } else {
                         OnReceivedError.Invoke(-1, new Exception("ERROR Unknown Product User ID"));
                     }
@@ -162,7 +161,9 @@ namespace EpicTransport {
 
         public string ServerGetClientAddress(int connectionId) {
             if (epicToMirrorIds.TryGetValue(connectionId, out ProductUserId userId)) {
-                return userId.ToString();
+                string userIdString;
+                userId.ToString(out userIdString);
+                return userIdString;
             } else {
                 Debug.LogError("Trying to get info on unknown connection: " + connectionId);
                 OnReceivedError.Invoke(connectionId, new Exception("ERROR Unknown Connection"));

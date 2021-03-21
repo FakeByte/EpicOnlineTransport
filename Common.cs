@@ -18,6 +18,11 @@ namespace EpicTransport {
             DISCONNECT
         }
 
+        protected struct PacketKey {
+            public ProductUserId productUserId;
+            public byte channel;
+        }
+
         private OnIncomingConnectionRequestCallback OnIncomingConnectionRequest;
         ulong incomingNotificationId = 0;
         private OnRemoteConnectionClosedCallback OnRemoteConnectionClosed;
@@ -28,11 +33,14 @@ namespace EpicTransport {
         protected List<string> deadSockets;
         public bool ignoreAllMessages = false;
 
+        // Mapping from PacketKey to a List of Packet Lists
+        protected Dictionary<PacketKey, List<List<Packet>>> incomingPackets = new Dictionary<PacketKey, List<List<Packet>>>();
+
         protected Common(EosTransport transport) {
             channels = transport.Channels;
 
             deadSockets = new List<string>();
-            
+
             AddNotifyPeerConnectionRequestOptions addNotifyPeerConnectionRequestOptions = new AddNotifyPeerConnectionRequestOptions();
             addNotifyPeerConnectionRequestOptions.LocalUserId = EOSSDKComponent.LocalUserProductId;
             addNotifyPeerConnectionRequestOptions.SocketId = null;
@@ -50,9 +58,11 @@ namespace EpicTransport {
             outgoingNotificationId = EOSSDKComponent.GetP2PInterface().AddNotifyPeerConnectionClosed(addNotifyPeerConnectionClosedOptions,
                 null, OnRemoteConnectionClosed);
 
-            if(outgoingNotificationId == 0 || incomingNotificationId == 0) {
+            if (outgoingNotificationId == 0 || incomingNotificationId == 0) {
                 Debug.LogError("Couldn't bind notifications with P2P interface");
             }
+
+            incomingPackets = new Dictionary<PacketKey, List<List<Packet>>>();
 
             this.transport = transport;
 
@@ -114,8 +124,8 @@ namespace EpicTransport {
         }
 
 
-        protected void Send(ProductUserId host, SocketId socketId, byte[] msgBuffer, byte channel) =>
-            EOSSDKComponent.GetP2PInterface().SendPacket(new SendPacketOptions() {
+        protected void Send(ProductUserId host, SocketId socketId, byte[] msgBuffer, byte channel) {
+            Result result = EOSSDKComponent.GetP2PInterface().SendPacket(new SendPacketOptions() {
                 AllowDelayedDelivery = true,
                 Channel = channel,
                 Data = msgBuffer,
@@ -125,6 +135,10 @@ namespace EpicTransport {
                 SocketId = socketId
             });
 
+            if(result != Result.Success) {
+                Debug.LogError("Send failed " + result);
+            }
+        }
 
         private bool Receive(out ProductUserId clientProductUserId, out SocketId socketId, out byte[] receiveBuffer, byte channel) {
             Result result = EOSSDKComponent.GetP2PInterface().ReceivePacket(new ReceivePacketOptions() {
@@ -133,7 +147,7 @@ namespace EpicTransport {
                 RequestedChannel = channel
             }, out clientProductUserId, out socketId, out channel, out receiveBuffer);
 
-            if(result == Result.Success) {
+            if (result == Result.Success) {
                 return true;
             }
 
@@ -143,14 +157,12 @@ namespace EpicTransport {
         }
 
         protected virtual void CloseP2PSessionWithUser(ProductUserId clientUserID, SocketId socketId) {
-            if (socketId == null)
-            {
+            if (socketId == null) {
                 Debug.LogWarning("Socket ID == null | " + ignoreAllMessages);
                 return;
             }
 
-            if (deadSockets == null)
-            {
+            if (deadSockets == null) {
                 Debug.LogWarning("DeadSockets == null");
                 return;
             }
@@ -171,8 +183,9 @@ namespace EpicTransport {
 
         public void ReceiveData() {
             try {
+                // Internal Channel, no fragmentation here
                 SocketId socketId = new SocketId();
-                while (transport.enabled && Receive(out ProductUserId clientUserID, out socketId, out byte[] internalMessage, (byte)internal_ch)) {
+                while (transport.enabled && Receive(out ProductUserId clientUserID, out socketId, out byte[] internalMessage, (byte) internal_ch)) {
                     if (internalMessage.Length == 1) {
                         OnReceiveInternalData((InternalMessages) internalMessage[0], clientUserID, socketId);
                         return; // Wait one frame
@@ -181,11 +194,87 @@ namespace EpicTransport {
                     }
                 }
 
+                // Insert new packet at the correct location in the incoming queue
                 for (int chNum = 0; chNum < channels.Length; chNum++) {
-                    while (transport.enabled && Receive(out ProductUserId clientUserID, out socketId, out byte[] receiveBuffer, (byte)chNum)) {
-                        OnReceiveData(receiveBuffer, clientUserID, chNum);
+                    while (transport.enabled && Receive(out ProductUserId clientUserID, out socketId, out byte[] receiveBuffer, (byte) chNum)) {
+                        PacketKey incomingPacketKey = new PacketKey();
+                        incomingPacketKey.productUserId = clientUserID;
+                        incomingPacketKey.channel = (byte)chNum;
+
+                        Packet packet = new Packet();
+                        packet.FromBytes(receiveBuffer);
+
+                        if (!incomingPackets.ContainsKey(incomingPacketKey)) {
+                            incomingPackets.Add(incomingPacketKey, new List<List<Packet>>());
+                        }
+
+                        int packetListIndex = incomingPackets[incomingPacketKey].Count;
+                        for(int i = 0; i < incomingPackets[incomingPacketKey].Count; i++) {
+                            if(incomingPackets[incomingPacketKey][i][0].id == packet.id) {
+                                packetListIndex = i;
+                                break;
+                            }
+                        }
+                        
+                        if (packetListIndex == incomingPackets[incomingPacketKey].Count) {
+                            incomingPackets[incomingPacketKey].Add(new List<Packet>());
+                        }
+
+                        int insertionIndex = -1;
+
+                        for (int i = 0; i < incomingPackets[incomingPacketKey][packetListIndex].Count; i++) {
+                            if (incomingPackets[incomingPacketKey][packetListIndex][i].fragment > packet.fragment) {
+                                insertionIndex = i;
+                                break;
+                            }
+                        }
+
+                        if (insertionIndex >= 0) {
+                            incomingPackets[incomingPacketKey][packetListIndex].Insert(insertionIndex, packet);
+                        } else {
+                            incomingPackets[incomingPacketKey][packetListIndex].Add(packet);
+                        }
                     }
                 }
+
+                // Find fully received packets
+                List<List<Packet>> emptyPacketLists = new List<List<Packet>>();
+                foreach(KeyValuePair<PacketKey, List<List<Packet>>> keyValuePair in incomingPackets) {
+                    for(int packetList = 0; packetList < keyValuePair.Value.Count; packetList++) {
+                        bool packetReady = true;
+                        int packetLength = 0;
+                        for (int packet = 0; packet < keyValuePair.Value[packetList].Count; packet++) {
+                            Packet tempPacket = keyValuePair.Value[packetList][packet];
+                            if (tempPacket.fragment != packet || (packet == keyValuePair.Value[packetList].Count - 1 && tempPacket.moreFragments)) {
+                                packetReady = false;
+                            } else {
+                                packetLength += tempPacket.data.Length;
+                            }
+                        }
+
+                        if (packetReady) {
+                            byte[] data = new byte[packetLength];
+                            int dataIndex = 0;
+
+                            for (int packet = 0; packet < keyValuePair.Value[packetList].Count; packet++) {
+                                Array.Copy(keyValuePair.Value[packetList][packet].data, 0, data, dataIndex, keyValuePair.Value[packetList][packet].data.Length);
+                                dataIndex += keyValuePair.Value[packetList][packet].data.Length;
+                            }
+
+                            OnReceiveData(data, keyValuePair.Key.productUserId, keyValuePair.Key.channel);
+
+                            //keyValuePair.Value[packetList].Clear();
+                            emptyPacketLists.Add(keyValuePair.Value[packetList]);
+                        }
+                    }
+
+                    for (int i = 0; i < emptyPacketLists.Count; i++) {
+                        keyValuePair.Value.Remove(emptyPacketLists[i]);
+                    }
+                    emptyPacketLists.Clear();
+                }
+
+
 
             } catch (Exception e) {
                 Debug.LogException(e);

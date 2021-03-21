@@ -27,6 +27,9 @@ namespace EpicTransport {
         [Tooltip("Timeout for connecting in seconds.")]
         public int timeout = 25;
 
+        [Tooltip("The max fragments used in fragmentation before throwing an error.")]
+        public int maxFragments = 55;
+
         public float ignoreCachedMessagesAtStartUpInSeconds = 2.0f;
         private float ignoreCachedMessagesTimer = 0.0f;
 
@@ -36,14 +39,26 @@ namespace EpicTransport {
         [Tooltip("This will display your Epic Account ID when you start or connect to a server.")]
         public ProductUserId productUserId;
 
+        private int packetId = 0;
+                
         private void Awake() {
             Debug.Assert(Channels != null && Channels.Length > 0, "No channel configured for EOS Transport.");
+            Debug.Assert(Channels.Length < byte.MaxValue, "Too many channels configured for EOS Transport");
+
+            if(Channels[0] != PacketReliability.ReliableOrdered) {
+                Debug.LogWarning("EOS Transport Channel[0] is not ReliableOrdered, Mirror expects Channel 0 to be ReliableOrdered, only change this if you know what you are doing.");
+            }
+            if (Channels[1] != PacketReliability.UnreliableUnordered) {
+                Debug.LogWarning("EOS Transport Channel[1] is not UnreliableUnordered, Mirror expects Channel 1 to be UnreliableUnordered, only change this if you know what you are doing.");
+            }
 
             StartCoroutine("FetchEpicAccountId");
             StartCoroutine("ChangeRelayStatus");
         }
 
-        private void LateUpdate() {
+        public override void ClientEarlyUpdate() {
+            EOSSDKComponent.Tick();
+
             if (activeNode != null) {
                 ignoreCachedMessagesTimer += Time.deltaTime;
 
@@ -52,7 +67,7 @@ namespace EpicTransport {
                 } else {
                     activeNode.ignoreAllMessages = false;
 
-                    if(client != null && !client.isConnecting) {
+                    if (client != null && !client.isConnecting) {
                         if (EOSSDKComponent.Initialized) {
                             client.Connect(client.hostAddress);
                         } else {
@@ -68,6 +83,28 @@ namespace EpicTransport {
                 activeNode?.ReceiveData();
             }
         }
+
+        public override void ClientLateUpdate() {}
+
+        public override void ServerEarlyUpdate() {
+            EOSSDKComponent.Tick();
+
+            if (activeNode != null) {
+                ignoreCachedMessagesTimer += Time.deltaTime;
+
+                if (ignoreCachedMessagesTimer <= ignoreCachedMessagesAtStartUpInSeconds) {
+                    activeNode.ignoreAllMessages = true;
+                } else {
+                    activeNode.ignoreAllMessages = false;
+                }
+            }
+
+            if (enabled) {
+                activeNode?.ReceiveData();
+            }
+        }
+
+        public override void ServerLateUpdate() {}
 
         public override bool ClientConnected() => ClientActive() && client.Connected;
         public override void ClientConnect(string address) {
@@ -117,9 +154,7 @@ namespace EpicTransport {
         }
 
         public override void ClientSend(int channelId, ArraySegment<byte> segment) {
-            byte[] data = new byte[segment.Count];
-            Array.Copy(segment.Array, segment.Offset, data, 0, segment.Count);
-            client.Send(data, channelId);
+            Send(channelId, segment);
         }
 
         public override void ClientDisconnect() {
@@ -180,9 +215,7 @@ namespace EpicTransport {
 
         public override void ServerSend(int connectionId, int channelId, ArraySegment<byte> segment) {
             if (ServerActive()) {
-                byte[] data = new byte[segment.Count];
-                Array.Copy(segment.Array, segment.Offset, data, 0, segment.Count);
-                server.SendAll(connectionId, data, channelId);
+                Send( channelId, segment, connectionId);
             }
         }
         public override bool ServerDisconnect(int connectionId) => ServerActive() && server.Disconnect(connectionId);
@@ -191,6 +224,38 @@ namespace EpicTransport {
             if (ServerActive()) {
                 Shutdown();
             }
+        }
+
+        private void Send(int channelId, ArraySegment<byte> segment, int connectionId = int.MinValue) {
+            Packet[] packets = GetPacketArray(channelId, segment);
+
+            for(int i  = 0; i < packets.Length; i++) {
+                if (connectionId == int.MinValue) {
+                    client.Send(packets[i].ToBytes(), channelId);
+                } else {
+                    server.SendAll(connectionId, packets[i].ToBytes(), channelId);
+                }
+            }
+
+            packetId++;
+        }
+
+        private Packet[] GetPacketArray(int channelId, ArraySegment<byte> segment) {
+            int packetCount = Mathf.CeilToInt((float) segment.Count / (float)GetMaxSinglePacketSize(channelId));
+            Packet[] packets = new Packet[packetCount];
+
+            for (int i = 0; i < segment.Count; i += GetMaxSinglePacketSize(channelId)) {
+                int fragment = i / GetMaxSinglePacketSize(channelId);
+
+                packets[fragment] = new Packet();
+                packets[fragment].id = packetId;
+                packets[fragment].fragment = fragment;
+                packets[fragment].moreFragments = (segment.Count - i) > GetMaxSinglePacketSize(channelId);
+                packets[fragment].data = new byte[segment.Count - i > GetMaxSinglePacketSize(channelId) ? GetMaxSinglePacketSize(channelId) : segment.Count - i];
+                Array.Copy(segment.Array, i, packets[fragment].data, 0, packets[fragment].data.Length);
+            }
+
+            return packets;
         }
 
         public override void Shutdown() {
@@ -214,9 +279,11 @@ namespace EpicTransport {
             Debug.Log("Transport shut down.");
         }
 
-        public override int GetMaxPacketSize(int channelId) {
-            return P2PInterface.MaxPacketSize;
-        }
+        public int GetMaxSinglePacketSize(int channelId) => P2PInterface.MaxPacketSize - 1; // 1170 bytes
+
+        public override int GetMaxPacketSize(int channelId) => P2PInterface.MaxPacketSize * maxFragments; 
+
+        public override int GetMaxBatchSize(int channelId) => P2PInterface.MaxPacketSize; // Use P2PInterface.MaxPacketSize as everything above will get fragmentated and will be counter effective to batching
 
         public override bool Available() {
             try {

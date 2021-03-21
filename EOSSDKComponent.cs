@@ -11,6 +11,7 @@ using UnityEngine;
 /// In the unity editor the OnDestroy function will not run so that we dont have to restart the editor after play.
 /// </summary>
 namespace EpicTransport {
+    [DefaultExecutionOrder(-32000)]
     public class EOSSDKComponent : MonoBehaviour {
 
         // Unity Inspector shown variables
@@ -141,6 +142,11 @@ namespace EpicTransport {
                     return instance;
                 }
             }
+        }
+
+        public static void Tick() {
+            instance.platformTickTimer -= Time.deltaTime;
+            instance.EOS.Tick();
         }
 
         void Awake() {
@@ -328,7 +334,7 @@ namespace EpicTransport {
         }
 
         // Calling tick on a regular interval is required for callbacks to work.
-        private void Update() {
+        private void LateUpdate() {
             if (EOS != null) {
                 platformTickTimer += Time.deltaTime;
 
