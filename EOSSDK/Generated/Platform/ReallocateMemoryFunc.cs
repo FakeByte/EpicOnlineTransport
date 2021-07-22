@@ -11,7 +11,6 @@ namespace Epic.OnlineServices.Platform
 	/// The SDK will always call the provided function with an Alignment that is a power of 2.
 	/// Reallocation failures should return a null pointer.
 	/// </summary>
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	public delegate System.IntPtr ReallocateMemoryFunc(System.IntPtr pointer, System.UIntPtr sizeInBytes, System.UIntPtr alignment);
-
-	internal delegate System.IntPtr ReallocateMemoryFuncInternal(System.IntPtr pointer, System.UIntPtr sizeInBytes, System.UIntPtr alignment);
 }

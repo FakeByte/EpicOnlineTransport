@@ -9,12 +9,12 @@ namespace Epic.OnlineServices.Connect
 	public class LinkAccountOptions
 	{
 		/// <summary>
-		/// If the operation suceeded, this is The Product User ID of the existing, logged-in user that is linked to the external account referenced by the continuance token
+		/// The existing logged in product user for which to link the external account described by the continuance token.
 		/// </summary>
 		public ProductUserId LocalUserId { get; set; }
 
 		/// <summary>
-		/// Continuance token from previous call to <see cref="ConnectInterface.Login" />
+		/// Continuance token from previous call to <see cref="ConnectInterface.Login" />.
 		/// </summary>
 		public ContinuanceToken ContinuanceToken { get; set; }
 	}
@@ -59,6 +59,8 @@ namespace Epic.OnlineServices.Connect
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
+			Helper.TryMarshalDispose(ref m_ContinuanceToken);
 		}
 	}
 }

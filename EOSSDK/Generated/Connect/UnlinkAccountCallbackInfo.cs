@@ -14,7 +14,7 @@ namespace Epic.OnlineServices.Connect
 		public Result ResultCode { get; private set; }
 
 		/// <summary>
-		/// Context that was passed into <see cref="ConnectInterface.UnlinkAccount" />
+		/// Context that was passed into <see cref="ConnectInterface.UnlinkAccount" />.
 		/// </summary>
 		public object ClientData { get; private set; }
 

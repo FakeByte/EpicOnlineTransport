@@ -9,17 +9,17 @@ namespace Epic.OnlineServices.Connect
 	public class GetProductUserIdMappingOptions
 	{
 		/// <summary>
-		/// The Product User ID of the existing, logged-in user that is querying account mappings
+		/// The Product User ID of the existing, logged-in user that is querying account mappings.
 		/// </summary>
 		public ProductUserId LocalUserId { get; set; }
 
 		/// <summary>
-		/// External auth service mapping to retrieve
+		/// External auth service mapping to retrieve.
 		/// </summary>
 		public ExternalAccountType AccountIdType { get; set; }
 
 		/// <summary>
-		/// The Product User ID of the user whose information is being requested
+		/// The Product User ID of the user whose information is being requested.
 		/// </summary>
 		public ProductUserId TargetProductUserId { get; set; }
 	}
@@ -74,6 +74,8 @@ namespace Epic.OnlineServices.Connect
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
+			Helper.TryMarshalDispose(ref m_TargetProductUserId);
 		}
 	}
 }

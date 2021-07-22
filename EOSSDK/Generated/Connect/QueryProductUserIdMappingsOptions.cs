@@ -9,17 +9,17 @@ namespace Epic.OnlineServices.Connect
 	public class QueryProductUserIdMappingsOptions
 	{
 		/// <summary>
-		/// The Product User ID of the existing, logged-in user who is querying account mappings
+		/// The Product User ID of the existing, logged-in user who is querying account mappings.
 		/// </summary>
 		public ProductUserId LocalUserId { get; set; }
 
 		/// <summary>
-		/// Deprecated - all external mappings are included in this call, it is no longer necessary to specify this value
+		/// Deprecated - all external mappings are included in this call, it is no longer necessary to specify this value.
 		/// </summary>
 		public ExternalAccountType AccountIdType_DEPRECATED { get; set; }
 
 		/// <summary>
-		/// An array of Product User IDs to query for the given external account representation
+		/// An array of Product User IDs to query for the given external account representation.
 		/// </summary>
 		public ProductUserId[] ProductUserIds { get; set; }
 	}
@@ -75,6 +75,7 @@ namespace Epic.OnlineServices.Connect
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 			Helper.TryMarshalDispose(ref m_ProductUserIds);
 		}
 	}

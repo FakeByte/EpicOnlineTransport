@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.TitleStorage
 {
-	public sealed class TitleStorageInterface : Handle
+	public sealed partial class TitleStorageInterface : Handle
 	{
 		public TitleStorageInterface()
 		{
@@ -31,7 +31,7 @@ namespace Epic.OnlineServices.TitleStorage
 		/// <summary>
 		/// The most recent version of the <see cref="FileMetadata" /> API.
 		/// </summary>
-		public const int FilemetadataApiLatest = 1;
+		public const int FilemetadataApiLatest = 2;
 
 		/// <summary>
 		/// Maximum File Name Length in bytes
@@ -70,18 +70,18 @@ namespace Epic.OnlineServices.TitleStorage
 		/// </returns>
 		public Result CopyFileMetadataAtIndex(CopyFileMetadataAtIndexOptions options, out FileMetadata outMetadata)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyFileMetadataAtIndexOptionsInternal, CopyFileMetadataAtIndexOptions>(ref optionsAddress, options);
 
 			var outMetadataAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_TitleStorage_CopyFileMetadataAtIndex(InnerHandle, optionsAddress, ref outMetadataAddress);
+			var funcResult = Bindings.EOS_TitleStorage_CopyFileMetadataAtIndex(InnerHandle, optionsAddress, ref outMetadataAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<FileMetadataInternal, FileMetadata>(outMetadataAddress, out outMetadata))
 			{
-				EOS_TitleStorage_FileMetadata_Release(outMetadataAddress);
+				Bindings.EOS_TitleStorage_FileMetadata_Release(outMetadataAddress);
 			}
 
 			return funcResult;
@@ -98,18 +98,18 @@ namespace Epic.OnlineServices.TitleStorage
 		/// </returns>
 		public Result CopyFileMetadataByFilename(CopyFileMetadataByFilenameOptions options, out FileMetadata outMetadata)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyFileMetadataByFilenameOptionsInternal, CopyFileMetadataByFilenameOptions>(ref optionsAddress, options);
 
 			var outMetadataAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_TitleStorage_CopyFileMetadataByFilename(InnerHandle, optionsAddress, ref outMetadataAddress);
+			var funcResult = Bindings.EOS_TitleStorage_CopyFileMetadataByFilename(InnerHandle, optionsAddress, ref outMetadataAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<FileMetadataInternal, FileMetadata>(outMetadataAddress, out outMetadata))
 			{
-				EOS_TitleStorage_FileMetadata_Release(outMetadataAddress);
+				Bindings.EOS_TitleStorage_FileMetadata_Release(outMetadataAddress);
 			}
 
 			return funcResult;
@@ -127,7 +127,7 @@ namespace Epic.OnlineServices.TitleStorage
 		/// </returns>
 		public Result DeleteCache(DeleteCacheOptions options, object clientData, OnDeleteCacheCompleteCallback completionCallback)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<DeleteCacheOptionsInternal, DeleteCacheOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -135,7 +135,7 @@ namespace Epic.OnlineServices.TitleStorage
 			var completionCallbackInternal = new OnDeleteCacheCompleteCallbackInternal(OnDeleteCacheCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionCallback, completionCallbackInternal);
 
-			var funcResult = EOS_TitleStorage_DeleteCache(InnerHandle, optionsAddress, clientDataAddress, completionCallbackInternal);
+			var funcResult = Bindings.EOS_TitleStorage_DeleteCache(InnerHandle, optionsAddress, clientDataAddress, completionCallbackInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -152,10 +152,10 @@ namespace Epic.OnlineServices.TitleStorage
 		/// </returns>
 		public uint GetFileMetadataCount(GetFileMetadataCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetFileMetadataCountOptionsInternal, GetFileMetadataCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_TitleStorage_GetFileMetadataCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_TitleStorage_GetFileMetadataCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -174,7 +174,7 @@ namespace Epic.OnlineServices.TitleStorage
 		/// <param name="completionCallback">This function is called when the query operation completes</param>
 		public void QueryFile(QueryFileOptions options, object clientData, OnQueryFileCompleteCallback completionCallback)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryFileOptionsInternal, QueryFileOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -182,7 +182,7 @@ namespace Epic.OnlineServices.TitleStorage
 			var completionCallbackInternal = new OnQueryFileCompleteCallbackInternal(OnQueryFileCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionCallback, completionCallbackInternal);
 
-			EOS_TitleStorage_QueryFile(InnerHandle, optionsAddress, clientDataAddress, completionCallbackInternal);
+			Bindings.EOS_TitleStorage_QueryFile(InnerHandle, optionsAddress, clientDataAddress, completionCallbackInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -196,7 +196,7 @@ namespace Epic.OnlineServices.TitleStorage
 		/// <param name="completionCallback">This function is called when the query operation completes</param>
 		public void QueryFileList(QueryFileListOptions options, object clientData, OnQueryFileListCompleteCallback completionCallback)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryFileListOptionsInternal, QueryFileListOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -204,7 +204,7 @@ namespace Epic.OnlineServices.TitleStorage
 			var completionCallbackInternal = new OnQueryFileListCompleteCallbackInternal(OnQueryFileListCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionCallback, completionCallbackInternal);
 
-			EOS_TitleStorage_QueryFileList(InnerHandle, optionsAddress, clientDataAddress, completionCallbackInternal);
+			Bindings.EOS_TitleStorage_QueryFileList(InnerHandle, optionsAddress, clientDataAddress, completionCallbackInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -223,7 +223,7 @@ namespace Epic.OnlineServices.TitleStorage
 		/// </returns>
 		public TitleStorageFileTransferRequest ReadFile(ReadFileOptions options, object clientData, OnReadFileCompleteCallback completionCallback)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<ReadFileOptionsInternal, ReadFileOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -231,7 +231,7 @@ namespace Epic.OnlineServices.TitleStorage
 			var completionCallbackInternal = new OnReadFileCompleteCallbackInternal(OnReadFileCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionCallback, completionCallbackInternal, options.ReadFileDataCallback, ReadFileOptionsInternal.ReadFileDataCallback, options.FileTransferProgressCallback, ReadFileOptionsInternal.FileTransferProgressCallback);
 
-			var funcResult = EOS_TitleStorage_ReadFile(InnerHandle, optionsAddress, clientDataAddress, completionCallbackInternal);
+			var funcResult = Bindings.EOS_TitleStorage_ReadFile(InnerHandle, optionsAddress, clientDataAddress, completionCallbackInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -315,29 +315,5 @@ namespace Epic.OnlineServices.TitleStorage
 
 			return Helper.GetDefault<ReadResult>();
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_TitleStorage_CopyFileMetadataAtIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outMetadata);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_TitleStorage_CopyFileMetadataByFilename(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outMetadata);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_TitleStorage_DeleteCache(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnDeleteCacheCompleteCallbackInternal completionCallback);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_TitleStorage_GetFileMetadataCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_TitleStorage_QueryFile(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnQueryFileCompleteCallbackInternal completionCallback);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_TitleStorage_QueryFileList(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnQueryFileListCompleteCallbackInternal completionCallback);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_TitleStorage_ReadFile(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnReadFileCompleteCallbackInternal completionCallback);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_TitleStorage_FileMetadata_Release(System.IntPtr fileMetadata);
 	}
 }

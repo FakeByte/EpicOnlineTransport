@@ -60,6 +60,7 @@ namespace Epic.OnlineServices.TitleStorage
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 			Helper.TryMarshalDispose(ref m_ListOfTags);
 		}
 	}

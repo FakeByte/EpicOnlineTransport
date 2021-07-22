@@ -178,6 +178,9 @@ namespace Epic.OnlineServices.Ecom
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_EntitlementName);
+			Helper.TryMarshalDispose(ref m_EntitlementId);
+			Helper.TryMarshalDispose(ref m_CatalogItemId);
 		}
 	}
 }

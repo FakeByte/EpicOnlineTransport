@@ -218,7 +218,7 @@ namespace EpicTransport {
                 Send( channelId, segment, connectionId);
             }
         }
-        public override bool ServerDisconnect(int connectionId) => ServerActive() && server.Disconnect(connectionId);
+        public override void ServerDisconnect(int connectionId) => server.Disconnect(connectionId);
         public override string ServerGetClientAddress(int connectionId) => ServerActive() ? server.ServerGetClientAddress(connectionId) : string.Empty;
         public override void ServerStop() {
             if (ServerActive()) {
@@ -279,7 +279,7 @@ namespace EpicTransport {
             Debug.Log("Transport shut down.");
         }
 
-        public int GetMaxSinglePacketSize(int channelId) => P2PInterface.MaxPacketSize - 1; // 1170 bytes
+        public int GetMaxSinglePacketSize(int channelId) => P2PInterface.MaxPacketSize - 10; // 1159 bytes, we need to remove 10 bytes for the packet header (id (4 bytes) + fragment (4 bytes) + more fragments (1 byte)) 
 
         public override int GetMaxPacketSize(int channelId) => P2PInterface.MaxPacketSize * maxFragments; 
 

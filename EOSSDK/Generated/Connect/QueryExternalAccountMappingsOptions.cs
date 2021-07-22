@@ -9,17 +9,17 @@ namespace Epic.OnlineServices.Connect
 	public class QueryExternalAccountMappingsOptions
 	{
 		/// <summary>
-		/// The Product User ID of the existing, logged-in user who is querying account mappings
+		/// The Product User ID of the existing, logged-in user who is querying account mappings.
 		/// </summary>
 		public ProductUserId LocalUserId { get; set; }
 
 		/// <summary>
-		/// External auth service supplying the account IDs in string form
+		/// External auth service supplying the account IDs in string form.
 		/// </summary>
 		public ExternalAccountType AccountIdType { get; set; }
 
 		/// <summary>
-		/// An array of external account IDs to map to the product user ID representation
+		/// An array of external account IDs to map to the product user ID representation.
 		/// </summary>
 		public string[] ExternalAccountIds { get; set; }
 	}
@@ -75,6 +75,7 @@ namespace Epic.OnlineServices.Connect
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 			Helper.TryMarshalDispose(ref m_ExternalAccountIds);
 		}
 	}

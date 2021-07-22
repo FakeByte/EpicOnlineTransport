@@ -18,11 +18,14 @@ namespace Epic.OnlineServices
 		/// </summary>
 		Steam = 1,
 		/// <summary>
-		/// External account is associated with Playstation
+		/// External account is associated with PlayStation(TM)Network
 		/// </summary>
 		Psn = 2,
 		/// <summary>
 		/// External account is associated with Xbox Live
+		/// 
+		/// With EOS Connect API, the associated account type is Partner XUID (PXUID).
+		/// With EOS UserInfo API, the associated account type is Xbox Live ID (XUID).
 		/// </summary>
 		Xbl = 3,
 		/// <summary>
@@ -35,6 +38,9 @@ namespace Epic.OnlineServices
 		Gog = 5,
 		/// <summary>
 		/// External account is associated with Nintendo
+		/// 
+		/// With both EOS Connect and EOS UserInfo APIs, the associated account type is Nintendo Service Account ID.
+		/// Local user authentication is possible using Nintendo Account ID, while the account type does not get exposed to the SDK in queries related to linked accounts information.
 		/// </summary>
 		Nintendo = 6,
 		/// <summary>
@@ -48,6 +54,18 @@ namespace Epic.OnlineServices
 		/// <summary>
 		/// External account is associated with Apple
 		/// </summary>
-		Apple = 9
+		Apple = 9,
+		/// <summary>
+		/// External account is associated with Google
+		/// </summary>
+		Google = 10,
+		/// <summary>
+		/// External account is associated with Oculus
+		/// </summary>
+		Oculus = 11,
+		/// <summary>
+		/// External account is associated with itch.io
+		/// </summary>
+		Itchio = 12
 	}
 }

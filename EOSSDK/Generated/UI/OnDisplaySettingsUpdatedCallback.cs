@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.UI
 	/// <param name="data">A <see cref="OnDisplaySettingsUpdatedCallbackInfo" /> containing the current display state.</param>
 	public delegate void OnDisplaySettingsUpdatedCallback(OnDisplaySettingsUpdatedCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnDisplaySettingsUpdatedCallbackInternal(System.IntPtr data);
 }

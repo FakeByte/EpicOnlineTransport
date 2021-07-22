@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Stats
 	/// <param name="data">A <see cref="IngestStatCompleteCallbackInfo" /> containing the output information and result</param>
 	public delegate void OnIngestStatCompleteCallback(IngestStatCompleteCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnIngestStatCompleteCallbackInternal(System.IntPtr data);
 }

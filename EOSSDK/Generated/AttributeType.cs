@@ -5,6 +5,8 @@ namespace Epic.OnlineServices
 {
 	/// <summary>
 	/// Supported types of data that can be stored with inside an attribute (used by sessions/lobbies/etc)
+	/// <seealso cref="Lobby.LobbySearch.SetParameter" />
+	/// <seealso cref="Sessions.SessionSearch.SetParameter" />
 	/// </summary>
 	public enum AttributeType : int
 	{

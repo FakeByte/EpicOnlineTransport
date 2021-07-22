@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Ecom
 	/// <param name="data">A <see cref="RedeemEntitlementsCallbackInfo" /> containing the output information and result</param>
 	public delegate void OnRedeemEntitlementsCallback(RedeemEntitlementsCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnRedeemEntitlementsCallbackInternal(System.IntPtr data);
 }

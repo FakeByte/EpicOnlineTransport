@@ -4,10 +4,11 @@
 namespace Epic.OnlineServices.Connect
 {
 	/// <summary>
-	/// Function prototype definition for callbacks passed to <see cref="ConnectInterface.TransferDeviceIdAccount" />
+	/// Function prototype definition for callbacks passed to <see cref="ConnectInterface.TransferDeviceIdAccount" />.
 	/// </summary>
-	/// <param name="data">A <see cref="TransferDeviceIdAccountCallbackInfo" /> containing the output information and result</param>
+	/// <param name="data">A <see cref="TransferDeviceIdAccountCallbackInfo" /> containing the output information and result.</param>
 	public delegate void OnTransferDeviceIdAccountCallback(TransferDeviceIdAccountCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnTransferDeviceIdAccountCallbackInternal(System.IntPtr data);
 }

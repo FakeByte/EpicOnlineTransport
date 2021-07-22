@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices
 {
-	public sealed class ProductUserId : Handle
+	public sealed partial class ProductUserId : Handle
 	{
 		public ProductUserId()
 		{
@@ -19,20 +19,21 @@ namespace Epic.OnlineServices
 		public const int ProductuseridMaxLength = 128;
 
 		/// <summary>
-		/// Retrieve an <see cref="EpicAccountId" /> from a raw Epic Online Services Account ID string. The input string must be null-terminated.
+		/// Retrieve an <see cref="ProductUserId" /> from a raw string representing an Epic Online Services Product User ID. The input string must be null-terminated.
+		/// NOTE: There is no validation on the string format, this should only be used with values serialized from legitimate sources such as <see cref="ToString" />
 		/// </summary>
-		/// <param name="accountIdString">The string-ified Epic Online Services Account ID for which to retrieve the <see cref="ProductUserId" /></param>
+		/// <param name="productUserIdString">The stringified product user ID for which to retrieve the Epic Online Services Product User ID</param>
 		/// <returns>
-		/// The <see cref="ProductUserId" /> that corresponds to the AccountIdString
+		/// The <see cref="ProductUserId" /> that corresponds to the ProductUserIdString
 		/// </returns>
-		public static ProductUserId FromString(string accountIdString)
+		public static ProductUserId FromString(string productUserIdString)
 		{
-			System.IntPtr accountIdStringAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet(ref accountIdStringAddress, accountIdString);
+			var productUserIdStringAddress = System.IntPtr.Zero;
+			Helper.TryMarshalSet(ref productUserIdStringAddress, productUserIdString);
 
-			var funcResult = EOS_ProductUserId_FromString(accountIdStringAddress);
+			var funcResult = Bindings.EOS_ProductUserId_FromString(productUserIdStringAddress);
 
-			Helper.TryMarshalDispose(ref accountIdStringAddress);
+			Helper.TryMarshalDispose(ref productUserIdStringAddress);
 
 			ProductUserId funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -41,6 +42,7 @@ namespace Epic.OnlineServices
 
 		/// <summary>
 		/// Check whether or not the given account unique ID is considered valid
+		/// NOTE: This will return true for any <see cref="ProductUserId" /> created with <see cref="FromString" /> as there is no validation
 		/// </summary>
 		/// <param name="accountId">The Product User ID to check for validity</param>
 		/// <returns>
@@ -48,7 +50,7 @@ namespace Epic.OnlineServices
 		/// </returns>
 		public bool IsValid()
 		{
-			var funcResult = EOS_ProductUserId_IsValid(InnerHandle);
+			var funcResult = Bindings.EOS_ProductUserId_IsValid(InnerHandle);
 
 			bool funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -56,10 +58,10 @@ namespace Epic.OnlineServices
 		}
 
 		/// <summary>
-		/// Retrieve a null-terminated string-ified Product User ID from an <see cref="ProductUserId" />. This is useful for replication of Product User IDs in multiplayer games.
+		/// Retrieve a null-terminated stringified Product User ID from an <see cref="ProductUserId" />. This is useful for replication of Product User IDs in multiplayer games.
 		/// This string will be no larger than <see cref="ProductuseridMaxLength" /> + 1 and will only contain UTF8-encoded printable characters (excluding the null-terminator).
 		/// </summary>
-		/// <param name="accountId">The Product User ID for which to retrieve the string-ified version.</param>
+		/// <param name="accountId">The Product User ID for which to retrieve the stringified version.</param>
 		/// <param name="outBuffer">The buffer into which the character data should be written</param>
 		/// <param name="inOutBufferLength">
 		/// The size of the OutBuffer in characters.
@@ -70,16 +72,16 @@ namespace Epic.OnlineServices
 		/// An <see cref="Result" /> that indicates whether the Product User ID string was copied into the OutBuffer.
 		/// <see cref="Result.Success" /> - The OutBuffer was filled, and InOutBufferLength contains the number of characters copied into OutBuffer including the null terminator.
 		/// <see cref="Result.InvalidParameters" /> - Either OutBuffer or InOutBufferLength were passed as NULL parameters.
-		/// <see cref="Result.InvalidUser" /> - The AccountId is invalid and cannot be string-ified
+		/// <see cref="Result.InvalidUser" /> - The AccountId is invalid and cannot be stringified.
 		/// <see cref="Result.LimitExceeded" /> - The OutBuffer is not large enough to receive the Product User ID string. InOutBufferLength contains the required minimum length to perform the operation successfully.
 		/// </returns>
 		public Result ToString(out string outBuffer)
 		{
 			System.IntPtr outBufferAddress = System.IntPtr.Zero;
 			int inOutBufferLength = ProductuseridMaxLength + 1;
-			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength);
+			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength, out _);
 
-			var funcResult = EOS_ProductUserId_ToString(InnerHandle, outBufferAddress, ref inOutBufferLength);
+			var funcResult = Bindings.EOS_ProductUserId_ToString(InnerHandle, outBufferAddress, ref inOutBufferLength);
 
 			Helper.TryMarshalGet(outBufferAddress, out outBuffer);
 			Helper.TryMarshalDispose(ref outBufferAddress);
@@ -87,13 +89,11 @@ namespace Epic.OnlineServices
 			return funcResult;
 		}
 
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_ProductUserId_FromString(System.IntPtr accountIdString);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern int EOS_ProductUserId_IsValid(System.IntPtr accountId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_ProductUserId_ToString(System.IntPtr accountId, System.IntPtr outBuffer, ref int inOutBufferLength);
+		public override string ToString()
+		{
+			string funcResult;
+			ToString(out funcResult);
+			return funcResult;
+		}
 	}
 }

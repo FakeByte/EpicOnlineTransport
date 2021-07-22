@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Auth
 {
-	public sealed class AuthInterface : Handle
+	public sealed partial class AuthInterface : Handle
 	{
 		public AuthInterface()
 		{
@@ -80,7 +80,7 @@ namespace Epic.OnlineServices.Auth
 		/// </returns>
 		public ulong AddNotifyLoginStatusChanged(AddNotifyLoginStatusChangedOptions options, object clientData, OnLoginStatusChangedCallback notification)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AddNotifyLoginStatusChangedOptionsInternal, AddNotifyLoginStatusChangedOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -88,7 +88,7 @@ namespace Epic.OnlineServices.Auth
 			var notificationInternal = new OnLoginStatusChangedCallbackInternal(OnLoginStatusChangedCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, notification, notificationInternal);
 
-			var funcResult = EOS_Auth_AddNotifyLoginStatusChanged(InnerHandle, optionsAddress, clientDataAddress, notificationInternal);
+			var funcResult = Bindings.EOS_Auth_AddNotifyLoginStatusChanged(InnerHandle, optionsAddress, clientDataAddress, notificationInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -111,7 +111,7 @@ namespace Epic.OnlineServices.Auth
 		/// </returns>
 		public Result CopyUserAuthToken(CopyUserAuthTokenOptions options, EpicAccountId localUserId, out Token outUserAuthToken)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyUserAuthTokenOptionsInternal, CopyUserAuthTokenOptions>(ref optionsAddress, options);
 
 			var localUserIdInnerHandle = System.IntPtr.Zero;
@@ -119,13 +119,13 @@ namespace Epic.OnlineServices.Auth
 
 			var outUserAuthTokenAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Auth_CopyUserAuthToken(InnerHandle, optionsAddress, localUserIdInnerHandle, ref outUserAuthTokenAddress);
+			var funcResult = Bindings.EOS_Auth_CopyUserAuthToken(InnerHandle, optionsAddress, localUserIdInnerHandle, ref outUserAuthTokenAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<TokenInternal, Token>(outUserAuthTokenAddress, out outUserAuthToken))
 			{
-				EOS_Auth_Token_Release(outUserAuthTokenAddress);
+				Bindings.EOS_Auth_Token_Release(outUserAuthTokenAddress);
 			}
 
 			return funcResult;
@@ -144,7 +144,7 @@ namespace Epic.OnlineServices.Auth
 		/// <param name="completionDelegate">a callback that is fired when the deletion operation completes, either successfully or in error</param>
 		public void DeletePersistentAuth(DeletePersistentAuthOptions options, object clientData, OnDeletePersistentAuthCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<DeletePersistentAuthOptionsInternal, DeletePersistentAuthOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -152,7 +152,7 @@ namespace Epic.OnlineServices.Auth
 			var completionDelegateInternal = new OnDeletePersistentAuthCallbackInternal(OnDeletePersistentAuthCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Auth_DeletePersistentAuth(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Auth_DeletePersistentAuth(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -166,7 +166,7 @@ namespace Epic.OnlineServices.Auth
 		/// </returns>
 		public EpicAccountId GetLoggedInAccountByIndex(int index)
 		{
-			var funcResult = EOS_Auth_GetLoggedInAccountByIndex(InnerHandle, index);
+			var funcResult = Bindings.EOS_Auth_GetLoggedInAccountByIndex(InnerHandle, index);
 
 			EpicAccountId funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -181,7 +181,7 @@ namespace Epic.OnlineServices.Auth
 		/// </returns>
 		public int GetLoggedInAccountsCount()
 		{
-			var funcResult = EOS_Auth_GetLoggedInAccountsCount(InnerHandle);
+			var funcResult = Bindings.EOS_Auth_GetLoggedInAccountsCount(InnerHandle);
 
 			return funcResult;
 		}
@@ -198,7 +198,7 @@ namespace Epic.OnlineServices.Auth
 			var localUserIdInnerHandle = System.IntPtr.Zero;
 			Helper.TryMarshalSet(ref localUserIdInnerHandle, localUserId);
 
-			var funcResult = EOS_Auth_GetLoginStatus(InnerHandle, localUserIdInnerHandle);
+			var funcResult = Bindings.EOS_Auth_GetLoginStatus(InnerHandle, localUserIdInnerHandle);
 
 			return funcResult;
 		}
@@ -219,7 +219,7 @@ namespace Epic.OnlineServices.Auth
 		/// <param name="completionDelegate">a callback that is fired when the link account operation completes, either successfully or in error</param>
 		public void LinkAccount(LinkAccountOptions options, object clientData, OnLinkAccountCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LinkAccountOptionsInternal, LinkAccountOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -227,7 +227,7 @@ namespace Epic.OnlineServices.Auth
 			var completionDelegateInternal = new OnLinkAccountCallbackInternal(OnLinkAccountCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Auth_LinkAccount(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Auth_LinkAccount(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -240,7 +240,7 @@ namespace Epic.OnlineServices.Auth
 		/// <param name="completionDelegate">a callback that is fired when the login operation completes, either successfully or in error</param>
 		public void Login(LoginOptions options, object clientData, OnLoginCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LoginOptionsInternal, LoginOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -248,7 +248,7 @@ namespace Epic.OnlineServices.Auth
 			var completionDelegateInternal = new OnLoginCallbackInternal(OnLoginCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Auth_Login(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Auth_Login(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -261,7 +261,7 @@ namespace Epic.OnlineServices.Auth
 		/// <param name="completionDelegate">a callback that is fired when the logout operation completes, either successfully or in error</param>
 		public void Logout(LogoutOptions options, object clientData, OnLogoutCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LogoutOptionsInternal, LogoutOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -269,7 +269,7 @@ namespace Epic.OnlineServices.Auth
 			var completionDelegateInternal = new OnLogoutCallbackInternal(OnLogoutCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Auth_Logout(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Auth_Logout(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -282,7 +282,7 @@ namespace Epic.OnlineServices.Auth
 		{
 			Helper.TryRemoveCallbackByNotificationId(inId);
 
-			EOS_Auth_RemoveNotifyLoginStatusChanged(InnerHandle, inId);
+			Bindings.EOS_Auth_RemoveNotifyLoginStatusChanged(InnerHandle, inId);
 		}
 
 		/// <summary>
@@ -294,7 +294,7 @@ namespace Epic.OnlineServices.Auth
 		/// <param name="completionDelegate">a callback that is fired when the logout operation completes, either successfully or in error</param>
 		public void VerifyUserAuth(VerifyUserAuthOptions options, object clientData, OnVerifyUserAuthCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<VerifyUserAuthOptionsInternal, VerifyUserAuthOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -302,7 +302,7 @@ namespace Epic.OnlineServices.Auth
 			var completionDelegateInternal = new OnVerifyUserAuthCallbackInternal(OnVerifyUserAuthCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Auth_VerifyUserAuth(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Auth_VerifyUserAuth(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -372,41 +372,5 @@ namespace Epic.OnlineServices.Auth
 				callback(callbackInfo);
 			}
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern ulong EOS_Auth_AddNotifyLoginStatusChanged(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnLoginStatusChangedCallbackInternal notification);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Auth_CopyUserAuthToken(System.IntPtr handle, System.IntPtr options, System.IntPtr localUserId, ref System.IntPtr outUserAuthToken);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Auth_DeletePersistentAuth(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnDeletePersistentAuthCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Auth_GetLoggedInAccountByIndex(System.IntPtr handle, int index);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern int EOS_Auth_GetLoggedInAccountsCount(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern LoginStatus EOS_Auth_GetLoginStatus(System.IntPtr handle, System.IntPtr localUserId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Auth_LinkAccount(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnLinkAccountCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Auth_Login(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnLoginCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Auth_Logout(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnLogoutCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Auth_Token_Release(System.IntPtr authToken);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Auth_RemoveNotifyLoginStatusChanged(System.IntPtr handle, ulong inId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Auth_VerifyUserAuth(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnVerifyUserAuthCallbackInternal completionDelegate);
 	}
 }

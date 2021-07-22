@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Mods
 	/// <param name="data">A <see cref="EnumerateModsCallbackInfo" /> containing the output information and result</param>
 	public delegate void OnEnumerateModsCallback(EnumerateModsCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnEnumerateModsCallbackInternal(System.IntPtr data);
 }

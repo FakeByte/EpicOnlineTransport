@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Lobby
 	/// <param name="data">A <see cref="LobbyInterface.KickMember" /> CallbackInfo containing the output information and result</param>
 	public delegate void OnKickMemberCallback(KickMemberCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnKickMemberCallbackInternal(System.IntPtr data);
 }

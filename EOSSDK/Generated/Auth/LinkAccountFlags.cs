@@ -8,7 +8,7 @@ namespace Epic.OnlineServices.Auth
 	/// <seealso cref="AuthInterface.LinkAccount" />
 	/// </summary>
 	[System.Flags]
-	public enum LinkAccountFlags : ulong
+	public enum LinkAccountFlags : int
 	{
 		/// <summary>
 		/// Default flag used for a standard account linking operation.
@@ -21,7 +21,7 @@ namespace Epic.OnlineServices.Auth
 		/// Specified when the <see cref="ContinuanceToken" /> describes a Nintendo NSA ID account type.
 		/// 
 		/// This flag is used only with, and must be set, when the continuance token was received from a previous call
-		/// to the <see cref="AuthInterface.Login" /> API using the <see cref="Connect.ExternalCredentialType" />::<see cref="Connect.ExternalCredentialType.NintendoNsaIdToken" /> login type.
+		/// to the <see cref="AuthInterface.Login" /> API using the <see cref="ExternalCredentialType" />::<see cref="ExternalCredentialType.NintendoNsaIdToken" /> login type.
 		/// </summary>
 		NintendoNsaId = 0x1
 	}

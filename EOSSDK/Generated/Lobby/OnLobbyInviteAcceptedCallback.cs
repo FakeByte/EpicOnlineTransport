@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Lobby
 	/// <param name="data">A <see cref="LobbyInviteAcceptedCallbackInfo" /> containing the output information and result</param>
 	public delegate void OnLobbyInviteAcceptedCallback(LobbyInviteAcceptedCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnLobbyInviteAcceptedCallbackInternal(System.IntPtr data);
 }

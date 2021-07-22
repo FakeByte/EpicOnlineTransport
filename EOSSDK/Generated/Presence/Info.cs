@@ -226,6 +226,7 @@ namespace Epic.OnlineServices.Presence
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_UserId);
 			Helper.TryMarshalDispose(ref m_ProductId);
 			Helper.TryMarshalDispose(ref m_ProductVersion);
 			Helper.TryMarshalDispose(ref m_Platform);

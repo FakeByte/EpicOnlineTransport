@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Ecom
 	/// <param name="data">A <see cref="QueryEntitlementsCallbackInfo" /> containing the output information and result</param>
 	public delegate void OnQueryEntitlementsCallback(QueryEntitlementsCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnQueryEntitlementsCallbackInternal(System.IntPtr data);
 }

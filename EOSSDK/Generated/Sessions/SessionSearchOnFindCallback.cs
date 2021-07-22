@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Sessions
 	/// <param name="data">A <see cref="SessionSearchFindCallbackInfo" /> containing the output information and result</param>
 	public delegate void SessionSearchOnFindCallback(SessionSearchFindCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void SessionSearchOnFindCallbackInternal(System.IntPtr data);
 }

@@ -11,7 +11,7 @@ namespace Epic.OnlineServices
 		/// <returns>Whether the operation has completed or not.</returns>
 		public static bool IsOperationComplete(this Result result)
 		{
-			return Helper.IsOperationComplete(result);
+			return Common.IsOperationComplete(result);
 		}
 
 		/// <summary>
@@ -21,7 +21,7 @@ namespace Epic.OnlineServices
 		/// <returns>A hex string, e.g. "A56904FF".</returns>
 		public static string ToHexString(this byte[] byteArray)
 		{
-			return Helper.ToHexString(byteArray);
+			return Common.ToString(byteArray);
 		}
 	}
 }

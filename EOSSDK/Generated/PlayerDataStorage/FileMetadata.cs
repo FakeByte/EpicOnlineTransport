@@ -23,6 +23,16 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// </summary>
 		public string Filename { get; set; }
 
+		/// <summary>
+		/// The POSIX timestamp when the file was saved last time.
+		/// </summary>
+		public System.DateTimeOffset? LastModifiedTime { get; set; }
+
+		/// <summary>
+		/// The size of data (payload) in file in unencrypted (original) form.
+		/// </summary>
+		public uint UnencryptedDataSizeBytes { get; set; }
+
 		internal void Set(FileMetadataInternal? other)
 		{
 			if (other != null)
@@ -30,6 +40,8 @@ namespace Epic.OnlineServices.PlayerDataStorage
 				FileSizeBytes = other.Value.FileSizeBytes;
 				MD5Hash = other.Value.MD5Hash;
 				Filename = other.Value.Filename;
+				LastModifiedTime = other.Value.LastModifiedTime;
+				UnencryptedDataSizeBytes = other.Value.UnencryptedDataSizeBytes;
 			}
 		}
 
@@ -46,6 +58,8 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		private uint m_FileSizeBytes;
 		private System.IntPtr m_MD5Hash;
 		private System.IntPtr m_Filename;
+		private long m_LastModifiedTime;
+		private uint m_UnencryptedDataSizeBytes;
 
 		public uint FileSizeBytes
 		{
@@ -90,6 +104,34 @@ namespace Epic.OnlineServices.PlayerDataStorage
 			}
 		}
 
+		public System.DateTimeOffset? LastModifiedTime
+		{
+			get
+			{
+				System.DateTimeOffset? value;
+				Helper.TryMarshalGet(m_LastModifiedTime, out value);
+				return value;
+			}
+
+			set
+			{
+				Helper.TryMarshalSet(ref m_LastModifiedTime, value);
+			}
+		}
+
+		public uint UnencryptedDataSizeBytes
+		{
+			get
+			{
+				return m_UnencryptedDataSizeBytes;
+			}
+
+			set
+			{
+				m_UnencryptedDataSizeBytes = value;
+			}
+		}
+
 		public void Set(FileMetadata other)
 		{
 			if (other != null)
@@ -98,6 +140,8 @@ namespace Epic.OnlineServices.PlayerDataStorage
 				FileSizeBytes = other.FileSizeBytes;
 				MD5Hash = other.MD5Hash;
 				Filename = other.Filename;
+				LastModifiedTime = other.LastModifiedTime;
+				UnencryptedDataSizeBytes = other.UnencryptedDataSizeBytes;
 			}
 		}
 

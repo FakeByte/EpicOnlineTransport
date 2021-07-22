@@ -722,6 +722,86 @@ namespace Epic.OnlineServices
 		/// </summary>
 		ModsUnsupportedOS = 11016,
 		/// <summary>
+		/// The anti-cheat client protection is not available. Check that the game was started using the correct launcher.
+		/// </summary>
+		AntiCheatClientProtectionNotAvailable = 12000,
+		/// <summary>
+		/// The current anti-cheat mode is incorrect for using this API
+		/// </summary>
+		AntiCheatInvalidMode = 12001,
+		/// <summary>
+		/// The ProductId provided to the anti-cheat client helper executable does not match what was used to initialize the EOS SDK
+		/// </summary>
+		AntiCheatClientProductIdMismatch = 12002,
+		/// <summary>
+		/// The SandboxId provided to the anti-cheat client helper executable does not match what was used to initialize the EOS SDK
+		/// </summary>
+		AntiCheatClientSandboxIdMismatch = 12003,
+		/// <summary>
+		/// (ProtectMessage/UnprotectMessage) No session key is available, but it is required to complete this operation
+		/// </summary>
+		AntiCheatProtectMessageSessionKeyRequired = 12004,
+		/// <summary>
+		/// (ProtectMessage/UnprotectMessage) Message integrity is invalid
+		/// </summary>
+		AntiCheatProtectMessageValidationFailed = 12005,
+		/// <summary>
+		/// (ProtectMessage/UnprotectMessage) Initialization failed
+		/// </summary>
+		AntiCheatProtectMessageInitializationFailed = 12006,
+		/// <summary>
+		/// (RegisterPeer) Peer is already registered
+		/// </summary>
+		AntiCheatPeerAlreadyRegistered = 12007,
+		/// <summary>
+		/// (UnregisterPeer) Peer does not exist
+		/// </summary>
+		AntiCheatPeerNotFound = 12008,
+		/// <summary>
+		/// (ReceiveMessageFromPeer) Invalid call: Peer is not protected
+		/// </summary>
+		AntiCheatPeerNotProtected = 12009,
+		/// <summary>
+		/// EOS RTC room cannot accept more participants
+		/// </summary>
+		TooManyParticipants = 13000,
+		/// <summary>
+		/// EOS RTC room already exists
+		/// </summary>
+		RoomAlreadyExists = 13001,
+		/// <summary>
+		/// The user kicked out from the room
+		/// </summary>
+		UserKicked = 13002,
+		/// <summary>
+		/// The user is banned
+		/// </summary>
+		UserBanned = 13003,
+		/// <summary>
+		/// EOS RTC room was left successfully
+		/// </summary>
+		RoomWasLeft = 13004,
+		/// <summary>
+		/// Connection dropped due to long timeout
+		/// </summary>
+		ReconnectionTimegateExpired = 13005,
+		/// <summary>
+		/// The number of available Snapshot IDs have all been exhausted.
+		/// </summary>
+		ProgressionSnapshotSnapshotIdUnavailable = 14000,
+		/// <summary>
+		/// The KWS user does not have a parental email associated with the account. The parent account was unlinked or deleted
+		/// </summary>
+		ParentEmailMissing = 15000,
+		/// <summary>
+		/// The KWS user is no longer a minor and trying to update the parent email
+		/// </summary>
+		UserGraduated = 15001,
+		/// <summary>
+		/// EOS Android VM not stored
+		/// </summary>
+		AndroidJavaVMNotStored = 17000,
+		/// <summary>
 		/// An unexpected error that we cannot identify has occurred.
 		/// </summary>
 		UnexpectedError = 0x7FFFFFFF

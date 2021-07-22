@@ -11,17 +11,17 @@ namespace Epic.OnlineServices.Platform
 		/// <summary>
 		/// A custom memory allocator, if desired.
 		/// </summary>
-		public AllocateMemoryFunc AllocateMemoryFunction { get; set; }
+		public System.IntPtr AllocateMemoryFunction { get; set; }
 
 		/// <summary>
 		/// A corresponding memory reallocator. If the AllocateMemoryFunction is nulled, then this field must also be nulled.
 		/// </summary>
-		public ReallocateMemoryFunc ReallocateMemoryFunction { get; set; }
+		public System.IntPtr ReallocateMemoryFunction { get; set; }
 
 		/// <summary>
 		/// A corresponding memory releaser. If the AllocateMemoryFunction is nulled, then this field must also be nulled.
 		/// </summary>
-		public ReleaseMemoryFunc ReleaseMemoryFunction { get; set; }
+		public System.IntPtr ReleaseMemoryFunction { get; set; }
 
 		/// <summary>
 		/// The name of the product using the Epic Online Services SDK.
@@ -57,54 +57,36 @@ namespace Epic.OnlineServices.Platform
 	internal struct InitializeOptionsInternal : ISettable, System.IDisposable
 	{
 		private int m_ApiVersion;
-		private AllocateMemoryFuncInternal m_AllocateMemoryFunction;
-		private ReallocateMemoryFuncInternal m_ReallocateMemoryFunction;
-		private ReleaseMemoryFuncInternal m_ReleaseMemoryFunction;
+		private System.IntPtr m_AllocateMemoryFunction;
+		private System.IntPtr m_ReallocateMemoryFunction;
+		private System.IntPtr m_ReleaseMemoryFunction;
 		private System.IntPtr m_ProductName;
 		private System.IntPtr m_ProductVersion;
 		private System.IntPtr m_Reserved;
 		private System.IntPtr m_SystemInitializeOptions;
 		private System.IntPtr m_OverrideThreadAffinity;
 
-		private static AllocateMemoryFuncInternal s_AllocateMemoryFunction;
-		public static AllocateMemoryFuncInternal AllocateMemoryFunction
+		public System.IntPtr AllocateMemoryFunction
 		{
-			get
+			set
 			{
-				if (s_AllocateMemoryFunction == null)
-				{
-					s_AllocateMemoryFunction = new AllocateMemoryFuncInternal(PlatformInterface.AllocateMemoryFuncInternalImplementation);
-				}
-
-				return s_AllocateMemoryFunction;
+				m_AllocateMemoryFunction = value;
 			}
 		}
 
-		private static ReallocateMemoryFuncInternal s_ReallocateMemoryFunction;
-		public static ReallocateMemoryFuncInternal ReallocateMemoryFunction
+		public System.IntPtr ReallocateMemoryFunction
 		{
-			get
+			set
 			{
-				if (s_ReallocateMemoryFunction == null)
-				{
-					s_ReallocateMemoryFunction = new ReallocateMemoryFuncInternal(PlatformInterface.ReallocateMemoryFuncInternalImplementation);
-				}
-
-				return s_ReallocateMemoryFunction;
+				m_ReallocateMemoryFunction = value;
 			}
 		}
 
-		private static ReleaseMemoryFuncInternal s_ReleaseMemoryFunction;
-		public static ReleaseMemoryFuncInternal ReleaseMemoryFunction
+		public System.IntPtr ReleaseMemoryFunction
 		{
-			get
+			set
 			{
-				if (s_ReleaseMemoryFunction == null)
-				{
-					s_ReleaseMemoryFunction = new ReleaseMemoryFuncInternal(PlatformInterface.ReleaseMemoryFuncInternalImplementation);
-				}
-
-				return s_ReleaseMemoryFunction;
+				m_ReleaseMemoryFunction = value;
 			}
 		}
 
@@ -145,9 +127,9 @@ namespace Epic.OnlineServices.Platform
 			if (other != null)
 			{
 				m_ApiVersion = PlatformInterface.InitializeApiLatest;
-				m_AllocateMemoryFunction = other.AllocateMemoryFunction != null ? AllocateMemoryFunction : null;
-				m_ReallocateMemoryFunction = other.ReallocateMemoryFunction != null ? ReallocateMemoryFunction : null;
-				m_ReleaseMemoryFunction = other.ReleaseMemoryFunction != null ? ReleaseMemoryFunction : null;
+				AllocateMemoryFunction = other.AllocateMemoryFunction;
+				ReallocateMemoryFunction = other.ReallocateMemoryFunction;
+				ReleaseMemoryFunction = other.ReleaseMemoryFunction;
 				ProductName = other.ProductName;
 				ProductVersion = other.ProductVersion;
 				int[] reservedData = new int[] { 1, 1 };
@@ -166,6 +148,9 @@ namespace Epic.OnlineServices.Platform
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_AllocateMemoryFunction);
+			Helper.TryMarshalDispose(ref m_ReallocateMemoryFunction);
+			Helper.TryMarshalDispose(ref m_ReleaseMemoryFunction);
 			Helper.TryMarshalDispose(ref m_ProductName);
 			Helper.TryMarshalDispose(ref m_ProductVersion);
 			Helper.TryMarshalDispose(ref m_Reserved);

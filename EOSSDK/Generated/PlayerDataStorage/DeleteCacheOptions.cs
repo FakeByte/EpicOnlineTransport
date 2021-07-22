@@ -44,6 +44,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 		}
 	}
 }

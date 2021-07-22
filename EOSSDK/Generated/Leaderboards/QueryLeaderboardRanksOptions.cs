@@ -13,6 +13,13 @@ namespace Epic.OnlineServices.Leaderboards
 		/// The ID of the leaderboard whose information you want to retrieve.
 		/// </summary>
 		public string LeaderboardId { get; set; }
+
+		/// <summary>
+		/// Product User ID for user who is querying ranks.
+		/// Must be set when using a client policy that requires a valid logged in user.
+		/// Not used for Dedicated Server where no user is available.
+		/// </summary>
+		public ProductUserId LocalUserId { get; set; }
 	}
 
 	[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 8)]
@@ -20,6 +27,7 @@ namespace Epic.OnlineServices.Leaderboards
 	{
 		private int m_ApiVersion;
 		private System.IntPtr m_LeaderboardId;
+		private System.IntPtr m_LocalUserId;
 
 		public string LeaderboardId
 		{
@@ -29,12 +37,21 @@ namespace Epic.OnlineServices.Leaderboards
 			}
 		}
 
+		public ProductUserId LocalUserId
+		{
+			set
+			{
+				Helper.TryMarshalSet(ref m_LocalUserId, value);
+			}
+		}
+
 		public void Set(QueryLeaderboardRanksOptions other)
 		{
 			if (other != null)
 			{
 				m_ApiVersion = LeaderboardsInterface.QueryleaderboardranksApiLatest;
 				LeaderboardId = other.LeaderboardId;
+				LocalUserId = other.LocalUserId;
 			}
 		}
 
@@ -46,6 +63,7 @@ namespace Epic.OnlineServices.Leaderboards
 		public void Dispose()
 		{
 			Helper.TryMarshalDispose(ref m_LeaderboardId);
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 		}
 	}
 }

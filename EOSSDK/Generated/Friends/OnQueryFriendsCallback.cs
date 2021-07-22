@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Friends
 	/// <param name="data">A <see cref="QueryFriendsCallbackInfo" /> containing the output information and result</param>
 	public delegate void OnQueryFriendsCallback(QueryFriendsCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnQueryFriendsCallbackInternal(System.IntPtr data);
 }

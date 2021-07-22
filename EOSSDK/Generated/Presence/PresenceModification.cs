@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Presence
 {
-	public sealed class PresenceModification : Handle
+	public sealed partial class PresenceModification : Handle
 	{
 		public PresenceModification()
 		{
@@ -52,10 +52,10 @@ namespace Epic.OnlineServices.Presence
 		/// </returns>
 		public Result DeleteData(PresenceModificationDeleteDataOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<PresenceModificationDeleteDataOptionsInternal, PresenceModificationDeleteDataOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_PresenceModification_DeleteData(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_PresenceModification_DeleteData(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -70,7 +70,7 @@ namespace Epic.OnlineServices.Presence
 		/// <param name="presenceModificationHandle">The presence modification handle to release</param>
 		public void Release()
 		{
-			EOS_PresenceModification_Release(InnerHandle);
+			Bindings.EOS_PresenceModification_Release(InnerHandle);
 		}
 
 		/// <summary>
@@ -86,10 +86,10 @@ namespace Epic.OnlineServices.Presence
 		/// </returns>
 		public Result SetData(PresenceModificationSetDataOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<PresenceModificationSetDataOptionsInternal, PresenceModificationSetDataOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_PresenceModification_SetData(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_PresenceModification_SetData(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -107,10 +107,10 @@ namespace Epic.OnlineServices.Presence
 		/// </returns>
 		public Result SetJoinInfo(PresenceModificationSetJoinInfoOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<PresenceModificationSetJoinInfoOptionsInternal, PresenceModificationSetJoinInfoOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_PresenceModification_SetJoinInfo(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_PresenceModification_SetJoinInfo(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -128,10 +128,10 @@ namespace Epic.OnlineServices.Presence
 		/// </returns>
 		public Result SetRawRichText(PresenceModificationSetRawRichTextOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<PresenceModificationSetRawRichTextOptionsInternal, PresenceModificationSetRawRichTextOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_PresenceModification_SetRawRichText(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_PresenceModification_SetRawRichText(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -147,32 +147,14 @@ namespace Epic.OnlineServices.Presence
 		/// </returns>
 		public Result SetStatus(PresenceModificationSetStatusOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<PresenceModificationSetStatusOptionsInternal, PresenceModificationSetStatusOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_PresenceModification_SetStatus(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_PresenceModification_SetStatus(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			return funcResult;
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_PresenceModification_DeleteData(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_PresenceModification_Release(System.IntPtr presenceModificationHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_PresenceModification_SetData(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_PresenceModification_SetJoinInfo(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_PresenceModification_SetRawRichText(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_PresenceModification_SetStatus(System.IntPtr handle, System.IntPtr options);
 	}
 }

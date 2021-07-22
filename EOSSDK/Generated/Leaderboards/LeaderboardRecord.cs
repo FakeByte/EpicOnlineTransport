@@ -129,6 +129,7 @@ namespace Epic.OnlineServices.Leaderboards
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_UserId);
 			Helper.TryMarshalDispose(ref m_UserDisplayName);
 		}
 	}

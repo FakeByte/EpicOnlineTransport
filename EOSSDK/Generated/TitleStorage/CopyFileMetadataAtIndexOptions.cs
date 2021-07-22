@@ -59,6 +59,7 @@ namespace Epic.OnlineServices.TitleStorage
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 		}
 	}
 }

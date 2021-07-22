@@ -8,5 +8,6 @@ namespace Epic.OnlineServices.Presence
 	/// </summary>
 	public delegate void OnPresenceChangedCallback(PresenceChangedCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnPresenceChangedCallbackInternal(System.IntPtr data);
 }

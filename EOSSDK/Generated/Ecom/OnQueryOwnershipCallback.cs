@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Ecom
 	/// <param name="data">A <see cref="QueryOwnershipCallbackInfo" /> containing the output information and result</param>
 	public delegate void OnQueryOwnershipCallback(QueryOwnershipCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnQueryOwnershipCallbackInternal(System.IntPtr data);
 }

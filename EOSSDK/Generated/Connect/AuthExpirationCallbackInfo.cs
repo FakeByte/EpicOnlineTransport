@@ -9,12 +9,12 @@ namespace Epic.OnlineServices.Connect
 	public class AuthExpirationCallbackInfo : ICallbackInfo, ISettable
 	{
 		/// <summary>
-		/// Context that was passed into <see cref="ConnectInterface.AddNotifyAuthExpiration" />
+		/// Context that was passed into <see cref="ConnectInterface.AddNotifyAuthExpiration" />.
 		/// </summary>
 		public object ClientData { get; private set; }
 
 		/// <summary>
-		/// The Product User ID of the local player whose status has changed
+		/// The Product User ID of the local player whose status has changed.
 		/// </summary>
 		public ProductUserId LocalUserId { get; private set; }
 

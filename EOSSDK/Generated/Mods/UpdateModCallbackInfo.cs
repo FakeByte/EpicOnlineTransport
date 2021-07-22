@@ -19,7 +19,7 @@ namespace Epic.OnlineServices.Mods
 		public EpicAccountId LocalUserId { get; private set; }
 
 		/// <summary>
-		/// Context that was passed into to <see cref="ModsInterface.UpdateMod" />
+		/// Context that is passed into <see cref="ModsInterface.UpdateMod" />
 		/// </summary>
 		public object ClientData { get; private set; }
 

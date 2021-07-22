@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.PlayerDataStorage
 {
-	public sealed class PlayerDataStorageFileTransferRequest : Handle
+	public sealed partial class PlayerDataStorageFileTransferRequest : Handle
 	{
 		public PlayerDataStorageFileTransferRequest()
 		{
@@ -21,7 +21,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// </returns>
 		public Result CancelRequest()
 		{
-			var funcResult = EOS_PlayerDataStorageFileTransferRequest_CancelRequest(InnerHandle);
+			var funcResult = Bindings.EOS_PlayerDataStorageFileTransferRequest_CancelRequest(InnerHandle);
 
 			return funcResult;
 		}
@@ -34,7 +34,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// </returns>
 		public Result GetFileRequestState()
 		{
-			var funcResult = EOS_PlayerDataStorageFileTransferRequest_GetFileRequestState(InnerHandle);
+			var funcResult = Bindings.EOS_PlayerDataStorageFileTransferRequest_GetFileRequestState(InnerHandle);
 
 			return funcResult;
 		}
@@ -53,9 +53,9 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		{
 			System.IntPtr outStringBufferAddress = System.IntPtr.Zero;
 			int outStringLength = PlayerDataStorageInterface.FilenameMaxLengthBytes;
-			Helper.TryMarshalAllocate(ref outStringBufferAddress, outStringLength);
+			Helper.TryMarshalAllocate(ref outStringBufferAddress, outStringLength, out _);
 
-			var funcResult = EOS_PlayerDataStorageFileTransferRequest_GetFilename(InnerHandle, (uint)outStringLength, outStringBufferAddress, ref outStringLength);
+			var funcResult = Bindings.EOS_PlayerDataStorageFileTransferRequest_GetFilename(InnerHandle, (uint)outStringLength, outStringBufferAddress, ref outStringLength);
 
 			Helper.TryMarshalGet(outStringBufferAddress, out outStringBuffer);
 			Helper.TryMarshalDispose(ref outStringBufferAddress);
@@ -68,19 +68,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// </summary>
 		public void Release()
 		{
-			EOS_PlayerDataStorageFileTransferRequest_Release(InnerHandle);
+			Bindings.EOS_PlayerDataStorageFileTransferRequest_Release(InnerHandle);
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_PlayerDataStorageFileTransferRequest_CancelRequest(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_PlayerDataStorageFileTransferRequest_GetFileRequestState(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_PlayerDataStorageFileTransferRequest_GetFilename(System.IntPtr handle, uint filenameStringBufferSizeBytes, System.IntPtr outStringBuffer, ref int outStringLength);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_PlayerDataStorageFileTransferRequest_Release(System.IntPtr playerDataStorageFileTransferHandle);
 	}
 }

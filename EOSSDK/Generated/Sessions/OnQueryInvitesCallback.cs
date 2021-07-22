@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Sessions
 	/// <param name="data">A <see cref="SessionsInterface.QueryInvites" /> CallbackInfo containing the output information and result</param>
 	public delegate void OnQueryInvitesCallback(QueryInvitesCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnQueryInvitesCallbackInternal(System.IntPtr data);
 }

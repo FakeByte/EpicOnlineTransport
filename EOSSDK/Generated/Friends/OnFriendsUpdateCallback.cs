@@ -8,5 +8,6 @@ namespace Epic.OnlineServices.Friends
 	/// </summary>
 	public delegate void OnFriendsUpdateCallback(OnFriendsUpdateInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnFriendsUpdateCallbackInternal(System.IntPtr data);
 }

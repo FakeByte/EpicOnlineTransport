@@ -9,6 +9,7 @@ namespace Epic.OnlineServices.Sessions
 	public class SessionDetailsCopySessionAttributeByKeyOptions
 	{
 		/// <summary>
+		/// The name of the key to get the session attribution for
 		/// <seealso cref="SessionModification.AddAttribute" />
 		/// </summary>
 		public string AttrKey { get; set; }

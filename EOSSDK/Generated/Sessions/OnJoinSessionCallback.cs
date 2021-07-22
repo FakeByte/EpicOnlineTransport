@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Sessions
 	/// <param name="data">A <see cref="JoinSessionCallbackInfo" /> containing the output information and result</param>
 	public delegate void OnJoinSessionCallback(JoinSessionCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnJoinSessionCallbackInternal(System.IntPtr data);
 }

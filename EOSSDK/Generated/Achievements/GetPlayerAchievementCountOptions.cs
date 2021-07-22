@@ -44,6 +44,7 @@ namespace Epic.OnlineServices.Achievements
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_UserId);
 		}
 	}
 }

@@ -133,6 +133,7 @@ namespace Epic.OnlineServices.Sessions
 		{
 			Helper.TryMarshalDispose(ref m_SessionName);
 			Helper.TryMarshalDispose(ref m_BucketId);
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 			Helper.TryMarshalDispose(ref m_SessionId);
 		}
 	}

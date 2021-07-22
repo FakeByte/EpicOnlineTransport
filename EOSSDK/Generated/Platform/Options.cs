@@ -69,6 +69,11 @@ namespace Epic.OnlineServices.Platform
 		/// Zero is interpreted as "perform all available work".
 		/// </summary>
 		public uint TickBudgetInMilliseconds { get; set; }
+
+		/// <summary>
+		/// RTC options. Setting to NULL will disable RTC features (e.g. voice)
+		/// </summary>
+		public RTCOptions RTCOptions { get; set; }
 	}
 
 	[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 8)]
@@ -87,6 +92,7 @@ namespace Epic.OnlineServices.Platform
 		private PlatformFlags m_Flags;
 		private System.IntPtr m_CacheDirectory;
 		private uint m_TickBudgetInMilliseconds;
+		private System.IntPtr m_RTCOptions;
 
 		public System.IntPtr Reserved
 		{
@@ -184,6 +190,14 @@ namespace Epic.OnlineServices.Platform
 			}
 		}
 
+		public RTCOptions RTCOptions
+		{
+			set
+			{
+				Helper.TryMarshalSet<RTCOptionsInternal, RTCOptions>(ref m_RTCOptions, value);
+			}
+		}
+
 		public void Set(Options other)
 		{
 			if (other != null)
@@ -201,6 +215,7 @@ namespace Epic.OnlineServices.Platform
 				Flags = other.Flags;
 				CacheDirectory = other.CacheDirectory;
 				TickBudgetInMilliseconds = other.TickBudgetInMilliseconds;
+				RTCOptions = other.RTCOptions;
 			}
 		}
 
@@ -220,6 +235,7 @@ namespace Epic.OnlineServices.Platform
 			Helper.TryMarshalDispose(ref m_OverrideLocaleCode);
 			Helper.TryMarshalDispose(ref m_DeploymentId);
 			Helper.TryMarshalDispose(ref m_CacheDirectory);
+			Helper.TryMarshalDispose(ref m_RTCOptions);
 		}
 	}
 }

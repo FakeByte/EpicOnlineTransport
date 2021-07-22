@@ -119,17 +119,15 @@ namespace EpicTransport {
             }
         }
 
-        public bool Disconnect(int connectionId) {
+        public void Disconnect(int connectionId) {
             if (epicToMirrorIds.TryGetValue(connectionId, out ProductUserId userId)) {
                 SocketId socketId;
                 epicToSocketIds.TryGetValue(userId, out socketId);
                 SendInternal(userId, socketId, InternalMessages.DISCONNECT);
                 epicToMirrorIds.Remove(userId);
                 epicToSocketIds.Remove(userId);
-                return true;
             } else {
                 Debug.LogWarning("Trying to disconnect unknown connection id: " + connectionId);
-                return false;
             }
         }
 

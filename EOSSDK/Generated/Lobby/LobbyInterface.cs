@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Lobby
 {
-	public sealed class LobbyInterface : Handle
+	public sealed partial class LobbyInterface : Handle
 	{
 		public LobbyInterface()
 		{
@@ -44,6 +44,11 @@ namespace Epic.OnlineServices.Lobby
 		public const int AddnotifylobbyupdatereceivedApiLatest = 1;
 
 		/// <summary>
+		/// The most recent version of the <see cref="AddNotifyRTCRoomConnectionChanged" /> API.
+		/// </summary>
+		public const int AddnotifyrtcroomconnectionchangedApiLatest = 1;
+
+		/// <summary>
 		/// The most recent version of the <see cref="Attribute" /> struct.
 		/// </summary>
 		public const int AttributeApiLatest = 1;
@@ -71,7 +76,7 @@ namespace Epic.OnlineServices.Lobby
 		/// <summary>
 		/// The most recent version of the <see cref="CreateLobby" /> API.
 		/// </summary>
-		public const int CreatelobbyApiLatest = 2;
+		public const int CreatelobbyApiLatest = 7;
 
 		/// <summary>
 		/// The most recent version of the <see cref="CreateLobbySearch" /> API.
@@ -94,14 +99,24 @@ namespace Epic.OnlineServices.Lobby
 		public const int GetinviteidbyindexApiLatest = 1;
 
 		/// <summary>
+		/// The most recent version of the <see cref="GetRTCRoomName" /> API.
+		/// </summary>
+		public const int GetrtcroomnameApiLatest = 1;
+
+		/// <summary>
 		/// Max length of an invite ID
 		/// </summary>
 		public const int InviteidMaxLength = 64;
 
 		/// <summary>
+		/// The most recent version of the <see cref="IsRTCRoomConnected" /> API.
+		/// </summary>
+		public const int IsrtcroomconnectedApiLatest = 1;
+
+		/// <summary>
 		/// The most recent version of the <see cref="JoinLobby" /> API.
 		/// </summary>
-		public const int JoinlobbyApiLatest = 2;
+		public const int JoinlobbyApiLatest = 3;
 
 		/// <summary>
 		/// The most recent version of the <see cref="KickMember" /> API.
@@ -113,14 +128,26 @@ namespace Epic.OnlineServices.Lobby
 		/// </summary>
 		public const int LeavelobbyApiLatest = 1;
 
+		public const int LocalrtcoptionsApiLatest = 1;
+
 		/// <summary>
 		/// All lobbies are referenced by a unique lobby ID
 		/// </summary>
-		public const int MaxLobbies = 4;
+		public const int MaxLobbies = 16;
 
 		public const int MaxLobbyMembers = 64;
 
+		/// <summary>
+		/// Maximum number of characters allowed in the lobby id override
+		/// </summary>
+		public const int MaxLobbyidoverrideLength = 60;
+
 		public const int MaxSearchResults = 200;
+
+		/// <summary>
+		/// Minimum number of characters allowed in the lobby id override
+		/// </summary>
+		public const int MinLobbyidoverrideLength = 4;
 
 		/// <summary>
 		/// The most recent version of the <see cref="PromoteMember" /> API.
@@ -136,6 +163,11 @@ namespace Epic.OnlineServices.Lobby
 		/// The most recent version of the <see cref="RejectInvite" /> API.
 		/// </summary>
 		public const int RejectinviteApiLatest = 1;
+
+		/// <summary>
+		/// Search for a matching bucket ID (value is string)
+		/// </summary>
+		public const string SearchBucketId = "bucket";
 
 		/// <summary>
 		/// Search for lobbies that contain at least this number of members (value is int)
@@ -164,17 +196,17 @@ namespace Epic.OnlineServices.Lobby
 
 		/// <summary>
 		/// Register to receive notifications about lobby join game accepted by local user via the overlay.
-		/// @note must call RemoveNotifyJoinLobbyAccepted to remove the notification
+		/// @note must call <see cref="RemoveNotifyJoinLobbyAccepted" /> to remove the notification
 		/// </summary>
 		/// <param name="options">Structure containing information about the request.</param>
 		/// <param name="clientData">Arbitrary data that is passed back to you in the CompletionDelegate.</param>
-		/// <param name="notificationFn">A callback that is fired when a a notification is received.</param>
+		/// <param name="notificationFn">A callback that is fired when a notification is received.</param>
 		/// <returns>
 		/// handle representing the registered callback
 		/// </returns>
 		public ulong AddNotifyJoinLobbyAccepted(AddNotifyJoinLobbyAcceptedOptions options, object clientData, OnJoinLobbyAcceptedCallback notificationFn)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AddNotifyJoinLobbyAcceptedOptionsInternal, AddNotifyJoinLobbyAcceptedOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -182,7 +214,7 @@ namespace Epic.OnlineServices.Lobby
 			var notificationFnInternal = new OnJoinLobbyAcceptedCallbackInternal(OnJoinLobbyAcceptedCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, notificationFn, notificationFnInternal);
 
-			var funcResult = EOS_Lobby_AddNotifyJoinLobbyAccepted(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
+			var funcResult = Bindings.EOS_Lobby_AddNotifyJoinLobbyAccepted(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -203,7 +235,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public ulong AddNotifyLobbyInviteAccepted(AddNotifyLobbyInviteAcceptedOptions options, object clientData, OnLobbyInviteAcceptedCallback notificationFn)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AddNotifyLobbyInviteAcceptedOptionsInternal, AddNotifyLobbyInviteAcceptedOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -211,7 +243,7 @@ namespace Epic.OnlineServices.Lobby
 			var notificationFnInternal = new OnLobbyInviteAcceptedCallbackInternal(OnLobbyInviteAcceptedCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, notificationFn, notificationFnInternal);
 
-			var funcResult = EOS_Lobby_AddNotifyLobbyInviteAccepted(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
+			var funcResult = Bindings.EOS_Lobby_AddNotifyLobbyInviteAccepted(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -232,7 +264,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public ulong AddNotifyLobbyInviteReceived(AddNotifyLobbyInviteReceivedOptions options, object clientData, OnLobbyInviteReceivedCallback notificationFn)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AddNotifyLobbyInviteReceivedOptionsInternal, AddNotifyLobbyInviteReceivedOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -240,7 +272,7 @@ namespace Epic.OnlineServices.Lobby
 			var notificationFnInternal = new OnLobbyInviteReceivedCallbackInternal(OnLobbyInviteReceivedCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, notificationFn, notificationFnInternal);
 
-			var funcResult = EOS_Lobby_AddNotifyLobbyInviteReceived(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
+			var funcResult = Bindings.EOS_Lobby_AddNotifyLobbyInviteReceived(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -261,7 +293,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public ulong AddNotifyLobbyMemberStatusReceived(AddNotifyLobbyMemberStatusReceivedOptions options, object clientData, OnLobbyMemberStatusReceivedCallback notificationFn)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AddNotifyLobbyMemberStatusReceivedOptionsInternal, AddNotifyLobbyMemberStatusReceivedOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -269,7 +301,7 @@ namespace Epic.OnlineServices.Lobby
 			var notificationFnInternal = new OnLobbyMemberStatusReceivedCallbackInternal(OnLobbyMemberStatusReceivedCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, notificationFn, notificationFnInternal);
 
-			var funcResult = EOS_Lobby_AddNotifyLobbyMemberStatusReceived(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
+			var funcResult = Bindings.EOS_Lobby_AddNotifyLobbyMemberStatusReceived(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -290,7 +322,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public ulong AddNotifyLobbyMemberUpdateReceived(AddNotifyLobbyMemberUpdateReceivedOptions options, object clientData, OnLobbyMemberUpdateReceivedCallback notificationFn)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AddNotifyLobbyMemberUpdateReceivedOptionsInternal, AddNotifyLobbyMemberUpdateReceivedOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -298,7 +330,7 @@ namespace Epic.OnlineServices.Lobby
 			var notificationFnInternal = new OnLobbyMemberUpdateReceivedCallbackInternal(OnLobbyMemberUpdateReceivedCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, notificationFn, notificationFnInternal);
 
-			var funcResult = EOS_Lobby_AddNotifyLobbyMemberUpdateReceived(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
+			var funcResult = Bindings.EOS_Lobby_AddNotifyLobbyMemberUpdateReceived(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -319,7 +351,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public ulong AddNotifyLobbyUpdateReceived(AddNotifyLobbyUpdateReceivedOptions options, object clientData, OnLobbyUpdateReceivedCallback notificationFn)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AddNotifyLobbyUpdateReceivedOptionsInternal, AddNotifyLobbyUpdateReceivedOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -327,7 +359,48 @@ namespace Epic.OnlineServices.Lobby
 			var notificationFnInternal = new OnLobbyUpdateReceivedCallbackInternal(OnLobbyUpdateReceivedCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, notificationFn, notificationFnInternal);
 
-			var funcResult = EOS_Lobby_AddNotifyLobbyUpdateReceived(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
+			var funcResult = Bindings.EOS_Lobby_AddNotifyLobbyUpdateReceived(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
+
+			Helper.TryMarshalDispose(ref optionsAddress);
+
+			Helper.TryAssignNotificationIdToCallback(clientDataAddress, funcResult);
+
+			return funcResult;
+		}
+
+		/// <summary>
+		/// Register to receive notifications of when the RTC Room for a particular lobby has a connection status change.
+		/// 
+		/// The RTC Room connection status is independent of the lobby connection status, however the lobby system will attempt to keep
+		/// them consistent, automatically connecting to the RTC room after joining a lobby which has an associated RTC room and disconnecting
+		/// from the RTC room when a lobby is left or disconnected.
+		/// 
+		/// This notification is entirely informational and requires no action in response by the application. If the connected status is offline
+		/// (bIsConnected is false), the connection will automatically attempt to reconnect. The purpose of this notification is to allow
+		/// applications to show the current connection status of the RTC room when the connection is not established.
+		/// 
+		/// Unlike <see cref="RTC.RTCInterface.AddNotifyDisconnected" />, <see cref="RTC.RTCInterface.LeaveRoom" /> should not be called when the RTC room is disconnected.
+		/// 
+		/// This function will only succeed when called on a lobby the local user is currently a member of.
+		/// <seealso cref="RemoveNotifyRTCRoomConnectionChanged" />
+		/// </summary>
+		/// <param name="options">Structure containing information about the lobby to receive updates about</param>
+		/// <param name="clientData">Arbitrary data that is passed back to you in the CompletionDelegate.</param>
+		/// <param name="notificationFn">The function to call if the RTC Room's connection status changes</param>
+		/// <returns>
+		/// A valid notification ID if the NotificationFn was successfully registered, or <see cref="Common.InvalidNotificationid" /> if the input was invalid, the lobby did not exist, or the lobby did not have an RTC room.
+		/// </returns>
+		public ulong AddNotifyRTCRoomConnectionChanged(AddNotifyRTCRoomConnectionChangedOptions options, object clientData, OnRTCRoomConnectionChangedCallback notificationFn)
+		{
+			var optionsAddress = System.IntPtr.Zero;
+			Helper.TryMarshalSet<AddNotifyRTCRoomConnectionChangedOptionsInternal, AddNotifyRTCRoomConnectionChangedOptions>(ref optionsAddress, options);
+
+			var clientDataAddress = System.IntPtr.Zero;
+
+			var notificationFnInternal = new OnRTCRoomConnectionChangedCallbackInternal(OnRTCRoomConnectionChangedCallbackInternalImplementation);
+			Helper.AddCallback(ref clientDataAddress, clientData, notificationFn, notificationFnInternal);
+
+			var funcResult = Bindings.EOS_Lobby_AddNotifyRTCRoomConnectionChanged(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -350,12 +423,12 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result CopyLobbyDetailsHandle(CopyLobbyDetailsHandleOptions options, out LobbyDetails outLobbyDetailsHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyLobbyDetailsHandleOptionsInternal, CopyLobbyDetailsHandleOptions>(ref optionsAddress, options);
 
 			var outLobbyDetailsHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Lobby_CopyLobbyDetailsHandle(InnerHandle, optionsAddress, ref outLobbyDetailsHandleAddress);
+			var funcResult = Bindings.EOS_Lobby_CopyLobbyDetailsHandle(InnerHandle, optionsAddress, ref outLobbyDetailsHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -380,12 +453,12 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result CopyLobbyDetailsHandleByInviteId(CopyLobbyDetailsHandleByInviteIdOptions options, out LobbyDetails outLobbyDetailsHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyLobbyDetailsHandleByInviteIdOptionsInternal, CopyLobbyDetailsHandleByInviteIdOptions>(ref optionsAddress, options);
 
 			var outLobbyDetailsHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Lobby_CopyLobbyDetailsHandleByInviteId(InnerHandle, optionsAddress, ref outLobbyDetailsHandleAddress);
+			var funcResult = Bindings.EOS_Lobby_CopyLobbyDetailsHandleByInviteId(InnerHandle, optionsAddress, ref outLobbyDetailsHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -410,12 +483,12 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result CopyLobbyDetailsHandleByUiEventId(CopyLobbyDetailsHandleByUiEventIdOptions options, out LobbyDetails outLobbyDetailsHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyLobbyDetailsHandleByUiEventIdOptionsInternal, CopyLobbyDetailsHandleByUiEventIdOptions>(ref optionsAddress, options);
 
 			var outLobbyDetailsHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Lobby_CopyLobbyDetailsHandleByUiEventId(InnerHandle, optionsAddress, ref outLobbyDetailsHandleAddress);
+			var funcResult = Bindings.EOS_Lobby_CopyLobbyDetailsHandleByUiEventId(InnerHandle, optionsAddress, ref outLobbyDetailsHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -426,6 +499,11 @@ namespace Epic.OnlineServices.Lobby
 
 		/// <summary>
 		/// Creates a lobby and adds the user to the lobby membership. There is no data associated with the lobby at the start and can be added vis <see cref="UpdateLobbyModification" />
+		/// 
+		/// If the lobby is successfully created with an RTC Room enabled, the lobby system will automatically join and maintain the connection to the RTC room as long as the
+		/// local user remains in the lobby. Applications can use the <see cref="GetRTCRoomName" /> to get the name of the RTC Room associated with a lobby, which may be used with
+		/// suite of functions. This can be useful to: register for notifications for talking status; to mute or unmute the local user's audio output;
+		/// to block or unblock room participants; to set local audio device settings; and more.
 		/// </summary>
 		/// <param name="options">Required fields for the creation of a lobby such as a user count and its starting advertised state</param>
 		/// <param name="clientData">Arbitrary data that is passed back to you in the CompletionDelegate</param>
@@ -437,7 +515,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public void CreateLobby(CreateLobbyOptions options, object clientData, OnCreateLobbyCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CreateLobbyOptionsInternal, CreateLobbyOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -445,7 +523,7 @@ namespace Epic.OnlineServices.Lobby
 			var completionDelegateInternal = new OnCreateLobbyCallbackInternal(OnCreateLobbyCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Lobby_CreateLobby(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Lobby_CreateLobby(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -465,12 +543,12 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result CreateLobbySearch(CreateLobbySearchOptions options, out LobbySearch outLobbySearchHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CreateLobbySearchOptionsInternal, CreateLobbySearchOptions>(ref optionsAddress, options);
 
 			var outLobbySearchHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Lobby_CreateLobbySearch(InnerHandle, optionsAddress, ref outLobbySearchHandleAddress);
+			var funcResult = Bindings.EOS_Lobby_CreateLobbySearch(InnerHandle, optionsAddress, ref outLobbySearchHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -493,7 +571,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public void DestroyLobby(DestroyLobbyOptions options, object clientData, OnDestroyLobbyCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<DestroyLobbyOptionsInternal, DestroyLobbyOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -501,7 +579,7 @@ namespace Epic.OnlineServices.Lobby
 			var completionDelegateInternal = new OnDestroyLobbyCallbackInternal(OnDestroyLobbyCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Lobby_DestroyLobby(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Lobby_DestroyLobby(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -515,10 +593,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public uint GetInviteCount(GetInviteCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetInviteCountOptionsInternal, GetInviteCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Lobby_GetInviteCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Lobby_GetInviteCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -538,14 +616,14 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result GetInviteIdByIndex(GetInviteIdByIndexOptions options, out string outBuffer)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetInviteIdByIndexOptionsInternal, GetInviteIdByIndexOptions>(ref optionsAddress, options);
 
 			System.IntPtr outBufferAddress = System.IntPtr.Zero;
 			int inOutBufferLength = InviteidMaxLength + 1;
-			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength);
+			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength, out _);
 
-			var funcResult = EOS_Lobby_GetInviteIdByIndex(InnerHandle, optionsAddress, outBufferAddress, ref inOutBufferLength);
+			var funcResult = Bindings.EOS_Lobby_GetInviteIdByIndex(InnerHandle, optionsAddress, outBufferAddress, ref inOutBufferLength);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -556,7 +634,84 @@ namespace Epic.OnlineServices.Lobby
 		}
 
 		/// <summary>
+		/// Get the name of the RTC room associated with a specific lobby a local user belongs to.
+		/// 
+		/// suite of functions. RTC Room Names must not be used with
+		/// <see cref="RTC.RTCInterface.JoinRoom" />, <see cref="RTC.RTCInterface.LeaveRoom" />, or <see cref="RTC.RTCInterface.AddNotifyDisconnected" />. Doing so will return <see cref="Result.AccessDenied" /> or
+		/// <see cref="Common.InvalidNotificationid" /> if used with those functions.
+		/// 
+		/// This function will only succeed when called on a lobby the local user is currently a member of.
+		/// </summary>
+		/// <param name="options">Structure containing information about the RTC room name to retrieve</param>
+		/// <param name="outBuffer">The buffer to store the null-terminated room name string within</param>
+		/// <param name="inOutBufferLength">In: The maximum amount of writable chars in OutBuffer, Out: The minimum amount of chars needed in OutBuffer to store the RTC room name (including the null-terminator)</param>
+		/// <returns>
+		/// <see cref="Result.Success" /> if a room exists for the specified lobby, there was enough space in OutBuffer, and the name was written successfully
+		/// <see cref="Result.NotFound" /> if the lobby does not exist
+		/// <see cref="Result.Disabled" /> if the lobby exists, but did not have the RTC Room feature enabled when created
+		/// <see cref="Result.InvalidParameters" /> if you pass a null pointer on invalid length for any of the parameters
+		/// <see cref="Result.LimitExceeded" /> The OutBuffer is not large enough to receive the room name. InOutBufferLength contains the required minimum length to perform the operation successfully.
+		/// </returns>
+		public Result GetRTCRoomName(GetRTCRoomNameOptions options, out string outBuffer)
+		{
+			var optionsAddress = System.IntPtr.Zero;
+			Helper.TryMarshalSet<GetRTCRoomNameOptionsInternal, GetRTCRoomNameOptions>(ref optionsAddress, options);
+
+			System.IntPtr outBufferAddress = System.IntPtr.Zero;
+			uint inOutBufferLength = 256;
+			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength, out _);
+
+			var funcResult = Bindings.EOS_Lobby_GetRTCRoomName(InnerHandle, optionsAddress, outBufferAddress, ref inOutBufferLength);
+
+			Helper.TryMarshalDispose(ref optionsAddress);
+
+			Helper.TryMarshalGet(outBufferAddress, out outBuffer);
+			Helper.TryMarshalDispose(ref outBufferAddress);
+
+			return funcResult;
+		}
+
+		/// <summary>
+		/// Get the current connection status of the RTC Room for a lobby.
+		/// 
+		/// The RTC Room connection status is independent of the lobby connection status, however the lobby system will attempt to keep
+		/// them consistent, automatically connecting to the RTC room after joining a lobby which has an associated RTC room and disconnecting
+		/// from the RTC room when a lobby is left or disconnected.
+		/// 
+		/// This function will only succeed when called on a lobby the local user is currently a member of.
+		/// <seealso cref="AddNotifyRTCRoomConnectionChanged" />
+		/// </summary>
+		/// <param name="options">Structure containing information about the lobby to query the RTC Room connection status for</param>
+		/// <param name="bOutIsConnected">If the result is <see cref="Result.Success" />, this will be set to true if we are connected, or false if we are not yet connected.</param>
+		/// <returns>
+		/// <see cref="Result.Success" /> if we are connected to the specified lobby, the input options and parameters were valid and we were able to write to bOutIsConnected successfully.
+		/// <see cref="Result.NotFound" /> if the lobby doesn't exist
+		/// <see cref="Result.Disabled" /> if the lobby exists, but did not have the RTC Room feature enabled when created
+		/// <see cref="Result.InvalidParameters" /> if bOutIsConnected is NULL, or any other parameters are NULL or invalid
+		/// </returns>
+		public Result IsRTCRoomConnected(IsRTCRoomConnectedOptions options, out bool bOutIsConnected)
+		{
+			var optionsAddress = System.IntPtr.Zero;
+			Helper.TryMarshalSet<IsRTCRoomConnectedOptionsInternal, IsRTCRoomConnectedOptions>(ref optionsAddress, options);
+
+			int bOutIsConnectedInt = 0;
+
+			var funcResult = Bindings.EOS_Lobby_IsRTCRoomConnected(InnerHandle, optionsAddress, ref bOutIsConnectedInt);
+
+			Helper.TryMarshalDispose(ref optionsAddress);
+
+			Helper.TryMarshalGet(bOutIsConnectedInt, out bOutIsConnected);
+
+			return funcResult;
+		}
+
+		/// <summary>
 		/// Join a lobby, creating a local instance under a given lobby ID. Backend will validate various conditions to make sure it is possible to join the lobby.
+		/// 
+		/// If the lobby is successfully join has an RTC Room enabled, the lobby system will automatically join and maintain the connection to the RTC room as long as the
+		/// local user remains in the lobby. Applications can use the <see cref="GetRTCRoomName" /> to get the name of the RTC Room associated with a lobby, which may be used with
+		/// suite of functions. This can be useful to: register for notifications for talking status; to mute or unmute the local user's audio output;
+		/// to block or unblock room participants; to set local audio device settings; and more.
 		/// </summary>
 		/// <param name="options">Structure containing information about the lobby to be joined</param>
 		/// <param name="clientData">Arbitrary data that is passed back to you in the CompletionDelegate</param>
@@ -567,7 +722,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public void JoinLobby(JoinLobbyOptions options, object clientData, OnJoinLobbyCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<JoinLobbyOptionsInternal, JoinLobbyOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -575,7 +730,7 @@ namespace Epic.OnlineServices.Lobby
 			var completionDelegateInternal = new OnJoinLobbyCallbackInternal(OnJoinLobbyCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Lobby_JoinLobby(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Lobby_JoinLobby(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -594,7 +749,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public void KickMember(KickMemberOptions options, object clientData, OnKickMemberCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<KickMemberOptionsInternal, KickMemberOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -602,13 +757,15 @@ namespace Epic.OnlineServices.Lobby
 			var completionDelegateInternal = new OnKickMemberCallbackInternal(OnKickMemberCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Lobby_KickMember(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Lobby_KickMember(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
 
 		/// <summary>
 		/// Leave a lobby given a lobby ID
+		/// 
+		/// If the lobby you are leaving had an RTC Room enabled, leaving the lobby will also automatically leave the RTC room.
 		/// </summary>
 		/// <param name="options">Structure containing information about the lobby to be left</param>
 		/// <param name="clientData">Arbitrary data that is passed back to you in the CompletionDelegate</param>
@@ -621,7 +778,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public void LeaveLobby(LeaveLobbyOptions options, object clientData, OnLeaveLobbyCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LeaveLobbyOptionsInternal, LeaveLobbyOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -629,7 +786,7 @@ namespace Epic.OnlineServices.Lobby
 			var completionDelegateInternal = new OnLeaveLobbyCallbackInternal(OnLeaveLobbyCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Lobby_LeaveLobby(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Lobby_LeaveLobby(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -648,7 +805,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public void PromoteMember(PromoteMemberOptions options, object clientData, OnPromoteMemberCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<PromoteMemberOptionsInternal, PromoteMemberOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -656,7 +813,7 @@ namespace Epic.OnlineServices.Lobby
 			var completionDelegateInternal = new OnPromoteMemberCallbackInternal(OnPromoteMemberCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Lobby_PromoteMember(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Lobby_PromoteMember(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -669,7 +826,7 @@ namespace Epic.OnlineServices.Lobby
 		/// <param name="completionDelegate">A callback that is fired when the query invites operation completes, either successfully or in error</param>
 		public void QueryInvites(QueryInvitesOptions options, object clientData, OnQueryInvitesCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryInvitesOptionsInternal, QueryInvitesOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -677,7 +834,7 @@ namespace Epic.OnlineServices.Lobby
 			var completionDelegateInternal = new OnQueryInvitesCallbackInternal(OnQueryInvitesCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Lobby_QueryInvites(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Lobby_QueryInvites(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -695,7 +852,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public void RejectInvite(RejectInviteOptions options, object clientData, OnRejectInviteCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<RejectInviteOptionsInternal, RejectInviteOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -703,7 +860,7 @@ namespace Epic.OnlineServices.Lobby
 			var completionDelegateInternal = new OnRejectInviteCallbackInternal(OnRejectInviteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Lobby_RejectInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Lobby_RejectInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -716,7 +873,7 @@ namespace Epic.OnlineServices.Lobby
 		{
 			Helper.TryRemoveCallbackByNotificationId(inId);
 
-			EOS_Lobby_RemoveNotifyJoinLobbyAccepted(InnerHandle, inId);
+			Bindings.EOS_Lobby_RemoveNotifyJoinLobbyAccepted(InnerHandle, inId);
 		}
 
 		/// <summary>
@@ -727,7 +884,7 @@ namespace Epic.OnlineServices.Lobby
 		{
 			Helper.TryRemoveCallbackByNotificationId(inId);
 
-			EOS_Lobby_RemoveNotifyLobbyInviteAccepted(InnerHandle, inId);
+			Bindings.EOS_Lobby_RemoveNotifyLobbyInviteAccepted(InnerHandle, inId);
 		}
 
 		/// <summary>
@@ -738,7 +895,7 @@ namespace Epic.OnlineServices.Lobby
 		{
 			Helper.TryRemoveCallbackByNotificationId(inId);
 
-			EOS_Lobby_RemoveNotifyLobbyInviteReceived(InnerHandle, inId);
+			Bindings.EOS_Lobby_RemoveNotifyLobbyInviteReceived(InnerHandle, inId);
 		}
 
 		/// <summary>
@@ -749,7 +906,7 @@ namespace Epic.OnlineServices.Lobby
 		{
 			Helper.TryRemoveCallbackByNotificationId(inId);
 
-			EOS_Lobby_RemoveNotifyLobbyMemberStatusReceived(InnerHandle, inId);
+			Bindings.EOS_Lobby_RemoveNotifyLobbyMemberStatusReceived(InnerHandle, inId);
 		}
 
 		/// <summary>
@@ -760,7 +917,7 @@ namespace Epic.OnlineServices.Lobby
 		{
 			Helper.TryRemoveCallbackByNotificationId(inId);
 
-			EOS_Lobby_RemoveNotifyLobbyMemberUpdateReceived(InnerHandle, inId);
+			Bindings.EOS_Lobby_RemoveNotifyLobbyMemberUpdateReceived(InnerHandle, inId);
 		}
 
 		/// <summary>
@@ -771,7 +928,21 @@ namespace Epic.OnlineServices.Lobby
 		{
 			Helper.TryRemoveCallbackByNotificationId(inId);
 
-			EOS_Lobby_RemoveNotifyLobbyUpdateReceived(InnerHandle, inId);
+			Bindings.EOS_Lobby_RemoveNotifyLobbyUpdateReceived(InnerHandle, inId);
+		}
+
+		/// <summary>
+		/// Unregister from receiving notifications when an RTC Room's connection status changes.
+		/// 
+		/// This should be called when the local user is leaving a lobby.
+		/// <seealso cref="AddNotifyRTCRoomConnectionChanged" />
+		/// </summary>
+		/// <param name="inId">Handle representing the registered callback</param>
+		public void RemoveNotifyRTCRoomConnectionChanged(ulong inId)
+		{
+			Helper.TryRemoveCallbackByNotificationId(inId);
+
+			Bindings.EOS_Lobby_RemoveNotifyRTCRoomConnectionChanged(InnerHandle, inId);
 		}
 
 		/// <summary>
@@ -787,7 +958,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public void SendInvite(SendInviteOptions options, object clientData, OnSendInviteCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SendInviteOptionsInternal, SendInviteOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -795,7 +966,7 @@ namespace Epic.OnlineServices.Lobby
 			var completionDelegateInternal = new OnSendInviteCallbackInternal(OnSendInviteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Lobby_SendInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Lobby_SendInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -814,7 +985,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public void UpdateLobby(UpdateLobbyOptions options, object clientData, OnUpdateLobbyCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<UpdateLobbyOptionsInternal, UpdateLobbyOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -822,7 +993,7 @@ namespace Epic.OnlineServices.Lobby
 			var completionDelegateInternal = new OnUpdateLobbyCallbackInternal(OnUpdateLobbyCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Lobby_UpdateLobby(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Lobby_UpdateLobby(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -842,12 +1013,12 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result UpdateLobbyModification(UpdateLobbyModificationOptions options, out LobbyModification outLobbyModificationHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<UpdateLobbyModificationOptionsInternal, UpdateLobbyModificationOptions>(ref optionsAddress, options);
 
 			var outLobbyModificationHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Lobby_UpdateLobbyModification(InnerHandle, optionsAddress, ref outLobbyModificationHandleAddress);
+			var funcResult = Bindings.EOS_Lobby_UpdateLobbyModification(InnerHandle, optionsAddress, ref outLobbyModificationHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -999,6 +1170,17 @@ namespace Epic.OnlineServices.Lobby
 			}
 		}
 
+		[MonoPInvokeCallback(typeof(OnRTCRoomConnectionChangedCallbackInternal))]
+		internal static void OnRTCRoomConnectionChangedCallbackInternalImplementation(System.IntPtr data)
+		{
+			OnRTCRoomConnectionChangedCallback callback;
+			RTCRoomConnectionChangedCallbackInfo callbackInfo;
+			if (Helper.TryGetAndRemoveCallback<OnRTCRoomConnectionChangedCallback, RTCRoomConnectionChangedCallbackInfoInternal, RTCRoomConnectionChangedCallbackInfo>(data, out callback, out callbackInfo))
+			{
+				callback(callbackInfo);
+			}
+		}
+
 		[MonoPInvokeCallback(typeof(OnRejectInviteCallbackInternal))]
 		internal static void OnRejectInviteCallbackInternalImplementation(System.IntPtr data)
 		{
@@ -1031,95 +1213,5 @@ namespace Epic.OnlineServices.Lobby
 				callback(callbackInfo);
 			}
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern ulong EOS_Lobby_AddNotifyJoinLobbyAccepted(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnJoinLobbyAcceptedCallbackInternal notificationFn);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern ulong EOS_Lobby_AddNotifyLobbyInviteAccepted(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnLobbyInviteAcceptedCallbackInternal notificationFn);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern ulong EOS_Lobby_AddNotifyLobbyInviteReceived(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnLobbyInviteReceivedCallbackInternal notificationFn);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern ulong EOS_Lobby_AddNotifyLobbyMemberStatusReceived(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnLobbyMemberStatusReceivedCallbackInternal notificationFn);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern ulong EOS_Lobby_AddNotifyLobbyMemberUpdateReceived(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnLobbyMemberUpdateReceivedCallbackInternal notificationFn);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern ulong EOS_Lobby_AddNotifyLobbyUpdateReceived(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnLobbyUpdateReceivedCallbackInternal notificationFn);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Lobby_CopyLobbyDetailsHandle(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outLobbyDetailsHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Lobby_CopyLobbyDetailsHandleByInviteId(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outLobbyDetailsHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Lobby_CopyLobbyDetailsHandleByUiEventId(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outLobbyDetailsHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_CreateLobby(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnCreateLobbyCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Lobby_CreateLobbySearch(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outLobbySearchHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_DestroyLobby(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnDestroyLobbyCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Lobby_GetInviteCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Lobby_GetInviteIdByIndex(System.IntPtr handle, System.IntPtr options, System.IntPtr outBuffer, ref int inOutBufferLength);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_JoinLobby(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnJoinLobbyCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_KickMember(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnKickMemberCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_LeaveLobby(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnLeaveLobbyCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_PromoteMember(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnPromoteMemberCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_QueryInvites(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnQueryInvitesCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_RejectInvite(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnRejectInviteCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_Attribute_Release(System.IntPtr lobbyAttribute);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_RemoveNotifyJoinLobbyAccepted(System.IntPtr handle, ulong inId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_RemoveNotifyLobbyInviteAccepted(System.IntPtr handle, ulong inId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_RemoveNotifyLobbyInviteReceived(System.IntPtr handle, ulong inId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_RemoveNotifyLobbyMemberStatusReceived(System.IntPtr handle, ulong inId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_RemoveNotifyLobbyMemberUpdateReceived(System.IntPtr handle, ulong inId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_RemoveNotifyLobbyUpdateReceived(System.IntPtr handle, ulong inId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_SendInvite(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnSendInviteCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Lobby_UpdateLobby(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnUpdateLobbyCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Lobby_UpdateLobbyModification(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outLobbyModificationHandle);
 	}
 }

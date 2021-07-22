@@ -74,6 +74,8 @@ namespace Epic.OnlineServices.UserInfo
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
+			Helper.TryMarshalDispose(ref m_TargetUserId);
 			Helper.TryMarshalDispose(ref m_AccountId);
 		}
 	}

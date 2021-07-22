@@ -14,7 +14,7 @@ namespace Epic.OnlineServices.Connect
 		public Result ResultCode { get; private set; }
 
 		/// <summary>
-		/// Context that was passed into <see cref="ConnectInterface.TransferDeviceIdAccount" />
+		/// Context that was passed into <see cref="ConnectInterface.TransferDeviceIdAccount" />.
 		/// </summary>
 		public object ClientData { get; private set; }
 

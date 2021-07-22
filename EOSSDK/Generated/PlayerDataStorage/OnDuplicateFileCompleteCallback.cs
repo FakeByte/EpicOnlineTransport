@@ -8,5 +8,6 @@ namespace Epic.OnlineServices.PlayerDataStorage
 	/// </summary>
 	public delegate void OnDuplicateFileCompleteCallback(DuplicateFileCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnDuplicateFileCompleteCallbackInternal(System.IntPtr data);
 }

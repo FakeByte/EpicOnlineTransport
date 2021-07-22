@@ -154,6 +154,7 @@ namespace Epic.OnlineServices.Connect
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_ProductUserId);
 			Helper.TryMarshalDispose(ref m_DisplayName);
 			Helper.TryMarshalDispose(ref m_AccountId);
 		}

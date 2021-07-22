@@ -8,5 +8,6 @@ namespace Epic.OnlineServices.P2P
 	/// </summary>
 	public delegate void OnIncomingConnectionRequestCallback(OnIncomingConnectionRequestInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnIncomingConnectionRequestCallbackInternal(System.IntPtr data);
 }

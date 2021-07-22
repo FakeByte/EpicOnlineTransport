@@ -41,8 +41,8 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		private System.IntPtr m_LocalUserId;
 		private System.IntPtr m_Filename;
 		private uint m_ChunkLengthBytes;
-		private OnWriteFileDataCallbackInternal m_WriteFileDataCallback;
-		private OnFileTransferProgressCallbackInternal m_FileTransferProgressCallback;
+		private System.IntPtr m_WriteFileDataCallback;
+		private System.IntPtr m_FileTransferProgressCallback;
 
 		public ProductUserId LocalUserId
 		{
@@ -104,8 +104,8 @@ namespace Epic.OnlineServices.PlayerDataStorage
 				LocalUserId = other.LocalUserId;
 				Filename = other.Filename;
 				ChunkLengthBytes = other.ChunkLengthBytes;
-				m_WriteFileDataCallback = other.WriteFileDataCallback != null ? WriteFileDataCallback : null;
-				m_FileTransferProgressCallback = other.FileTransferProgressCallback != null ? FileTransferProgressCallback : null;
+				m_WriteFileDataCallback = other.WriteFileDataCallback != null ? System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(WriteFileDataCallback) : System.IntPtr.Zero;
+				m_FileTransferProgressCallback = other.FileTransferProgressCallback != null ? System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(FileTransferProgressCallback) : System.IntPtr.Zero;
 			}
 		}
 
@@ -116,7 +116,10 @@ namespace Epic.OnlineServices.PlayerDataStorage
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 			Helper.TryMarshalDispose(ref m_Filename);
+			Helper.TryMarshalDispose(ref m_WriteFileDataCallback);
+			Helper.TryMarshalDispose(ref m_FileTransferProgressCallback);
 		}
 	}
 }

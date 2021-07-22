@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.UI
 	/// <param name="data">A <see cref="ShowFriendsCallbackInfo" /> containing the output information and result</param>
 	public delegate void OnShowFriendsCallback(ShowFriendsCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnShowFriendsCallbackInternal(System.IntPtr data);
 }

@@ -7,7 +7,7 @@ namespace Epic.OnlineServices.Auth
 	/// Flags that describe user permissions
 	/// </summary>
 	[System.Flags]
-	public enum AuthScopeFlags : ulong
+	public enum AuthScopeFlags : int
 	{
 		NoFlags = 0x0,
 		/// <summary>
@@ -25,6 +25,10 @@ namespace Epic.OnlineServices.Auth
 		/// <summary>
 		/// Permissions to manage the Epic friends list. This scope is restricted to Epic first party products, and attempting to use it will result in authentication failures.
 		/// </summary>
-		FriendsManagement = 0x8
+		FriendsManagement = 0x8,
+		/// <summary>
+		/// Permissions to see email in the response when fetching information for a user. This scope is restricted to Epic first party products, and attempting to use it will result in authentication failures.
+		/// </summary>
+		Email = 0x10
 	}
 }

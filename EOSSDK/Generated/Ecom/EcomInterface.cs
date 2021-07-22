@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Ecom
 {
-	public sealed class EcomInterface : Handle
+	public sealed partial class EcomInterface : Handle
 	{
 		public EcomInterface()
 		{
@@ -26,7 +26,7 @@ namespace Epic.OnlineServices.Ecom
 		/// <summary>
 		/// The most recent version of the <see cref="CatalogOffer" /> struct.
 		/// </summary>
-		public const int CatalogofferApiLatest = 2;
+		public const int CatalogofferApiLatest = 3;
 
 		/// <summary>
 		/// Timestamp value representing an undefined ExpirationTimestamp for <see cref="CatalogOffer" />
@@ -86,12 +86,12 @@ namespace Epic.OnlineServices.Ecom
 		/// <summary>
 		/// The most recent version of the <see cref="CopyOfferById" /> API.
 		/// </summary>
-		public const int CopyofferbyidApiLatest = 1;
+		public const int CopyofferbyidApiLatest = 2;
 
 		/// <summary>
 		/// The most recent version of the <see cref="CopyOfferByIndex" /> API.
 		/// </summary>
-		public const int CopyofferbyindexApiLatest = 1;
+		public const int CopyofferbyindexApiLatest = 2;
 
 		/// <summary>
 		/// The most recent version of the <see cref="CopyOfferImageInfoByIndex" /> API.
@@ -235,7 +235,7 @@ namespace Epic.OnlineServices.Ecom
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
 		public void Checkout(CheckoutOptions options, object clientData, OnCheckoutCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CheckoutOptionsInternal, CheckoutOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -243,7 +243,7 @@ namespace Epic.OnlineServices.Ecom
 			var completionDelegateInternal = new OnCheckoutCallbackInternal(OnCheckoutCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Ecom_Checkout(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Ecom_Checkout(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -263,18 +263,18 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public Result CopyEntitlementById(CopyEntitlementByIdOptions options, out Entitlement outEntitlement)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyEntitlementByIdOptionsInternal, CopyEntitlementByIdOptions>(ref optionsAddress, options);
 
 			var outEntitlementAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Ecom_CopyEntitlementById(InnerHandle, optionsAddress, ref outEntitlementAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyEntitlementById(InnerHandle, optionsAddress, ref outEntitlementAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<EntitlementInternal, Entitlement>(outEntitlementAddress, out outEntitlement))
 			{
-				EOS_Ecom_Entitlement_Release(outEntitlementAddress);
+				Bindings.EOS_Ecom_Entitlement_Release(outEntitlementAddress);
 			}
 
 			return funcResult;
@@ -294,18 +294,18 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public Result CopyEntitlementByIndex(CopyEntitlementByIndexOptions options, out Entitlement outEntitlement)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyEntitlementByIndexOptionsInternal, CopyEntitlementByIndexOptions>(ref optionsAddress, options);
 
 			var outEntitlementAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Ecom_CopyEntitlementByIndex(InnerHandle, optionsAddress, ref outEntitlementAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyEntitlementByIndex(InnerHandle, optionsAddress, ref outEntitlementAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<EntitlementInternal, Entitlement>(outEntitlementAddress, out outEntitlement))
 			{
-				EOS_Ecom_Entitlement_Release(outEntitlementAddress);
+				Bindings.EOS_Ecom_Entitlement_Release(outEntitlementAddress);
 			}
 
 			return funcResult;
@@ -327,18 +327,18 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public Result CopyEntitlementByNameAndIndex(CopyEntitlementByNameAndIndexOptions options, out Entitlement outEntitlement)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyEntitlementByNameAndIndexOptionsInternal, CopyEntitlementByNameAndIndexOptions>(ref optionsAddress, options);
 
 			var outEntitlementAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Ecom_CopyEntitlementByNameAndIndex(InnerHandle, optionsAddress, ref outEntitlementAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyEntitlementByNameAndIndex(InnerHandle, optionsAddress, ref outEntitlementAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<EntitlementInternal, Entitlement>(outEntitlementAddress, out outEntitlement))
 			{
-				EOS_Ecom_Entitlement_Release(outEntitlementAddress);
+				Bindings.EOS_Ecom_Entitlement_Release(outEntitlementAddress);
 			}
 
 			return funcResult;
@@ -360,18 +360,18 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public Result CopyItemById(CopyItemByIdOptions options, out CatalogItem outItem)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyItemByIdOptionsInternal, CopyItemByIdOptions>(ref optionsAddress, options);
 
 			var outItemAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Ecom_CopyItemById(InnerHandle, optionsAddress, ref outItemAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyItemById(InnerHandle, optionsAddress, ref outItemAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<CatalogItemInternal, CatalogItem>(outItemAddress, out outItem))
 			{
-				EOS_Ecom_CatalogItem_Release(outItemAddress);
+				Bindings.EOS_Ecom_CatalogItem_Release(outItemAddress);
 			}
 
 			return funcResult;
@@ -391,18 +391,18 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public Result CopyItemImageInfoByIndex(CopyItemImageInfoByIndexOptions options, out KeyImageInfo outImageInfo)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyItemImageInfoByIndexOptionsInternal, CopyItemImageInfoByIndexOptions>(ref optionsAddress, options);
 
 			var outImageInfoAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Ecom_CopyItemImageInfoByIndex(InnerHandle, optionsAddress, ref outImageInfoAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyItemImageInfoByIndex(InnerHandle, optionsAddress, ref outImageInfoAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<KeyImageInfoInternal, KeyImageInfo>(outImageInfoAddress, out outImageInfo))
 			{
-				EOS_Ecom_KeyImageInfo_Release(outImageInfoAddress);
+				Bindings.EOS_Ecom_KeyImageInfo_Release(outImageInfoAddress);
 			}
 
 			return funcResult;
@@ -422,18 +422,18 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public Result CopyItemReleaseByIndex(CopyItemReleaseByIndexOptions options, out CatalogRelease outRelease)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyItemReleaseByIndexOptionsInternal, CopyItemReleaseByIndexOptions>(ref optionsAddress, options);
 
 			var outReleaseAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Ecom_CopyItemReleaseByIndex(InnerHandle, optionsAddress, ref outReleaseAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyItemReleaseByIndex(InnerHandle, optionsAddress, ref outReleaseAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<CatalogReleaseInternal, CatalogRelease>(outReleaseAddress, out outRelease))
 			{
-				EOS_Ecom_CatalogRelease_Release(outReleaseAddress);
+				Bindings.EOS_Ecom_CatalogRelease_Release(outReleaseAddress);
 			}
 
 			return funcResult;
@@ -455,18 +455,18 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public Result CopyOfferById(CopyOfferByIdOptions options, out CatalogOffer outOffer)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyOfferByIdOptionsInternal, CopyOfferByIdOptions>(ref optionsAddress, options);
 
 			var outOfferAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Ecom_CopyOfferById(InnerHandle, optionsAddress, ref outOfferAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyOfferById(InnerHandle, optionsAddress, ref outOfferAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<CatalogOfferInternal, CatalogOffer>(outOfferAddress, out outOffer))
 			{
-				EOS_Ecom_CatalogOffer_Release(outOfferAddress);
+				Bindings.EOS_Ecom_CatalogOffer_Release(outOfferAddress);
 			}
 
 			return funcResult;
@@ -488,18 +488,18 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public Result CopyOfferByIndex(CopyOfferByIndexOptions options, out CatalogOffer outOffer)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyOfferByIndexOptionsInternal, CopyOfferByIndexOptions>(ref optionsAddress, options);
 
 			var outOfferAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Ecom_CopyOfferByIndex(InnerHandle, optionsAddress, ref outOfferAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyOfferByIndex(InnerHandle, optionsAddress, ref outOfferAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<CatalogOfferInternal, CatalogOffer>(outOfferAddress, out outOffer))
 			{
-				EOS_Ecom_CatalogOffer_Release(outOfferAddress);
+				Bindings.EOS_Ecom_CatalogOffer_Release(outOfferAddress);
 			}
 
 			return funcResult;
@@ -519,18 +519,18 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public Result CopyOfferImageInfoByIndex(CopyOfferImageInfoByIndexOptions options, out KeyImageInfo outImageInfo)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyOfferImageInfoByIndexOptionsInternal, CopyOfferImageInfoByIndexOptions>(ref optionsAddress, options);
 
 			var outImageInfoAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Ecom_CopyOfferImageInfoByIndex(InnerHandle, optionsAddress, ref outImageInfoAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyOfferImageInfoByIndex(InnerHandle, optionsAddress, ref outImageInfoAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<KeyImageInfoInternal, KeyImageInfo>(outImageInfoAddress, out outImageInfo))
 			{
-				EOS_Ecom_KeyImageInfo_Release(outImageInfoAddress);
+				Bindings.EOS_Ecom_KeyImageInfo_Release(outImageInfoAddress);
 			}
 
 			return funcResult;
@@ -552,18 +552,18 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public Result CopyOfferItemByIndex(CopyOfferItemByIndexOptions options, out CatalogItem outItem)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyOfferItemByIndexOptionsInternal, CopyOfferItemByIndexOptions>(ref optionsAddress, options);
 
 			var outItemAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Ecom_CopyOfferItemByIndex(InnerHandle, optionsAddress, ref outItemAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyOfferItemByIndex(InnerHandle, optionsAddress, ref outItemAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<CatalogItemInternal, CatalogItem>(outItemAddress, out outItem))
 			{
-				EOS_Ecom_CatalogItem_Release(outItemAddress);
+				Bindings.EOS_Ecom_CatalogItem_Release(outItemAddress);
 			}
 
 			return funcResult;
@@ -582,12 +582,12 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public Result CopyTransactionById(CopyTransactionByIdOptions options, out Transaction outTransaction)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyTransactionByIdOptionsInternal, CopyTransactionByIdOptions>(ref optionsAddress, options);
 
 			var outTransactionAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Ecom_CopyTransactionById(InnerHandle, optionsAddress, ref outTransactionAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyTransactionById(InnerHandle, optionsAddress, ref outTransactionAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -609,12 +609,12 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public Result CopyTransactionByIndex(CopyTransactionByIndexOptions options, out Transaction outTransaction)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyTransactionByIndexOptionsInternal, CopyTransactionByIndexOptions>(ref optionsAddress, options);
 
 			var outTransactionAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Ecom_CopyTransactionByIndex(InnerHandle, optionsAddress, ref outTransactionAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyTransactionByIndex(InnerHandle, optionsAddress, ref outTransactionAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -633,10 +633,10 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public uint GetEntitlementsByNameCount(GetEntitlementsByNameCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetEntitlementsByNameCountOptionsInternal, GetEntitlementsByNameCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Ecom_GetEntitlementsByNameCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetEntitlementsByNameCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -653,10 +653,10 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public uint GetEntitlementsCount(GetEntitlementsCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetEntitlementsCountOptionsInternal, GetEntitlementsCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Ecom_GetEntitlementsCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetEntitlementsCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -671,10 +671,10 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public uint GetItemImageInfoCount(GetItemImageInfoCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetItemImageInfoCountOptionsInternal, GetItemImageInfoCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Ecom_GetItemImageInfoCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetItemImageInfoCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -689,10 +689,10 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public uint GetItemReleaseCount(GetItemReleaseCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetItemReleaseCountOptionsInternal, GetItemReleaseCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Ecom_GetItemReleaseCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetItemReleaseCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -709,10 +709,10 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public uint GetOfferCount(GetOfferCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetOfferCountOptionsInternal, GetOfferCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Ecom_GetOfferCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetOfferCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -727,10 +727,10 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public uint GetOfferImageInfoCount(GetOfferImageInfoCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetOfferImageInfoCountOptionsInternal, GetOfferImageInfoCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Ecom_GetOfferImageInfoCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetOfferImageInfoCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -745,10 +745,10 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public uint GetOfferItemCount(GetOfferItemCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetOfferItemCountOptionsInternal, GetOfferItemCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Ecom_GetOfferItemCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetOfferItemCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -765,10 +765,10 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public uint GetTransactionCount(GetTransactionCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetTransactionCountOptionsInternal, GetTransactionCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Ecom_GetTransactionCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetTransactionCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -787,7 +787,7 @@ namespace Epic.OnlineServices.Ecom
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
 		public void QueryEntitlements(QueryEntitlementsOptions options, object clientData, OnQueryEntitlementsCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryEntitlementsOptionsInternal, QueryEntitlementsOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -795,7 +795,7 @@ namespace Epic.OnlineServices.Ecom
 			var completionDelegateInternal = new OnQueryEntitlementsCallbackInternal(OnQueryEntitlementsCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Ecom_QueryEntitlements(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Ecom_QueryEntitlements(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -809,7 +809,7 @@ namespace Epic.OnlineServices.Ecom
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
 		public void QueryOffers(QueryOffersOptions options, object clientData, OnQueryOffersCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryOffersOptionsInternal, QueryOffersOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -817,7 +817,7 @@ namespace Epic.OnlineServices.Ecom
 			var completionDelegateInternal = new OnQueryOffersCallbackInternal(OnQueryOffersCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Ecom_QueryOffers(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Ecom_QueryOffers(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -831,7 +831,7 @@ namespace Epic.OnlineServices.Ecom
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
 		public void QueryOwnership(QueryOwnershipOptions options, object clientData, OnQueryOwnershipCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryOwnershipOptionsInternal, QueryOwnershipOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -839,7 +839,7 @@ namespace Epic.OnlineServices.Ecom
 			var completionDelegateInternal = new OnQueryOwnershipCallbackInternal(OnQueryOwnershipCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Ecom_QueryOwnership(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Ecom_QueryOwnership(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -853,7 +853,7 @@ namespace Epic.OnlineServices.Ecom
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
 		public void QueryOwnershipToken(QueryOwnershipTokenOptions options, object clientData, OnQueryOwnershipTokenCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryOwnershipTokenOptionsInternal, QueryOwnershipTokenOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -861,7 +861,7 @@ namespace Epic.OnlineServices.Ecom
 			var completionDelegateInternal = new OnQueryOwnershipTokenCallbackInternal(OnQueryOwnershipTokenCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Ecom_QueryOwnershipToken(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Ecom_QueryOwnershipToken(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -875,7 +875,7 @@ namespace Epic.OnlineServices.Ecom
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
 		public void RedeemEntitlements(RedeemEntitlementsOptions options, object clientData, OnRedeemEntitlementsCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<RedeemEntitlementsOptionsInternal, RedeemEntitlementsOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -883,7 +883,7 @@ namespace Epic.OnlineServices.Ecom
 			var completionDelegateInternal = new OnRedeemEntitlementsCallbackInternal(OnRedeemEntitlementsCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Ecom_RedeemEntitlements(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Ecom_RedeemEntitlements(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -953,98 +953,5 @@ namespace Epic.OnlineServices.Ecom
 				callback(callbackInfo);
 			}
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Ecom_Checkout(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnCheckoutCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Ecom_CopyEntitlementById(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outEntitlement);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Ecom_CopyEntitlementByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outEntitlement);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Ecom_CopyEntitlementByNameAndIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outEntitlement);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Ecom_CopyItemById(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outItem);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Ecom_CopyItemImageInfoByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outImageInfo);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Ecom_CopyItemReleaseByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outRelease);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Ecom_CopyOfferById(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outOffer);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Ecom_CopyOfferByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outOffer);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Ecom_CopyOfferImageInfoByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outImageInfo);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Ecom_CopyOfferItemByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outItem);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Ecom_CopyTransactionById(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outTransaction);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Ecom_CopyTransactionByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outTransaction);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Ecom_GetEntitlementsByNameCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Ecom_GetEntitlementsCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Ecom_GetItemImageInfoCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Ecom_GetItemReleaseCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Ecom_GetOfferCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Ecom_GetOfferImageInfoCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Ecom_GetOfferItemCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Ecom_GetTransactionCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Ecom_QueryEntitlements(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnQueryEntitlementsCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Ecom_QueryOffers(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnQueryOffersCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Ecom_QueryOwnership(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnQueryOwnershipCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Ecom_QueryOwnershipToken(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnQueryOwnershipTokenCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Ecom_RedeemEntitlements(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnRedeemEntitlementsCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Ecom_Entitlement_Release(System.IntPtr entitlement);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Ecom_CatalogItem_Release(System.IntPtr catalogItem);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Ecom_CatalogOffer_Release(System.IntPtr catalogOffer);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Ecom_KeyImageInfo_Release(System.IntPtr keyImageInfo);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Ecom_CatalogRelease_Release(System.IntPtr catalogRelease);
 	}
 }

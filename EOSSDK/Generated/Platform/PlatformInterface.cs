@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Platform
 {
-	public sealed class PlatformInterface : Handle
+	public sealed partial class PlatformInterface : Handle
 	{
 		public PlatformInterface()
 		{
@@ -31,7 +31,12 @@ namespace Epic.OnlineServices.Platform
 
 		public const int LocalecodeMaxLength = 9;
 
-		public const int OptionsApiLatest = 9;
+		public const int OptionsApiLatest = 11;
+
+		/// <summary>
+		/// The most recent version of the <see cref="RTCOptions" /> API.
+		/// </summary>
+		public const int RtcoptionsApiLatest = 1;
 
 		/// <summary>
 		/// Checks if the app was launched through the Epic Launcher, and relaunches it through the Epic Launcher if it wasn't.
@@ -44,7 +49,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Result CheckForLauncherAndRestart()
 		{
-			var funcResult = EOS_Platform_CheckForLauncherAndRestart(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_CheckForLauncherAndRestart(InnerHandle);
 
 			return funcResult;
 		}
@@ -61,10 +66,10 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public static PlatformInterface Create(Options options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<OptionsInternal, Options>(ref optionsAddress, options);
 
-			var funcResult = EOS_Platform_Create(optionsAddress);
+			var funcResult = Bindings.EOS_Platform_Create(optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -83,7 +88,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Achievements.AchievementsInterface GetAchievementsInterface()
 		{
-			var funcResult = EOS_Platform_GetAchievementsInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetAchievementsInterface(InnerHandle);
 
 			Achievements.AchievementsInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -117,9 +122,9 @@ namespace Epic.OnlineServices.Platform
 
 			System.IntPtr outBufferAddress = System.IntPtr.Zero;
 			int inOutBufferLength = CountrycodeMaxLength + 1;
-			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength);
+			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength, out _);
 
-			var funcResult = EOS_Platform_GetActiveCountryCode(InnerHandle, localUserIdInnerHandle, outBufferAddress, ref inOutBufferLength);
+			var funcResult = Bindings.EOS_Platform_GetActiveCountryCode(InnerHandle, localUserIdInnerHandle, outBufferAddress, ref inOutBufferLength);
 
 			Helper.TryMarshalGet(outBufferAddress, out outBuffer);
 			Helper.TryMarshalDispose(ref outBufferAddress);
@@ -155,14 +160,48 @@ namespace Epic.OnlineServices.Platform
 
 			System.IntPtr outBufferAddress = System.IntPtr.Zero;
 			int inOutBufferLength = LocalecodeMaxLength + 1;
-			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength);
+			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength, out _);
 
-			var funcResult = EOS_Platform_GetActiveLocaleCode(InnerHandle, localUserIdInnerHandle, outBufferAddress, ref inOutBufferLength);
+			var funcResult = Bindings.EOS_Platform_GetActiveLocaleCode(InnerHandle, localUserIdInnerHandle, outBufferAddress, ref inOutBufferLength);
 
 			Helper.TryMarshalGet(outBufferAddress, out outBuffer);
 			Helper.TryMarshalDispose(ref outBufferAddress);
 
 			return funcResult;
+		}
+
+		/// <summary>
+		/// Get a handle to the Anti-Cheat Client Interface.
+		/// eos_anticheatclient.h
+		/// eos_anticheatclient_types.h
+		/// </summary>
+		/// <returns>
+		/// <see cref="AntiCheatClient.AntiCheatClientInterface" /> handle
+		/// </returns>
+		public AntiCheatClient.AntiCheatClientInterface GetAntiCheatClientInterface()
+		{
+			var funcResult = Bindings.EOS_Platform_GetAntiCheatClientInterface(InnerHandle);
+
+			AntiCheatClient.AntiCheatClientInterface funcResultReturn;
+			Helper.TryMarshalGet(funcResult, out funcResultReturn);
+			return funcResultReturn;
+		}
+
+		/// <summary>
+		/// Get a handle to the Anti-Cheat Server Interface.
+		/// eos_anticheatserver.h
+		/// eos_anticheatserver_types.h
+		/// </summary>
+		/// <returns>
+		/// <see cref="AntiCheatServer.AntiCheatServerInterface" /> handle
+		/// </returns>
+		public AntiCheatServer.AntiCheatServerInterface GetAntiCheatServerInterface()
+		{
+			var funcResult = Bindings.EOS_Platform_GetAntiCheatServerInterface(InnerHandle);
+
+			AntiCheatServer.AntiCheatServerInterface funcResultReturn;
+			Helper.TryMarshalGet(funcResult, out funcResultReturn);
+			return funcResultReturn;
 		}
 
 		/// <summary>
@@ -175,7 +214,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Auth.AuthInterface GetAuthInterface()
 		{
-			var funcResult = EOS_Platform_GetAuthInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetAuthInterface(InnerHandle);
 
 			Auth.AuthInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -192,7 +231,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Connect.ConnectInterface GetConnectInterface()
 		{
-			var funcResult = EOS_Platform_GetConnectInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetConnectInterface(InnerHandle);
 
 			Connect.ConnectInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -209,7 +248,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Ecom.EcomInterface GetEcomInterface()
 		{
-			var funcResult = EOS_Platform_GetEcomInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetEcomInterface(InnerHandle);
 
 			Ecom.EcomInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -226,9 +265,26 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Friends.FriendsInterface GetFriendsInterface()
 		{
-			var funcResult = EOS_Platform_GetFriendsInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetFriendsInterface(InnerHandle);
 
 			Friends.FriendsInterface funcResultReturn;
+			Helper.TryMarshalGet(funcResult, out funcResultReturn);
+			return funcResultReturn;
+		}
+
+		/// <summary>
+		/// Get a handle to the Kids Web Service Interface.
+		/// eos_kws.h
+		/// eos_kws_types.h
+		/// </summary>
+		/// <returns>
+		/// <see cref="KWS.KWSInterface" /> handle
+		/// </returns>
+		public KWS.KWSInterface GetKWSInterface()
+		{
+			var funcResult = Bindings.EOS_Platform_GetKWSInterface(InnerHandle);
+
+			KWS.KWSInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
 			return funcResultReturn;
 		}
@@ -243,7 +299,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Leaderboards.LeaderboardsInterface GetLeaderboardsInterface()
 		{
-			var funcResult = EOS_Platform_GetLeaderboardsInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetLeaderboardsInterface(InnerHandle);
 
 			Leaderboards.LeaderboardsInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -260,7 +316,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Lobby.LobbyInterface GetLobbyInterface()
 		{
-			var funcResult = EOS_Platform_GetLobbyInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetLobbyInterface(InnerHandle);
 
 			Lobby.LobbyInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -277,7 +333,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Metrics.MetricsInterface GetMetricsInterface()
 		{
-			var funcResult = EOS_Platform_GetMetricsInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetMetricsInterface(InnerHandle);
 
 			Metrics.MetricsInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -294,7 +350,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Mods.ModsInterface GetModsInterface()
 		{
-			var funcResult = EOS_Platform_GetModsInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetModsInterface(InnerHandle);
 
 			Mods.ModsInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -323,9 +379,9 @@ namespace Epic.OnlineServices.Platform
 		{
 			System.IntPtr outBufferAddress = System.IntPtr.Zero;
 			int inOutBufferLength = CountrycodeMaxLength + 1;
-			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength);
+			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength, out _);
 
-			var funcResult = EOS_Platform_GetOverrideCountryCode(InnerHandle, outBufferAddress, ref inOutBufferLength);
+			var funcResult = Bindings.EOS_Platform_GetOverrideCountryCode(InnerHandle, outBufferAddress, ref inOutBufferLength);
 
 			Helper.TryMarshalGet(outBufferAddress, out outBuffer);
 			Helper.TryMarshalDispose(ref outBufferAddress);
@@ -355,9 +411,9 @@ namespace Epic.OnlineServices.Platform
 		{
 			System.IntPtr outBufferAddress = System.IntPtr.Zero;
 			int inOutBufferLength = LocalecodeMaxLength + 1;
-			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength);
+			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength, out _);
 
-			var funcResult = EOS_Platform_GetOverrideLocaleCode(InnerHandle, outBufferAddress, ref inOutBufferLength);
+			var funcResult = Bindings.EOS_Platform_GetOverrideLocaleCode(InnerHandle, outBufferAddress, ref inOutBufferLength);
 
 			Helper.TryMarshalGet(outBufferAddress, out outBuffer);
 			Helper.TryMarshalDispose(ref outBufferAddress);
@@ -375,7 +431,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public P2P.P2PInterface GetP2PInterface()
 		{
-			var funcResult = EOS_Platform_GetP2PInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetP2PInterface(InnerHandle);
 
 			P2P.P2PInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -392,7 +448,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public PlayerDataStorage.PlayerDataStorageInterface GetPlayerDataStorageInterface()
 		{
-			var funcResult = EOS_Platform_GetPlayerDataStorageInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetPlayerDataStorageInterface(InnerHandle);
 
 			PlayerDataStorage.PlayerDataStorageInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -409,9 +465,79 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Presence.PresenceInterface GetPresenceInterface()
 		{
-			var funcResult = EOS_Platform_GetPresenceInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetPresenceInterface(InnerHandle);
 
 			Presence.PresenceInterface funcResultReturn;
+			Helper.TryMarshalGet(funcResult, out funcResultReturn);
+			return funcResultReturn;
+		}
+
+		/// <summary>
+		/// Get a handle to the RTC Admin interface
+		/// eos_rtc_admin.h
+		/// eos_admin_types.h
+		/// </summary>
+		/// <returns>
+		/// <see cref="RTCAdmin.RTCAdminInterface" /> handle
+		/// </returns>
+		public RTCAdmin.RTCAdminInterface GetRTCAdminInterface()
+		{
+			var funcResult = Bindings.EOS_Platform_GetRTCAdminInterface(InnerHandle);
+
+			RTCAdmin.RTCAdminInterface funcResultReturn;
+			Helper.TryMarshalGet(funcResult, out funcResultReturn);
+			return funcResultReturn;
+		}
+
+		/// <summary>
+		/// Get a handle to the Real Time Communications Interface (RTC).
+		/// From the RTC interface you can retrieve the handle to the audio interface (RTCAudio), which is a component of RTC.
+		/// <seealso cref="RTC.RTCInterface.GetAudioInterface" />
+		/// eos_rtc.h
+		/// eos_rtc_types.h
+		/// </summary>
+		/// <returns>
+		/// <see cref="RTC.RTCInterface" /> handle
+		/// </returns>
+		public RTC.RTCInterface GetRTCInterface()
+		{
+			var funcResult = Bindings.EOS_Platform_GetRTCInterface(InnerHandle);
+
+			RTC.RTCInterface funcResultReturn;
+			Helper.TryMarshalGet(funcResult, out funcResultReturn);
+			return funcResultReturn;
+		}
+
+		/// <summary>
+		/// Get a handle to the Reports Interface.
+		/// eos_reports.h
+		/// eos_reports_types.h
+		/// </summary>
+		/// <returns>
+		/// <see cref="Reports.ReportsInterface" /> handle
+		/// </returns>
+		public Reports.ReportsInterface GetReportsInterface()
+		{
+			var funcResult = Bindings.EOS_Platform_GetReportsInterface(InnerHandle);
+
+			Reports.ReportsInterface funcResultReturn;
+			Helper.TryMarshalGet(funcResult, out funcResultReturn);
+			return funcResultReturn;
+		}
+
+		/// <summary>
+		/// Get a handle to the Sanctions Interface.
+		/// eos_sanctions.h
+		/// eos_sanctions_types.h
+		/// </summary>
+		/// <returns>
+		/// <see cref="Sanctions.SanctionsInterface" /> handle
+		/// </returns>
+		public Sanctions.SanctionsInterface GetSanctionsInterface()
+		{
+			var funcResult = Bindings.EOS_Platform_GetSanctionsInterface(InnerHandle);
+
+			Sanctions.SanctionsInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
 			return funcResultReturn;
 		}
@@ -426,7 +552,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Sessions.SessionsInterface GetSessionsInterface()
 		{
-			var funcResult = EOS_Platform_GetSessionsInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetSessionsInterface(InnerHandle);
 
 			Sessions.SessionsInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -443,7 +569,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Stats.StatsInterface GetStatsInterface()
 		{
-			var funcResult = EOS_Platform_GetStatsInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetStatsInterface(InnerHandle);
 
 			Stats.StatsInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -460,7 +586,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public TitleStorage.TitleStorageInterface GetTitleStorageInterface()
 		{
-			var funcResult = EOS_Platform_GetTitleStorageInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetTitleStorageInterface(InnerHandle);
 
 			TitleStorage.TitleStorageInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -477,7 +603,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public UI.UIInterface GetUIInterface()
 		{
-			var funcResult = EOS_Platform_GetUIInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetUIInterface(InnerHandle);
 
 			UI.UIInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -494,7 +620,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public UserInfo.UserInfoInterface GetUserInfoInterface()
 		{
-			var funcResult = EOS_Platform_GetUserInfoInterface(InnerHandle);
+			var funcResult = Bindings.EOS_Platform_GetUserInfoInterface(InnerHandle);
 
 			UserInfo.UserInfoInterface funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -517,25 +643,10 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public static Result Initialize(InitializeOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<InitializeOptionsInternal, InitializeOptions>(ref optionsAddress, options);
 
-			if (options.AllocateMemoryFunction != null)
-			{
-				Helper.AddStaticCallback("AllocateMemoryFuncInternalImplementation", options.AllocateMemoryFunction, InitializeOptionsInternal.AllocateMemoryFunction);
-			}
-
-			if (options.ReallocateMemoryFunction != null)
-			{
-				Helper.AddStaticCallback("ReallocateMemoryFuncInternalImplementation", options.ReallocateMemoryFunction, InitializeOptionsInternal.ReallocateMemoryFunction);
-			}
-
-			if (options.ReleaseMemoryFunction != null)
-			{
-				Helper.AddStaticCallback("ReleaseMemoryFuncInternalImplementation", options.ReleaseMemoryFunction, InitializeOptionsInternal.ReleaseMemoryFunction);
-			}
-
-			var funcResult = EOS_Initialize(optionsAddress);
+			var funcResult = Bindings.EOS_Initialize(optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -551,7 +662,7 @@ namespace Epic.OnlineServices.Platform
 		/// </summary>
 		public void Release()
 		{
-			EOS_Platform_Release(InnerHandle);
+			Bindings.EOS_Platform_Release(InnerHandle);
 		}
 
 		/// <summary>
@@ -567,10 +678,10 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Result SetOverrideCountryCode(string newCountryCode)
 		{
-			System.IntPtr newCountryCodeAddress = System.IntPtr.Zero;
+			var newCountryCodeAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet(ref newCountryCodeAddress, newCountryCode);
 
-			var funcResult = EOS_Platform_SetOverrideCountryCode(InnerHandle, newCountryCodeAddress);
+			var funcResult = Bindings.EOS_Platform_SetOverrideCountryCode(InnerHandle, newCountryCodeAddress);
 
 			Helper.TryMarshalDispose(ref newCountryCodeAddress);
 
@@ -590,10 +701,10 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public Result SetOverrideLocaleCode(string newLocaleCode)
 		{
-			System.IntPtr newLocaleCodeAddress = System.IntPtr.Zero;
+			var newLocaleCodeAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet(ref newLocaleCodeAddress, newLocaleCode);
 
-			var funcResult = EOS_Platform_SetOverrideLocaleCode(InnerHandle, newLocaleCodeAddress);
+			var funcResult = Bindings.EOS_Platform_SetOverrideLocaleCode(InnerHandle, newLocaleCodeAddress);
 
 			Helper.TryMarshalDispose(ref newLocaleCodeAddress);
 
@@ -613,7 +724,7 @@ namespace Epic.OnlineServices.Platform
 		/// </returns>
 		public static Result Shutdown()
 		{
-			var funcResult = EOS_Shutdown();
+			var funcResult = Bindings.EOS_Shutdown();
 
 			return funcResult;
 		}
@@ -624,132 +735,7 @@ namespace Epic.OnlineServices.Platform
 		/// </summary>
 		public void Tick()
 		{
-			EOS_Platform_Tick(InnerHandle);
+			Bindings.EOS_Platform_Tick(InnerHandle);
 		}
-
-		[MonoPInvokeCallback(typeof(AllocateMemoryFuncInternal))]
-		internal static System.IntPtr AllocateMemoryFuncInternalImplementation(System.UIntPtr sizeInBytes, System.UIntPtr alignment)
-		{
-			AllocateMemoryFunc callback;
-			if (Helper.TryGetStaticCallback("AllocateMemoryFuncInternalImplementation", out callback))
-			{
-				var funcResult = callback(sizeInBytes, alignment);
-
-				return funcResult;
-			}
-
-			return Helper.GetDefault<System.IntPtr>();
-		}
-
-		[MonoPInvokeCallback(typeof(ReallocateMemoryFuncInternal))]
-		internal static System.IntPtr ReallocateMemoryFuncInternalImplementation(System.IntPtr pointer, System.UIntPtr sizeInBytes, System.UIntPtr alignment)
-		{
-			ReallocateMemoryFunc callback;
-			if (Helper.TryGetStaticCallback("ReallocateMemoryFuncInternalImplementation", out callback))
-			{
-				var funcResult = callback(pointer, sizeInBytes, alignment);
-
-				return funcResult;
-			}
-
-			return Helper.GetDefault<System.IntPtr>();
-		}
-
-		[MonoPInvokeCallback(typeof(ReleaseMemoryFuncInternal))]
-		internal static void ReleaseMemoryFuncInternalImplementation(System.IntPtr pointer)
-		{
-			ReleaseMemoryFunc callback;
-			if (Helper.TryGetStaticCallback("ReleaseMemoryFuncInternalImplementation", out callback))
-			{
-				callback(pointer);
-			}
-		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Platform_CheckForLauncherAndRestart(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_Create(System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetAchievementsInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Platform_GetActiveCountryCode(System.IntPtr handle, System.IntPtr localUserId, System.IntPtr outBuffer, ref int inOutBufferLength);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Platform_GetActiveLocaleCode(System.IntPtr handle, System.IntPtr localUserId, System.IntPtr outBuffer, ref int inOutBufferLength);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetAuthInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetConnectInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetEcomInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetFriendsInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetLeaderboardsInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetLobbyInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetMetricsInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetModsInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Platform_GetOverrideCountryCode(System.IntPtr handle, System.IntPtr outBuffer, ref int inOutBufferLength);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Platform_GetOverrideLocaleCode(System.IntPtr handle, System.IntPtr outBuffer, ref int inOutBufferLength);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetP2PInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetPlayerDataStorageInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetPresenceInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetSessionsInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetStatsInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetTitleStorageInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetUIInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Platform_GetUserInfoInterface(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Initialize(System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Platform_Release(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Platform_SetOverrideCountryCode(System.IntPtr handle, System.IntPtr newCountryCode);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Platform_SetOverrideLocaleCode(System.IntPtr handle, System.IntPtr newLocaleCode);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Shutdown();
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Platform_Tick(System.IntPtr handle);
 	}
 }

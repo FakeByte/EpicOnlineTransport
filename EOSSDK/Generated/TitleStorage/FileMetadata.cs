@@ -23,6 +23,11 @@ namespace Epic.OnlineServices.TitleStorage
 		/// </summary>
 		public string Filename { get; set; }
 
+		/// <summary>
+		/// The size of data (payload) in file in unencrypted (original) form.
+		/// </summary>
+		public uint UnencryptedDataSizeBytes { get; set; }
+
 		internal void Set(FileMetadataInternal? other)
 		{
 			if (other != null)
@@ -30,6 +35,7 @@ namespace Epic.OnlineServices.TitleStorage
 				FileSizeBytes = other.Value.FileSizeBytes;
 				MD5Hash = other.Value.MD5Hash;
 				Filename = other.Value.Filename;
+				UnencryptedDataSizeBytes = other.Value.UnencryptedDataSizeBytes;
 			}
 		}
 
@@ -46,6 +52,7 @@ namespace Epic.OnlineServices.TitleStorage
 		private uint m_FileSizeBytes;
 		private System.IntPtr m_MD5Hash;
 		private System.IntPtr m_Filename;
+		private uint m_UnencryptedDataSizeBytes;
 
 		public uint FileSizeBytes
 		{
@@ -90,6 +97,19 @@ namespace Epic.OnlineServices.TitleStorage
 			}
 		}
 
+		public uint UnencryptedDataSizeBytes
+		{
+			get
+			{
+				return m_UnencryptedDataSizeBytes;
+			}
+
+			set
+			{
+				m_UnencryptedDataSizeBytes = value;
+			}
+		}
+
 		public void Set(FileMetadata other)
 		{
 			if (other != null)
@@ -98,6 +118,7 @@ namespace Epic.OnlineServices.TitleStorage
 				FileSizeBytes = other.FileSizeBytes;
 				MD5Hash = other.MD5Hash;
 				Filename = other.Filename;
+				UnencryptedDataSizeBytes = other.UnencryptedDataSizeBytes;
 			}
 		}
 

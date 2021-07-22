@@ -44,6 +44,7 @@ namespace Epic.OnlineServices.Sessions
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 		}
 	}
 }

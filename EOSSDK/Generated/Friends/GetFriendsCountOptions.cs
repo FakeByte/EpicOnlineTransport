@@ -44,6 +44,7 @@ namespace Epic.OnlineServices.Friends
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 		}
 	}
 }

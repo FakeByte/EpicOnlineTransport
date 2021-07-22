@@ -84,6 +84,8 @@ namespace Epic.OnlineServices.Auth
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_ContinuanceToken);
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 		}
 	}
 }

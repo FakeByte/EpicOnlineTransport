@@ -19,6 +19,13 @@ namespace Epic.OnlineServices.Leaderboards
 		/// An optional POSIX timestamp for the leaderboard's end time, or <see cref="LeaderboardsInterface.TimeUndefined" />
 		/// </summary>
 		public System.DateTimeOffset? EndTime { get; set; }
+
+		/// <summary>
+		/// Product User ID for user who is querying definitions.
+		/// Must be set when using a client policy that requires a valid logged in user.
+		/// Not used for Dedicated Server where no user is available.
+		/// </summary>
+		public ProductUserId LocalUserId { get; set; }
 	}
 
 	[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 8)]
@@ -27,6 +34,7 @@ namespace Epic.OnlineServices.Leaderboards
 		private int m_ApiVersion;
 		private long m_StartTime;
 		private long m_EndTime;
+		private System.IntPtr m_LocalUserId;
 
 		public System.DateTimeOffset? StartTime
 		{
@@ -44,6 +52,14 @@ namespace Epic.OnlineServices.Leaderboards
 			}
 		}
 
+		public ProductUserId LocalUserId
+		{
+			set
+			{
+				Helper.TryMarshalSet(ref m_LocalUserId, value);
+			}
+		}
+
 		public void Set(QueryLeaderboardDefinitionsOptions other)
 		{
 			if (other != null)
@@ -51,6 +67,7 @@ namespace Epic.OnlineServices.Leaderboards
 				m_ApiVersion = LeaderboardsInterface.QueryleaderboarddefinitionsApiLatest;
 				StartTime = other.StartTime;
 				EndTime = other.EndTime;
+				LocalUserId = other.LocalUserId;
 			}
 		}
 
@@ -61,6 +78,7 @@ namespace Epic.OnlineServices.Leaderboards
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 		}
 	}
 }

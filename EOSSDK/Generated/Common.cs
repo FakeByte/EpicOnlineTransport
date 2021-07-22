@@ -40,7 +40,7 @@ namespace Epic.OnlineServices
 		/// </returns>
 		public static bool IsOperationComplete(Result result)
 		{
-			var funcResult = EOS_EResult_IsOperationComplete(result);
+			var funcResult = Bindings.EOS_EResult_IsOperationComplete(result);
 
 			bool funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -56,7 +56,7 @@ namespace Epic.OnlineServices
 		/// </summary>
 		public static string ToString(Result result)
 		{
-			var funcResult = EOS_EResult_ToString(result);
+			var funcResult = Bindings.EOS_EResult_ToString(result);
 
 			string funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -74,15 +74,15 @@ namespace Epic.OnlineServices
 		/// </returns>
 		public static Result ToString(byte[] byteArray, out string outBuffer)
 		{
-			System.IntPtr byteArrayAddress = System.IntPtr.Zero;
+			var byteArrayAddress = System.IntPtr.Zero;
 			uint length;
 			Helper.TryMarshalSet(ref byteArrayAddress, byteArray, out length);
 
 			System.IntPtr outBufferAddress = System.IntPtr.Zero;
 			uint inOutBufferLength = 1024;
-			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength);
+			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength, out _);
 
-			var funcResult = EOS_ByteArray_ToString(byteArrayAddress, length, outBufferAddress, ref inOutBufferLength);
+			var funcResult = Bindings.EOS_ByteArray_ToString(byteArrayAddress, length, outBufferAddress, ref inOutBufferLength);
 
 			Helper.TryMarshalDispose(ref byteArrayAddress);
 
@@ -92,13 +92,11 @@ namespace Epic.OnlineServices
 			return funcResult;
 		}
 
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern int EOS_EResult_IsOperationComplete(Result result);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_EResult_ToString(Result result);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_ByteArray_ToString(System.IntPtr byteArray, uint length, System.IntPtr outBuffer, ref uint inOutBufferLength);
+		public static string ToString(byte[] byteArray)
+		{
+			string funcResult;
+			ToString(byteArray, out funcResult);
+			return funcResult;
+		}
 	}
 }

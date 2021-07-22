@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Leaderboards
 {
-	public sealed class LeaderboardsInterface : Handle
+	public sealed partial class LeaderboardsInterface : Handle
 	{
 		public LeaderboardsInterface()
 		{
@@ -76,17 +76,17 @@ namespace Epic.OnlineServices.Leaderboards
 		/// <summary>
 		/// The most recent version of the <see cref="QueryLeaderboardDefinitions" /> struct.
 		/// </summary>
-		public const int QueryleaderboarddefinitionsApiLatest = 1;
+		public const int QueryleaderboarddefinitionsApiLatest = 2;
 
 		/// <summary>
 		/// The most recent version of the <see cref="QueryLeaderboardRanks" /> struct.
 		/// </summary>
-		public const int QueryleaderboardranksApiLatest = 1;
+		public const int QueryleaderboardranksApiLatest = 2;
 
 		/// <summary>
 		/// The most recent version of the <see cref="QueryLeaderboardUserScores" /> struct.
 		/// </summary>
-		public const int QueryleaderboarduserscoresApiLatest = 1;
+		public const int QueryleaderboarduserscoresApiLatest = 2;
 
 		/// <summary>
 		/// Timestamp value representing an undefined time for <see cref="LeaderboardsInterface" />.
@@ -111,18 +111,18 @@ namespace Epic.OnlineServices.Leaderboards
 		/// </returns>
 		public Result CopyLeaderboardDefinitionByIndex(CopyLeaderboardDefinitionByIndexOptions options, out Definition outLeaderboardDefinition)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyLeaderboardDefinitionByIndexOptionsInternal, CopyLeaderboardDefinitionByIndexOptions>(ref optionsAddress, options);
 
 			var outLeaderboardDefinitionAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Leaderboards_CopyLeaderboardDefinitionByIndex(InnerHandle, optionsAddress, ref outLeaderboardDefinitionAddress);
+			var funcResult = Bindings.EOS_Leaderboards_CopyLeaderboardDefinitionByIndex(InnerHandle, optionsAddress, ref outLeaderboardDefinitionAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<DefinitionInternal, Definition>(outLeaderboardDefinitionAddress, out outLeaderboardDefinition))
 			{
-				EOS_Leaderboards_Definition_Release(outLeaderboardDefinitionAddress);
+				Bindings.EOS_Leaderboards_Definition_Release(outLeaderboardDefinitionAddress);
 			}
 
 			return funcResult;
@@ -141,18 +141,18 @@ namespace Epic.OnlineServices.Leaderboards
 		/// </returns>
 		public Result CopyLeaderboardDefinitionByLeaderboardId(CopyLeaderboardDefinitionByLeaderboardIdOptions options, out Definition outLeaderboardDefinition)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyLeaderboardDefinitionByLeaderboardIdOptionsInternal, CopyLeaderboardDefinitionByLeaderboardIdOptions>(ref optionsAddress, options);
 
 			var outLeaderboardDefinitionAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Leaderboards_CopyLeaderboardDefinitionByLeaderboardId(InnerHandle, optionsAddress, ref outLeaderboardDefinitionAddress);
+			var funcResult = Bindings.EOS_Leaderboards_CopyLeaderboardDefinitionByLeaderboardId(InnerHandle, optionsAddress, ref outLeaderboardDefinitionAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<DefinitionInternal, Definition>(outLeaderboardDefinitionAddress, out outLeaderboardDefinition))
 			{
-				EOS_Leaderboards_Definition_Release(outLeaderboardDefinitionAddress);
+				Bindings.EOS_Leaderboards_Definition_Release(outLeaderboardDefinitionAddress);
 			}
 
 			return funcResult;
@@ -171,18 +171,18 @@ namespace Epic.OnlineServices.Leaderboards
 		/// </returns>
 		public Result CopyLeaderboardRecordByIndex(CopyLeaderboardRecordByIndexOptions options, out LeaderboardRecord outLeaderboardRecord)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyLeaderboardRecordByIndexOptionsInternal, CopyLeaderboardRecordByIndexOptions>(ref optionsAddress, options);
 
 			var outLeaderboardRecordAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Leaderboards_CopyLeaderboardRecordByIndex(InnerHandle, optionsAddress, ref outLeaderboardRecordAddress);
+			var funcResult = Bindings.EOS_Leaderboards_CopyLeaderboardRecordByIndex(InnerHandle, optionsAddress, ref outLeaderboardRecordAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<LeaderboardRecordInternal, LeaderboardRecord>(outLeaderboardRecordAddress, out outLeaderboardRecord))
 			{
-				EOS_Leaderboards_LeaderboardRecord_Release(outLeaderboardRecordAddress);
+				Bindings.EOS_Leaderboards_LeaderboardRecord_Release(outLeaderboardRecordAddress);
 			}
 
 			return funcResult;
@@ -201,18 +201,18 @@ namespace Epic.OnlineServices.Leaderboards
 		/// </returns>
 		public Result CopyLeaderboardRecordByUserId(CopyLeaderboardRecordByUserIdOptions options, out LeaderboardRecord outLeaderboardRecord)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyLeaderboardRecordByUserIdOptionsInternal, CopyLeaderboardRecordByUserIdOptions>(ref optionsAddress, options);
 
 			var outLeaderboardRecordAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Leaderboards_CopyLeaderboardRecordByUserId(InnerHandle, optionsAddress, ref outLeaderboardRecordAddress);
+			var funcResult = Bindings.EOS_Leaderboards_CopyLeaderboardRecordByUserId(InnerHandle, optionsAddress, ref outLeaderboardRecordAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<LeaderboardRecordInternal, LeaderboardRecord>(outLeaderboardRecordAddress, out outLeaderboardRecord))
 			{
-				EOS_Leaderboards_LeaderboardRecord_Release(outLeaderboardRecordAddress);
+				Bindings.EOS_Leaderboards_LeaderboardRecord_Release(outLeaderboardRecordAddress);
 			}
 
 			return funcResult;
@@ -231,18 +231,18 @@ namespace Epic.OnlineServices.Leaderboards
 		/// </returns>
 		public Result CopyLeaderboardUserScoreByIndex(CopyLeaderboardUserScoreByIndexOptions options, out LeaderboardUserScore outLeaderboardUserScore)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyLeaderboardUserScoreByIndexOptionsInternal, CopyLeaderboardUserScoreByIndexOptions>(ref optionsAddress, options);
 
 			var outLeaderboardUserScoreAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Leaderboards_CopyLeaderboardUserScoreByIndex(InnerHandle, optionsAddress, ref outLeaderboardUserScoreAddress);
+			var funcResult = Bindings.EOS_Leaderboards_CopyLeaderboardUserScoreByIndex(InnerHandle, optionsAddress, ref outLeaderboardUserScoreAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<LeaderboardUserScoreInternal, LeaderboardUserScore>(outLeaderboardUserScoreAddress, out outLeaderboardUserScore))
 			{
-				EOS_Leaderboards_LeaderboardUserScore_Release(outLeaderboardUserScoreAddress);
+				Bindings.EOS_Leaderboards_LeaderboardUserScore_Release(outLeaderboardUserScoreAddress);
 			}
 
 			return funcResult;
@@ -261,18 +261,18 @@ namespace Epic.OnlineServices.Leaderboards
 		/// </returns>
 		public Result CopyLeaderboardUserScoreByUserId(CopyLeaderboardUserScoreByUserIdOptions options, out LeaderboardUserScore outLeaderboardUserScore)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyLeaderboardUserScoreByUserIdOptionsInternal, CopyLeaderboardUserScoreByUserIdOptions>(ref optionsAddress, options);
 
 			var outLeaderboardUserScoreAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Leaderboards_CopyLeaderboardUserScoreByUserId(InnerHandle, optionsAddress, ref outLeaderboardUserScoreAddress);
+			var funcResult = Bindings.EOS_Leaderboards_CopyLeaderboardUserScoreByUserId(InnerHandle, optionsAddress, ref outLeaderboardUserScoreAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<LeaderboardUserScoreInternal, LeaderboardUserScore>(outLeaderboardUserScoreAddress, out outLeaderboardUserScore))
 			{
-				EOS_Leaderboards_LeaderboardUserScore_Release(outLeaderboardUserScoreAddress);
+				Bindings.EOS_Leaderboards_LeaderboardUserScore_Release(outLeaderboardUserScoreAddress);
 			}
 
 			return funcResult;
@@ -289,10 +289,10 @@ namespace Epic.OnlineServices.Leaderboards
 		/// </returns>
 		public uint GetLeaderboardDefinitionCount(GetLeaderboardDefinitionCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetLeaderboardDefinitionCountOptionsInternal, GetLeaderboardDefinitionCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Leaderboards_GetLeaderboardDefinitionCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Leaderboards_GetLeaderboardDefinitionCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -310,10 +310,10 @@ namespace Epic.OnlineServices.Leaderboards
 		/// </returns>
 		public uint GetLeaderboardRecordCount(GetLeaderboardRecordCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetLeaderboardRecordCountOptionsInternal, GetLeaderboardRecordCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Leaderboards_GetLeaderboardRecordCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Leaderboards_GetLeaderboardRecordCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -331,10 +331,10 @@ namespace Epic.OnlineServices.Leaderboards
 		/// </returns>
 		public uint GetLeaderboardUserScoreCount(GetLeaderboardUserScoreCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetLeaderboardUserScoreCountOptionsInternal, GetLeaderboardUserScoreCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Leaderboards_GetLeaderboardUserScoreCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Leaderboards_GetLeaderboardUserScoreCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -353,7 +353,7 @@ namespace Epic.OnlineServices.Leaderboards
 		/// </returns>
 		public void QueryLeaderboardDefinitions(QueryLeaderboardDefinitionsOptions options, object clientData, OnQueryLeaderboardDefinitionsCompleteCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryLeaderboardDefinitionsOptionsInternal, QueryLeaderboardDefinitionsOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -361,7 +361,7 @@ namespace Epic.OnlineServices.Leaderboards
 			var completionDelegateInternal = new OnQueryLeaderboardDefinitionsCompleteCallbackInternal(OnQueryLeaderboardDefinitionsCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Leaderboards_QueryLeaderboardDefinitions(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Leaderboards_QueryLeaderboardDefinitions(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -378,7 +378,7 @@ namespace Epic.OnlineServices.Leaderboards
 		/// </returns>
 		public void QueryLeaderboardRanks(QueryLeaderboardRanksOptions options, object clientData, OnQueryLeaderboardRanksCompleteCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryLeaderboardRanksOptionsInternal, QueryLeaderboardRanksOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -386,7 +386,7 @@ namespace Epic.OnlineServices.Leaderboards
 			var completionDelegateInternal = new OnQueryLeaderboardRanksCompleteCallbackInternal(OnQueryLeaderboardRanksCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Leaderboards_QueryLeaderboardRanks(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Leaderboards_QueryLeaderboardRanks(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -403,7 +403,7 @@ namespace Epic.OnlineServices.Leaderboards
 		/// </returns>
 		public void QueryLeaderboardUserScores(QueryLeaderboardUserScoresOptions options, object clientData, OnQueryLeaderboardUserScoresCompleteCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryLeaderboardUserScoresOptionsInternal, QueryLeaderboardUserScoresOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -411,7 +411,7 @@ namespace Epic.OnlineServices.Leaderboards
 			var completionDelegateInternal = new OnQueryLeaderboardUserScoresCompleteCallbackInternal(OnQueryLeaderboardUserScoresCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Leaderboards_QueryLeaderboardUserScores(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Leaderboards_QueryLeaderboardUserScores(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -448,53 +448,5 @@ namespace Epic.OnlineServices.Leaderboards
 				callback(callbackInfo);
 			}
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Leaderboards_CopyLeaderboardDefinitionByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outLeaderboardDefinition);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Leaderboards_CopyLeaderboardDefinitionByLeaderboardId(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outLeaderboardDefinition);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Leaderboards_CopyLeaderboardRecordByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outLeaderboardRecord);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Leaderboards_CopyLeaderboardRecordByUserId(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outLeaderboardRecord);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Leaderboards_CopyLeaderboardUserScoreByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outLeaderboardUserScore);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Leaderboards_CopyLeaderboardUserScoreByUserId(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outLeaderboardUserScore);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Leaderboards_GetLeaderboardDefinitionCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Leaderboards_GetLeaderboardRecordCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Leaderboards_GetLeaderboardUserScoreCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Leaderboards_QueryLeaderboardDefinitions(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnQueryLeaderboardDefinitionsCompleteCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Leaderboards_QueryLeaderboardRanks(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnQueryLeaderboardRanksCompleteCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Leaderboards_QueryLeaderboardUserScores(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnQueryLeaderboardUserScoresCompleteCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Leaderboards_Definition_Release(System.IntPtr leaderboardDefinition);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Leaderboards_LeaderboardUserScore_Release(System.IntPtr leaderboardUserScore);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Leaderboards_LeaderboardRecord_Release(System.IntPtr leaderboardRecord);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Leaderboards_LeaderboardDefinition_Release(System.IntPtr leaderboardDefinition);
 	}
 }

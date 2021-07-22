@@ -9,22 +9,22 @@ namespace Epic.OnlineServices.Connect
 	public class LoginStatusChangedCallbackInfo : ICallbackInfo, ISettable
 	{
 		/// <summary>
-		/// Context that was passed into <see cref="ConnectInterface.AddNotifyLoginStatusChanged" />
+		/// Context that was passed into <see cref="ConnectInterface.AddNotifyLoginStatusChanged" />.
 		/// </summary>
 		public object ClientData { get; private set; }
 
 		/// <summary>
-		/// The Product User ID of the local player whose status has changed
+		/// The Product User ID of the local player whose status has changed.
 		/// </summary>
 		public ProductUserId LocalUserId { get; private set; }
 
 		/// <summary>
-		/// The status prior to the change
+		/// The status prior to the change.
 		/// </summary>
 		public LoginStatus PreviousStatus { get; private set; }
 
 		/// <summary>
-		/// The status at the time of the notification
+		/// The status at the time of the notification.
 		/// </summary>
 		public LoginStatus CurrentStatus { get; private set; }
 

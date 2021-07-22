@@ -28,6 +28,11 @@ namespace Epic.OnlineServices.Lobby
 		/// </summary>
 		public ProductUserId TargetUserId { get; private set; }
 
+		/// <summary>
+		/// Lobby ID that the user has been invited to
+		/// </summary>
+		public string LobbyId { get; private set; }
+
 		public Result? GetResultCode()
 		{
 			return null;
@@ -41,6 +46,7 @@ namespace Epic.OnlineServices.Lobby
 				InviteId = other.Value.InviteId;
 				LocalUserId = other.Value.LocalUserId;
 				TargetUserId = other.Value.TargetUserId;
+				LobbyId = other.Value.LobbyId;
 			}
 		}
 
@@ -57,6 +63,7 @@ namespace Epic.OnlineServices.Lobby
 		private System.IntPtr m_InviteId;
 		private System.IntPtr m_LocalUserId;
 		private System.IntPtr m_TargetUserId;
+		private System.IntPtr m_LobbyId;
 
 		public object ClientData
 		{
@@ -102,6 +109,16 @@ namespace Epic.OnlineServices.Lobby
 			{
 				ProductUserId value;
 				Helper.TryMarshalGet(m_TargetUserId, out value);
+				return value;
+			}
+		}
+
+		public string LobbyId
+		{
+			get
+			{
+				string value;
+				Helper.TryMarshalGet(m_LobbyId, out value);
 				return value;
 			}
 		}

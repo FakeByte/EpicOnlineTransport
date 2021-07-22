@@ -59,6 +59,8 @@ namespace Epic.OnlineServices.Lobby
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
+			Helper.TryMarshalDispose(ref m_LobbyId);
 		}
 	}
 }

@@ -8,5 +8,6 @@ namespace Epic.OnlineServices.PlayerDataStorage
 	/// </summary>
 	public delegate void OnDeleteFileCompleteCallback(DeleteFileCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnDeleteFileCompleteCallbackInternal(System.IntPtr data);
 }

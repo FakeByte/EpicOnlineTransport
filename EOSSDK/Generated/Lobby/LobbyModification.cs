@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Lobby
 {
-	public sealed class LobbyModification : Handle
+	public sealed partial class LobbyModification : Handle
 	{
 		public LobbyModification()
 		{
@@ -44,6 +44,16 @@ namespace Epic.OnlineServices.Lobby
 		public const int LobbymodificationRemovememberattributeApiLatest = 1;
 
 		/// <summary>
+		/// The most recent version of the <see cref="SetBucketId" /> API.
+		/// </summary>
+		public const int LobbymodificationSetbucketidApiLatest = 1;
+
+		/// <summary>
+		/// The most recent version of the <see cref="SetInvitesAllowed" /> API.
+		/// </summary>
+		public const int LobbymodificationSetinvitesallowedApiLatest = 1;
+
+		/// <summary>
 		/// The most recent version of the <see cref="SetMaxMembers" /> API.
 		/// </summary>
 		public const int LobbymodificationSetmaxmembersApiLatest = 1;
@@ -66,10 +76,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result AddAttribute(LobbyModificationAddAttributeOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyModificationAddAttributeOptionsInternal, LobbyModificationAddAttributeOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbyModification_AddAttribute(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbyModification_AddAttribute(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -88,10 +98,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result AddMemberAttribute(LobbyModificationAddMemberAttributeOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyModificationAddMemberAttributeOptionsInternal, LobbyModificationAddMemberAttributeOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbyModification_AddMemberAttribute(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbyModification_AddMemberAttribute(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -100,7 +110,7 @@ namespace Epic.OnlineServices.Lobby
 
 		public void Release()
 		{
-			EOS_LobbyModification_Release(InnerHandle);
+			Bindings.EOS_LobbyModification_Release(InnerHandle);
 		}
 
 		/// <summary>
@@ -114,10 +124,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result RemoveAttribute(LobbyModificationRemoveAttributeOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyModificationRemoveAttributeOptionsInternal, LobbyModificationRemoveAttributeOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbyModification_RemoveAttribute(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbyModification_RemoveAttribute(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -135,10 +145,54 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result RemoveMemberAttribute(LobbyModificationRemoveMemberAttributeOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyModificationRemoveMemberAttributeOptionsInternal, LobbyModificationRemoveMemberAttributeOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbyModification_RemoveMemberAttribute(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbyModification_RemoveMemberAttribute(InnerHandle, optionsAddress);
+
+			Helper.TryMarshalDispose(ref optionsAddress);
+
+			return funcResult;
+		}
+
+		/// <summary>
+		/// Set the bucket ID associated with this lobby.
+		/// Values such as region, game mode, etc can be combined here depending on game need.
+		/// Setting this is strongly recommended to improve search performance.
+		/// </summary>
+		/// <param name="options">Options associated with the bucket ID of the lobby</param>
+		/// <returns>
+		/// <see cref="Result.Success" /> if setting this parameter was successful
+		/// <see cref="Result.InvalidParameters" /> if the bucket ID is invalid or null
+		/// <see cref="Result.IncompatibleVersion" /> if the API version passed in is incorrect
+		/// </returns>
+		public Result SetBucketId(LobbyModificationSetBucketIdOptions options)
+		{
+			var optionsAddress = System.IntPtr.Zero;
+			Helper.TryMarshalSet<LobbyModificationSetBucketIdOptionsInternal, LobbyModificationSetBucketIdOptions>(ref optionsAddress, options);
+
+			var funcResult = Bindings.EOS_LobbyModification_SetBucketId(InnerHandle, optionsAddress);
+
+			Helper.TryMarshalDispose(ref optionsAddress);
+
+			return funcResult;
+		}
+
+		/// <summary>
+		/// Allows enabling or disabling invites for this lobby.
+		/// The lobby will also need to have `bPresenceEnabled` true.
+		/// </summary>
+		/// <param name="options">Options associated with invites allowed flag for this lobby.</param>
+		/// <returns>
+		/// <see cref="Result.Success" /> if setting this parameter was successful
+		/// <see cref="Result.IncompatibleVersion" /> if the API version passed in is incorrect
+		/// </returns>
+		public Result SetInvitesAllowed(LobbyModificationSetInvitesAllowedOptions options)
+		{
+			var optionsAddress = System.IntPtr.Zero;
+			Helper.TryMarshalSet<LobbyModificationSetInvitesAllowedOptionsInternal, LobbyModificationSetInvitesAllowedOptions>(ref optionsAddress, options);
+
+			var funcResult = Bindings.EOS_LobbyModification_SetInvitesAllowed(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -156,10 +210,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result SetMaxMembers(LobbyModificationSetMaxMembersOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyModificationSetMaxMembersOptionsInternal, LobbyModificationSetMaxMembersOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbyModification_SetMaxMembers(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbyModification_SetMaxMembers(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -177,35 +231,14 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result SetPermissionLevel(LobbyModificationSetPermissionLevelOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyModificationSetPermissionLevelOptionsInternal, LobbyModificationSetPermissionLevelOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbyModification_SetPermissionLevel(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbyModification_SetPermissionLevel(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			return funcResult;
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbyModification_AddAttribute(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbyModification_AddMemberAttribute(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_LobbyModification_Release(System.IntPtr lobbyModificationHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbyModification_RemoveAttribute(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbyModification_RemoveMemberAttribute(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbyModification_SetMaxMembers(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbyModification_SetPermissionLevel(System.IntPtr handle, System.IntPtr options);
 	}
 }

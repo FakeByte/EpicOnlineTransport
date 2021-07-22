@@ -16,7 +16,8 @@ namespace Epic.OnlineServices.Connect
 		/// <summary>
 		/// Additional non-authoritative information about the local user.
 		/// 
-		/// This field is required to be set for user authentication with Apple and Nintendo, as well as with the Device ID feature login. When using other identity providers, set to NULL.
+		/// This field is required to be set and only used when authenticating the user using Apple, Google, Nintendo Account, Nintendo Service Account, Oculus or the Device ID feature login.
+		/// When using other identity providers, set to NULL.
 		/// </summary>
 		public UserLoginInfo UserLoginInfo { get; set; }
 	}

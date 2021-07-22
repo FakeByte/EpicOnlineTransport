@@ -8,5 +8,6 @@ namespace Epic.OnlineServices.PlayerDataStorage
 	/// </summary>
 	public delegate void OnFileTransferProgressCallback(FileTransferProgressCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnFileTransferProgressCallbackInternal(System.IntPtr data);
 }

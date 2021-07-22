@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Lobby
 {
-	public sealed class LobbySearch : Handle
+	public sealed partial class LobbySearch : Handle
 	{
 		public LobbySearch()
 		{
@@ -68,12 +68,12 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result CopySearchResultByIndex(LobbySearchCopySearchResultByIndexOptions options, out LobbyDetails outLobbyDetailsHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbySearchCopySearchResultByIndexOptionsInternal, LobbySearchCopySearchResultByIndexOptions>(ref optionsAddress, options);
 
 			var outLobbyDetailsHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_LobbySearch_CopySearchResultByIndex(InnerHandle, optionsAddress, ref outLobbyDetailsHandleAddress);
+			var funcResult = Bindings.EOS_LobbySearch_CopySearchResultByIndex(InnerHandle, optionsAddress, ref outLobbyDetailsHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -96,7 +96,7 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public void Find(LobbySearchFindOptions options, object clientData, LobbySearchOnFindCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbySearchFindOptionsInternal, LobbySearchFindOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -104,7 +104,7 @@ namespace Epic.OnlineServices.Lobby
 			var completionDelegateInternal = new LobbySearchOnFindCallbackInternal(OnFindCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_LobbySearch_Find(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_LobbySearch_Find(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -118,10 +118,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public uint GetSearchResultCount(LobbySearchGetSearchResultCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbySearchGetSearchResultCountOptionsInternal, LobbySearchGetSearchResultCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbySearch_GetSearchResultCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbySearch_GetSearchResultCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -135,7 +135,7 @@ namespace Epic.OnlineServices.Lobby
 		/// <param name="lobbySearchHandle">- The lobby search handle to release</param>
 		public void Release()
 		{
-			EOS_LobbySearch_Release(InnerHandle);
+			Bindings.EOS_LobbySearch_Release(InnerHandle);
 		}
 
 		/// <summary>
@@ -151,10 +151,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result RemoveParameter(LobbySearchRemoveParameterOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbySearchRemoveParameterOptionsInternal, LobbySearchRemoveParameterOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbySearch_RemoveParameter(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbySearch_RemoveParameter(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -172,10 +172,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result SetLobbyId(LobbySearchSetLobbyIdOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbySearchSetLobbyIdOptionsInternal, LobbySearchSetLobbyIdOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbySearch_SetLobbyId(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbySearch_SetLobbyId(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -193,10 +193,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result SetMaxResults(LobbySearchSetMaxResultsOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbySearchSetMaxResultsOptionsInternal, LobbySearchSetMaxResultsOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbySearch_SetMaxResults(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbySearch_SetMaxResults(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -216,10 +216,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result SetParameter(LobbySearchSetParameterOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbySearchSetParameterOptionsInternal, LobbySearchSetParameterOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbySearch_SetParameter(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbySearch_SetParameter(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -238,10 +238,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result SetTargetUserId(LobbySearchSetTargetUserIdOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbySearchSetTargetUserIdOptionsInternal, LobbySearchSetTargetUserIdOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbySearch_SetTargetUserId(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbySearch_SetTargetUserId(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -258,32 +258,5 @@ namespace Epic.OnlineServices.Lobby
 				callback(callbackInfo);
 			}
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbySearch_CopySearchResultByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outLobbyDetailsHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_LobbySearch_Find(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, LobbySearchOnFindCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_LobbySearch_GetSearchResultCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_LobbySearch_Release(System.IntPtr lobbySearchHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbySearch_RemoveParameter(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbySearch_SetLobbyId(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbySearch_SetMaxResults(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbySearch_SetParameter(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbySearch_SetTargetUserId(System.IntPtr handle, System.IntPtr options);
 	}
 }

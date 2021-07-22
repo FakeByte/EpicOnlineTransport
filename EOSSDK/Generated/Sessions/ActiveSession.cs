@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Sessions
 {
-	public sealed class ActiveSession : Handle
+	public sealed partial class ActiveSession : Handle
 	{
 		public ActiveSession()
 		{
@@ -49,18 +49,18 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result CopyInfo(ActiveSessionCopyInfoOptions options, out ActiveSessionInfo outActiveSessionInfo)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<ActiveSessionCopyInfoOptionsInternal, ActiveSessionCopyInfoOptions>(ref optionsAddress, options);
 
 			var outActiveSessionInfoAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_ActiveSession_CopyInfo(InnerHandle, optionsAddress, ref outActiveSessionInfoAddress);
+			var funcResult = Bindings.EOS_ActiveSession_CopyInfo(InnerHandle, optionsAddress, ref outActiveSessionInfoAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<ActiveSessionInfoInternal, ActiveSessionInfo>(outActiveSessionInfoAddress, out outActiveSessionInfo))
 			{
-				EOS_ActiveSession_Info_Release(outActiveSessionInfoAddress);
+				Bindings.EOS_ActiveSession_Info_Release(outActiveSessionInfoAddress);
 			}
 
 			return funcResult;
@@ -77,10 +77,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public ProductUserId GetRegisteredPlayerByIndex(ActiveSessionGetRegisteredPlayerByIndexOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<ActiveSessionGetRegisteredPlayerByIndexOptionsInternal, ActiveSessionGetRegisteredPlayerByIndexOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_ActiveSession_GetRegisteredPlayerByIndex(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_ActiveSession_GetRegisteredPlayerByIndex(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -98,10 +98,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public uint GetRegisteredPlayerCount(ActiveSessionGetRegisteredPlayerCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<ActiveSessionGetRegisteredPlayerCountOptionsInternal, ActiveSessionGetRegisteredPlayerCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_ActiveSession_GetRegisteredPlayerCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_ActiveSession_GetRegisteredPlayerCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -116,22 +116,7 @@ namespace Epic.OnlineServices.Sessions
 		/// <param name="activeSessionHandle">- The active session handle to release</param>
 		public void Release()
 		{
-			EOS_ActiveSession_Release(InnerHandle);
+			Bindings.EOS_ActiveSession_Release(InnerHandle);
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_ActiveSession_CopyInfo(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outActiveSessionInfo);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_ActiveSession_GetRegisteredPlayerByIndex(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_ActiveSession_GetRegisteredPlayerCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_ActiveSession_Release(System.IntPtr activeSessionHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_ActiveSession_Info_Release(System.IntPtr activeSessionInfo);
 	}
 }

@@ -85,6 +85,7 @@ namespace Epic.OnlineServices.Leaderboards
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_UserId);
 		}
 	}
 }

@@ -5,5 +5,6 @@ namespace Epic.OnlineServices.Connect
 {
 	public delegate void OnDeleteDeviceIdCallback(DeleteDeviceIdCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnDeleteDeviceIdCallbackInternal(System.IntPtr data);
 }

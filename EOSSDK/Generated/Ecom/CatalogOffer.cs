@@ -61,14 +61,14 @@ namespace Epic.OnlineServices.Ecom
 		public Result PriceResult { get; set; }
 
 		/// <summary>
-		/// The original price of this offer.
+		/// The original price of this offer as a 32-bit number is deprecated.
 		/// </summary>
-		public uint OriginalPrice { get; set; }
+		public uint OriginalPrice_DEPRECATED { get; set; }
 
 		/// <summary>
-		/// The current price including discounts of this offer.
+		/// The current price including discounts of this offer as a 32-bit number is deprecated..
 		/// </summary>
-		public uint CurrentPrice { get; set; }
+		public uint CurrentPrice_DEPRECATED { get; set; }
 
 		/// <summary>
 		/// A value from 0 to 100 define the percentage of the OrignalPrice that the CurrentPrice represents
@@ -96,6 +96,16 @@ namespace Epic.OnlineServices.Ecom
 		/// </summary>
 		public bool AvailableForPurchase { get; set; }
 
+		/// <summary>
+		/// The original price of this offer as a 64-bit number.
+		/// </summary>
+		public ulong OriginalPrice64 { get; set; }
+
+		/// <summary>
+		/// The current price including discounts of this offer as a 64-bit number.
+		/// </summary>
+		public ulong CurrentPrice64 { get; set; }
+
 		internal void Set(CatalogOfferInternal? other)
 		{
 			if (other != null)
@@ -109,13 +119,15 @@ namespace Epic.OnlineServices.Ecom
 				TechnicalDetailsText_DEPRECATED = other.Value.TechnicalDetailsText_DEPRECATED;
 				CurrencyCode = other.Value.CurrencyCode;
 				PriceResult = other.Value.PriceResult;
-				OriginalPrice = other.Value.OriginalPrice;
-				CurrentPrice = other.Value.CurrentPrice;
+				OriginalPrice_DEPRECATED = other.Value.OriginalPrice_DEPRECATED;
+				CurrentPrice_DEPRECATED = other.Value.CurrentPrice_DEPRECATED;
 				DiscountPercentage = other.Value.DiscountPercentage;
 				ExpirationTimestamp = other.Value.ExpirationTimestamp;
 				PurchasedCount = other.Value.PurchasedCount;
 				PurchaseLimit = other.Value.PurchaseLimit;
 				AvailableForPurchase = other.Value.AvailableForPurchase;
+				OriginalPrice64 = other.Value.OriginalPrice64;
+				CurrentPrice64 = other.Value.CurrentPrice64;
 			}
 		}
 
@@ -138,13 +150,15 @@ namespace Epic.OnlineServices.Ecom
 		private System.IntPtr m_TechnicalDetailsText_DEPRECATED;
 		private System.IntPtr m_CurrencyCode;
 		private Result m_PriceResult;
-		private uint m_OriginalPrice;
-		private uint m_CurrentPrice;
+		private uint m_OriginalPrice_DEPRECATED;
+		private uint m_CurrentPrice_DEPRECATED;
 		private byte m_DiscountPercentage;
 		private long m_ExpirationTimestamp;
 		private uint m_PurchasedCount;
 		private int m_PurchaseLimit;
 		private int m_AvailableForPurchase;
+		private ulong m_OriginalPrice64;
+		private ulong m_CurrentPrice64;
 
 		public int ServerIndex
 		{
@@ -277,29 +291,29 @@ namespace Epic.OnlineServices.Ecom
 			}
 		}
 
-		public uint OriginalPrice
+		public uint OriginalPrice_DEPRECATED
 		{
 			get
 			{
-				return m_OriginalPrice;
+				return m_OriginalPrice_DEPRECATED;
 			}
 
 			set
 			{
-				m_OriginalPrice = value;
+				m_OriginalPrice_DEPRECATED = value;
 			}
 		}
 
-		public uint CurrentPrice
+		public uint CurrentPrice_DEPRECATED
 		{
 			get
 			{
-				return m_CurrentPrice;
+				return m_CurrentPrice_DEPRECATED;
 			}
 
 			set
 			{
-				m_CurrentPrice = value;
+				m_CurrentPrice_DEPRECATED = value;
 			}
 		}
 
@@ -370,6 +384,32 @@ namespace Epic.OnlineServices.Ecom
 			}
 		}
 
+		public ulong OriginalPrice64
+		{
+			get
+			{
+				return m_OriginalPrice64;
+			}
+
+			set
+			{
+				m_OriginalPrice64 = value;
+			}
+		}
+
+		public ulong CurrentPrice64
+		{
+			get
+			{
+				return m_CurrentPrice64;
+			}
+
+			set
+			{
+				m_CurrentPrice64 = value;
+			}
+		}
+
 		public void Set(CatalogOffer other)
 		{
 			if (other != null)
@@ -384,13 +424,15 @@ namespace Epic.OnlineServices.Ecom
 				TechnicalDetailsText_DEPRECATED = other.TechnicalDetailsText_DEPRECATED;
 				CurrencyCode = other.CurrencyCode;
 				PriceResult = other.PriceResult;
-				OriginalPrice = other.OriginalPrice;
-				CurrentPrice = other.CurrentPrice;
+				OriginalPrice_DEPRECATED = other.OriginalPrice_DEPRECATED;
+				CurrentPrice_DEPRECATED = other.CurrentPrice_DEPRECATED;
 				DiscountPercentage = other.DiscountPercentage;
 				ExpirationTimestamp = other.ExpirationTimestamp;
 				PurchasedCount = other.PurchasedCount;
 				PurchaseLimit = other.PurchaseLimit;
 				AvailableForPurchase = other.AvailableForPurchase;
+				OriginalPrice64 = other.OriginalPrice64;
+				CurrentPrice64 = other.CurrentPrice64;
 			}
 		}
 
@@ -402,6 +444,7 @@ namespace Epic.OnlineServices.Ecom
 		public void Dispose()
 		{
 			Helper.TryMarshalDispose(ref m_CatalogNamespace);
+			Helper.TryMarshalDispose(ref m_Id);
 			Helper.TryMarshalDispose(ref m_TitleText);
 			Helper.TryMarshalDispose(ref m_DescriptionText);
 			Helper.TryMarshalDispose(ref m_LongDescriptionText);

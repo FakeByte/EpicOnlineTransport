@@ -19,46 +19,54 @@ namespace Epic.OnlineServices
 	internal class ExternalAllocationException : AllocationException
 	{
 		public ExternalAllocationException(IntPtr address, Type type)
-			: base(string.Format("Attempting to allocate {0} over externally allocated memory at {1}", type, address.ToString("X")))
+			: base(string.Format("Attempting to allocate '{0}' over externally allocated memory at {1}", type, address.ToString("X")))
 		{
 		}
 	}
 
-	internal class TypeAllocationException : AllocationException
+	internal class CachedTypeAllocationException : AllocationException
 	{
-		public TypeAllocationException(IntPtr address, Type foundType, Type expectedType)
-			: base(string.Format("Found allocation of {0} but expected {1} at {2}", foundType, expectedType, address.ToString("X")))
+		public CachedTypeAllocationException(IntPtr address, Type foundType, Type expectedType)
+			: base(string.Format("Cached allocation is '{0}' but expected '{1}' at {2}", foundType, expectedType, address.ToString("X")))
 		{
 		}
 	}
 
-	internal class ArrayAllocationException : AllocationException
+	internal class CachedArrayAllocationException : AllocationException
 	{
-		public ArrayAllocationException(IntPtr address, int foundLength, int expectedLength)
-			: base(string.Format("Found array allocation with length {0} but expected {1} at {2}", foundLength, expectedLength, address.ToString("X")))
+		public CachedArrayAllocationException(IntPtr address, int foundLength, int expectedLength)
+			: base(string.Format("Cached array allocation has length {0} but expected {1} at {2}", foundLength, expectedLength, address.ToString("X")))
+		{
+		}
+	}
+
+	internal class DynamicBindingException : Exception
+	{
+		public DynamicBindingException(string bindingName)
+			: base(string.Format("Failed to hook dynamic binding for '{0}'", bindingName))
 		{
 		}
 	}
 
 	public static class Helper
 	{
-		private class Allocation
+		internal class Allocation
 		{
-			public object Data { get; private set; }
+			public int Size { get; private set; }
 
-			public Allocation(object data)
+			public object CachedData { get; private set; }
+
+			public bool? IsCachedArrayElementAllocated { get; private set; }
+
+			public Allocation(int size)
 			{
-				Data = data;
+				Size = size;
 			}
-		}
 
-		private class ArrayAllocation : Allocation
-		{
-			public bool IsElementAllocated { get; private set; }
-
-			public ArrayAllocation(object data, bool isElementAllocated) : base(data)
+			public void SetCachedData(object data, bool? isCachedArrayElementAllocated = null)
 			{
-				IsElementAllocated = isElementAllocated;
+				CachedData = data;
+				IsCachedArrayElementAllocated = isCachedArrayElementAllocated;
 			}
 		}
 
@@ -90,36 +98,9 @@ namespace Epic.OnlineServices
 			return s_Allocations.Count;
 		}
 
-		/// <summary>
-		/// Checks whether the given result indicates that the operation has completed. Some operations may callback with a result indicating that they will callback again.
-		/// </summary>
-		/// <param name="result">The result to check.</param>
-		/// <returns>Whether the operation has completed or not.</returns>
-		public static bool IsOperationComplete(Result result)
-		{
-			int isOperationCompleteInt = EOS_EResult_IsOperationComplete(result);
-
-			bool isOperationComplete;
-			TryMarshalGet(isOperationCompleteInt, out isOperationComplete);
-			return isOperationComplete;
-		}
-
-		[DllImport(Config.BinaryName)]
-		private static extern int EOS_EResult_IsOperationComplete(Result result);
-
-		/// <summary>
-		/// Converts a byte array into a hex string, e.g. "A56904FF".
-		/// </summary>
-		/// <param name="byteArray">The byte array to convert.</param>
-		/// <returns>A hex string, e.g. "A56904FF".</returns>
-		public static string ToHexString(byte[] byteArray)
-		{
-			return string.Join("", byteArray.Select(b => string.Format("{0:X2}", b)).ToArray());
-		}
-
 		// These functions are the front end when changing SDK values into wrapper values.
 		// They will either fetch or convert; whichever is most appropriate for the source and target types.
-		#region Marshal Getters
+#region Marshal Getters
 		internal static bool TryMarshalGet<T>(T[] source, out uint target)
 		{
 			return TryConvert(source, out target);
@@ -131,7 +112,18 @@ namespace Epic.OnlineServices
 			return TryConvert(source, out target);
 		}
 
+		internal static bool TryMarshalGet<TSource, TTarget>(TSource source, out TTarget target)
+			where TTarget : ISettable, new()
+		{
+			return TryConvert(source, out target);
+		}
+
 		internal static bool TryMarshalGet(int source, out bool target)
+		{
+			return TryConvert(source, out target);
+		}
+
+		internal static bool TryMarshalGet(bool source, out int target)
 		{
 			return TryConvert(source, out target);
 		}
@@ -234,6 +226,19 @@ namespace Epic.OnlineServices
 			return false;
 		}
 
+		internal static bool TryMarshalGet<TTarget, TEnum>(ISettable source, out TTarget target, TEnum currentEnum, TEnum comparisonEnum)
+			where TTarget : ISettable, new()
+		{
+			target = GetDefault<TTarget>();
+
+			if ((int)(object)currentEnum == (int)(object)comparisonEnum)
+			{
+				return TryConvert(source, out target);
+			}
+
+			return false;
+		}
+
 		internal static bool TryMarshalGet<TEnum>(int source, out bool? target, TEnum currentEnum, TEnum comparisonEnum)
 		{
 			target = GetDefault<bool?>();
@@ -278,6 +283,18 @@ namespace Epic.OnlineServices
 			return false;
 		}
 
+		internal static bool TryMarshalGet<TEnum>(IntPtr source, out IntPtr? target, TEnum currentEnum, TEnum comparisonEnum)
+		{
+			target = GetDefault<IntPtr?>();
+
+			if ((int)(object)currentEnum == (int)(object)comparisonEnum)
+			{
+				return TryMarshalGet(source, out target);
+			}
+
+			return false;
+		}
+
 		internal static bool TryMarshalGet<TEnum>(IntPtr source, out string target, TEnum currentEnum, TEnum comparisonEnum)
 		{
 			target = GetDefault<string>();
@@ -311,15 +328,6 @@ namespace Epic.OnlineServices
 			return false;
 		}
 
-		internal static bool TryMarshalGet<TInternal, TPublic>(TInternal source, out TPublic target)
-			where TInternal : struct
-			where TPublic : class, ISettable, new()
-		{
-			target = new TPublic();
-			target.Set(source);
-			return true;
-		}
-
 		internal static bool TryMarshalGet<TCallbackInfoInternal, TCallbackInfo>(IntPtr callbackInfoAddress, out TCallbackInfo callbackInfo, out IntPtr clientDataAddress)
 			where TCallbackInfoInternal : struct, ICallbackInfoInternal
 			where TCallbackInfo : class, ISettable, new()
@@ -339,11 +347,11 @@ namespace Epic.OnlineServices
 
 			return false;
 		}
-		#endregion
+#endregion
 
 		// These functions are the front end for changing wrapper values into SDK values.
 		// They will either allocate or convert; whichever is most appropriate for the source and target types.
-		#region Marshal Setters
+#region Marshal Setters
 		internal static bool TryMarshalSet<T>(ref T target, T source)
 		{
 			target = source;
@@ -437,6 +445,23 @@ namespace Epic.OnlineServices
 				TryMarshalDispose(ref disposable);
 
 				if (TryMarshalSet(ref target, source))
+				{
+					currentEnum = comparisonEnum;
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		internal static bool TryMarshalSet<TTarget, TEnum>(ref TTarget target, ISettable source, ref TEnum currentEnum, TEnum comparisonEnum, IDisposable disposable = null)
+			where TTarget : ISettable, new()
+		{
+			if (source != null)
+			{
+				TryMarshalDispose(ref disposable);
+
+				if (TryConvert(source, out target))
 				{
 					currentEnum = comparisonEnum;
 					return true;
@@ -625,24 +650,27 @@ namespace Epic.OnlineServices
 			return false;
 		}
 
-		internal static bool TryMarshalAllocate(ref IntPtr target, int length)
+		internal static bool TryMarshalAllocate(ref IntPtr target, int size, out Allocation allocation)
 		{
 			TryMarshalDispose(ref target);
 
-			target = Marshal.AllocHGlobal(length);
+			target = Marshal.AllocHGlobal(size);
 			Marshal.WriteByte(target, 0, 0);
+
+			allocation = new Allocation(size);
+			s_Allocations.Add(target, allocation);
 
 			return true;
 		}
 
-		internal static bool TryMarshalAllocate(ref IntPtr target, uint length)
+		internal static bool TryMarshalAllocate(ref IntPtr target, uint size, out Allocation allocation)
 		{
-			return TryMarshalAllocate(ref target, (int)length);
+			return TryMarshalAllocate(ref target, (int)size, out allocation);
 		}
-		#endregion
+#endregion
 
 		// These functions are the front end for disposing of unmanaged memory that this wrapper has allocated.
-		#region Marshal Disposers
+#region Marshal Disposers
 		internal static bool TryMarshalDispose<TDisposable>(ref TDisposable disposable)
 			where TDisposable : IDisposable
 		{
@@ -669,10 +697,10 @@ namespace Epic.OnlineServices
 
 			return false;
 		}
-		#endregion
+#endregion
 
 		// These functions are exposed to the wrapper to generally streamline blocks of generated code.
-		#region Helpers
+#region Helpers
 		internal static T GetDefault<T>()
 		{
 			return default(T);
@@ -761,11 +789,11 @@ namespace Epic.OnlineServices
 
 			return false;
 		}
-		#endregion
+#endregion
 
 		// These functions are used for allocating unmanaged memory.
 		// They should not be exposed outside of this helper.
-		#region Private Allocators
+#region Private Allocators
 		private static bool TryAllocate<T>(ref IntPtr target, T source)
 		{
 			TryRelease(ref target);
@@ -780,9 +808,14 @@ namespace Epic.OnlineServices
 				return false;
 			}
 
-			TryMarshalAllocate(ref target, Marshal.SizeOf(typeof(T)));
+			Allocation allocation;
+			if (!TryMarshalAllocate(ref target, Marshal.SizeOf(typeof(T)), out allocation))
+			{
+				return false;
+			}
+
+			allocation.SetCachedData(source);
 			Marshal.StructureToPtr(source, target, false);
-			s_Allocations.Add(target, new Allocation(source));
 
 			return true;
 		}
@@ -853,8 +886,13 @@ namespace Epic.OnlineServices
 			}
 
 			// Allocate the array
-			TryMarshalAllocate(ref target, source.Length * itemSize);
-			s_Allocations.Add(target, new ArrayAllocation(source, isElementAllocated));
+			Allocation allocation;
+			if (!TryMarshalAllocate(ref target, source.Length * itemSize, out allocation))
+			{
+				return false;
+			}
+
+			allocation.SetCachedData(source, isElementAllocated);
 
 			for (int itemIndex = 0; itemIndex < source.Length; ++itemIndex)
 			{
@@ -908,16 +946,21 @@ namespace Epic.OnlineServices
 			}
 
 			// The source should always be fetched directly from our cache, so the allocation is arbitrary.
-			TryMarshalAllocate(ref target, 1);
-			s_Allocations.Add(target, new Allocation(source));
+			Allocation allocation;
+			if (!TryMarshalAllocate(ref target, 1, out allocation))
+			{
+				return false;
+			}
+
+			allocation.SetCachedData(source);
 
 			return true;
 		}
-		#endregion
+#endregion
 
 		// These functions are used for releasing unmanaged memory.
 		// They should not be exposed outside of this helper.
-		#region Private Releasers
+#region Private Releasers
 		private static bool TryRelease(ref IntPtr target)
 		{
 			if (target == IntPtr.Zero)
@@ -931,25 +974,23 @@ namespace Epic.OnlineServices
 				return false;
 			}
 
-			if (allocation is ArrayAllocation)
+			if (allocation.IsCachedArrayElementAllocated.HasValue)
 			{
-				ArrayAllocation arrayAllocation = allocation as ArrayAllocation;
-
 				var itemSize = 0;
-				if (arrayAllocation.IsElementAllocated)
+				if (allocation.IsCachedArrayElementAllocated.Value)
 				{
 					itemSize = Marshal.SizeOf(typeof(IntPtr));
 				}
 				else
 				{
-					itemSize = Marshal.SizeOf(arrayAllocation.Data.GetType().GetElementType());
+					itemSize = Marshal.SizeOf(allocation.CachedData.GetType().GetElementType());
 				}
 
-				var array = arrayAllocation.Data as Array;
+				var array = allocation.CachedData as Array;
 
 				for (int itemIndex = 0; itemIndex < array.Length; ++itemIndex)
 				{
-					if (arrayAllocation.IsElementAllocated)
+					if (allocation.IsCachedArrayElementAllocated.Value)
 					{
 						var itemAddress = new IntPtr(target.ToInt64() + itemIndex * itemSize);
 						itemAddress = Marshal.ReadIntPtr(itemAddress);
@@ -970,9 +1011,9 @@ namespace Epic.OnlineServices
 				}
 			}
 
-			if (allocation.Data is IDisposable)
+			if (allocation.CachedData is IDisposable)
 			{
-				var disposable = allocation.Data as IDisposable;
+				var disposable = allocation.CachedData as IDisposable;
 				if (disposable != null)
 				{
 					disposable.Dispose();
@@ -985,11 +1026,11 @@ namespace Epic.OnlineServices
 
 			return true;
 		}
-		#endregion
+#endregion
 
 		// These functions are used for fetching unmanaged memory.
 		// They should not be exposed outside of this helper.
-		#region Private Fetchers
+#region Private Fetchers
 		private static bool TryFetch<T>(IntPtr source, out T target)
 		{
 			target = GetDefault<T>();
@@ -999,17 +1040,21 @@ namespace Epic.OnlineServices
 				return false;
 			}
 
+			// If this is an allocation containing cached data, we should be able to fetch it from the cache
 			if (s_Allocations.ContainsKey(source))
 			{
 				Allocation allocation = s_Allocations[source];
-				if (allocation.Data.GetType() == typeof(T))
+				if (allocation.CachedData != null)
 				{
-					target = (T)allocation.Data;
-					return true;
-				}
-				else
-				{
-					throw new TypeAllocationException(source, allocation.Data.GetType(), typeof(T));
+					if (allocation.CachedData.GetType() == typeof(T))
+					{
+						target = (T)allocation.CachedData;
+						return true;
+					}
+					else
+					{
+						throw new CachedTypeAllocationException(source, allocation.CachedData.GetType(), typeof(T));
+					}
 				}
 			}
 
@@ -1027,17 +1072,21 @@ namespace Epic.OnlineServices
 				return false;
 			}
 
+			// If this is an allocation containing cached data, we should be able to fetch it from the cache
 			if (s_Allocations.ContainsKey(source))
 			{
 				Allocation allocation = s_Allocations[source];
-				if (allocation.Data.GetType() == typeof(T))
+				if (allocation.CachedData != null)
 				{
-					target = (T?)allocation.Data;
-					return true;
-				}
-				else
-				{
-					throw new TypeAllocationException(source, allocation.Data.GetType(), typeof(T));
+					if (allocation.CachedData.GetType() == typeof(T))
+					{
+						target = (T?)allocation.CachedData;
+						return true;
+					}
+					else
+					{
+						throw new CachedTypeAllocationException(source, allocation.CachedData.GetType(), typeof(T));
+					}
 				}
 			}
 
@@ -1054,26 +1103,29 @@ namespace Epic.OnlineServices
 				return false;
 			}
 
-			// Try to retrieve the array from our allocation cache
+			// If this is an allocation containing cached data, we should be able to fetch it from the cache
 			if (s_Allocations.ContainsKey(source))
 			{
 				Allocation allocation = s_Allocations[source];
-				if (allocation.Data.GetType() == typeof(T[]))
+				if (allocation.CachedData != null)
 				{
-					var cachedArray = (Array)allocation.Data;
-					if (cachedArray.Length == arrayLength)
+					if (allocation.CachedData.GetType() == typeof(T[]))
 					{
-						target = cachedArray as T[];
-						return true;
+						var cachedArray = (Array)allocation.CachedData;
+						if (cachedArray.Length == arrayLength)
+						{
+							target = cachedArray as T[];
+							return true;
+						}
+						else
+						{
+							throw new CachedArrayAllocationException(source, cachedArray.Length, arrayLength);
+						}
 					}
 					else
 					{
-						throw new ArrayAllocationException(source, cachedArray.Length, arrayLength);
+						throw new CachedTypeAllocationException(source, allocation.CachedData.GetType(), typeof(T[]));
 					}
-				}
-				else
-				{
-					throw new TypeAllocationException(source, allocation.Data.GetType(), typeof(T[]));
 				}
 			}
 
@@ -1129,11 +1181,11 @@ namespace Epic.OnlineServices
 
 			return true;
 		}
-		#endregion
+#endregion
 
 		// These functions are used for converting managed memory.
 		// They should not be exposed outside of this helper.
-		#region Private Converters
+#region Private Converters
 		private static bool TryConvert<THandle>(IntPtr source, out THandle target)
 			where THandle : Handle, new()
 		{
@@ -1303,10 +1355,10 @@ namespace Epic.OnlineServices
 
 			return true;
 		}
-		#endregion
+#endregion
 
 		// These functions exist to further streamline blocks of generated code.
-		#region Private Helpers
+#region Private Helpers
 		private static bool CanRemoveCallback<TCallbackInfo>(IntPtr clientDataAddress, TCallbackInfo callbackInfo)
 			where TCallbackInfo : ICallbackInfo
 		{
@@ -1321,7 +1373,7 @@ namespace Epic.OnlineServices
 
 			if (callbackInfo.GetResultCode().HasValue)
 			{
-				return IsOperationComplete(callbackInfo.GetResultCode().Value);
+				return Common.IsOperationComplete(callbackInfo.GetResultCode().Value);
 			}
 
 			return true;
@@ -1384,6 +1436,6 @@ namespace Epic.OnlineServices
 
 			return false;
 		}
-		#endregion
+#endregion
 	}
 }

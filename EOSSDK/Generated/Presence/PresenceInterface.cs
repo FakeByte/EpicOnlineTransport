@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Presence
 {
-	public sealed class PresenceInterface : Handle
+	public sealed partial class PresenceInterface : Handle
 	{
 		public PresenceInterface()
 		{
@@ -90,7 +90,7 @@ namespace Epic.OnlineServices.Presence
 		/// </returns>
 		public ulong AddNotifyJoinGameAccepted(AddNotifyJoinGameAcceptedOptions options, object clientData, OnJoinGameAcceptedCallback notificationFn)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AddNotifyJoinGameAcceptedOptionsInternal, AddNotifyJoinGameAcceptedOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -98,7 +98,7 @@ namespace Epic.OnlineServices.Presence
 			var notificationFnInternal = new OnJoinGameAcceptedCallbackInternal(OnJoinGameAcceptedCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, notificationFn, notificationFnInternal);
 
-			var funcResult = EOS_Presence_AddNotifyJoinGameAccepted(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
+			var funcResult = Bindings.EOS_Presence_AddNotifyJoinGameAccepted(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -120,7 +120,7 @@ namespace Epic.OnlineServices.Presence
 		/// </returns>
 		public ulong AddNotifyOnPresenceChanged(AddNotifyOnPresenceChangedOptions options, object clientData, OnPresenceChangedCallback notificationHandler)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AddNotifyOnPresenceChangedOptionsInternal, AddNotifyOnPresenceChangedOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -128,7 +128,7 @@ namespace Epic.OnlineServices.Presence
 			var notificationHandlerInternal = new OnPresenceChangedCallbackInternal(OnPresenceChangedCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, notificationHandler, notificationHandlerInternal);
 
-			var funcResult = EOS_Presence_AddNotifyOnPresenceChanged(InnerHandle, optionsAddress, clientDataAddress, notificationHandlerInternal);
+			var funcResult = Bindings.EOS_Presence_AddNotifyOnPresenceChanged(InnerHandle, optionsAddress, clientDataAddress, notificationHandlerInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -148,18 +148,18 @@ namespace Epic.OnlineServices.Presence
 		/// </returns>
 		public Result CopyPresence(CopyPresenceOptions options, out Info outPresence)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyPresenceOptionsInternal, CopyPresenceOptions>(ref optionsAddress, options);
 
 			var outPresenceAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Presence_CopyPresence(InnerHandle, optionsAddress, ref outPresenceAddress);
+			var funcResult = Bindings.EOS_Presence_CopyPresence(InnerHandle, optionsAddress, ref outPresenceAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<InfoInternal, Info>(outPresenceAddress, out outPresence))
 			{
-				EOS_Presence_Info_Release(outPresenceAddress);
+				Bindings.EOS_Presence_Info_Release(outPresenceAddress);
 			}
 
 			return funcResult;
@@ -182,12 +182,12 @@ namespace Epic.OnlineServices.Presence
 		/// </returns>
 		public Result CreatePresenceModification(CreatePresenceModificationOptions options, out PresenceModification outPresenceModificationHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CreatePresenceModificationOptionsInternal, CreatePresenceModificationOptions>(ref optionsAddress, options);
 
 			var outPresenceModificationHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Presence_CreatePresenceModification(InnerHandle, optionsAddress, ref outPresenceModificationHandleAddress);
+			var funcResult = Bindings.EOS_Presence_CreatePresenceModification(InnerHandle, optionsAddress, ref outPresenceModificationHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -219,14 +219,14 @@ namespace Epic.OnlineServices.Presence
 		/// </returns>
 		public Result GetJoinInfo(GetJoinInfoOptions options, out string outBuffer)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetJoinInfoOptionsInternal, GetJoinInfoOptions>(ref optionsAddress, options);
 
 			System.IntPtr outBufferAddress = System.IntPtr.Zero;
 			int inOutBufferLength = PresenceModification.PresencemodificationJoininfoMaxLength + 1;
-			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength);
+			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength, out _);
 
-			var funcResult = EOS_Presence_GetJoinInfo(InnerHandle, optionsAddress, outBufferAddress, ref inOutBufferLength);
+			var funcResult = Bindings.EOS_Presence_GetJoinInfo(InnerHandle, optionsAddress, outBufferAddress, ref inOutBufferLength);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -245,10 +245,10 @@ namespace Epic.OnlineServices.Presence
 		/// </returns>
 		public bool HasPresence(HasPresenceOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<HasPresenceOptionsInternal, HasPresenceOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Presence_HasPresence(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Presence_HasPresence(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -266,7 +266,7 @@ namespace Epic.OnlineServices.Presence
 		/// <param name="completionDelegate">Pointer to a function that handles receiving the completion information</param>
 		public void QueryPresence(QueryPresenceOptions options, object clientData, OnQueryPresenceCompleteCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryPresenceOptionsInternal, QueryPresenceOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -274,7 +274,7 @@ namespace Epic.OnlineServices.Presence
 			var completionDelegateInternal = new OnQueryPresenceCompleteCallbackInternal(OnQueryPresenceCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Presence_QueryPresence(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Presence_QueryPresence(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -287,7 +287,7 @@ namespace Epic.OnlineServices.Presence
 		{
 			Helper.TryRemoveCallbackByNotificationId(inId);
 
-			EOS_Presence_RemoveNotifyJoinGameAccepted(InnerHandle, inId);
+			Bindings.EOS_Presence_RemoveNotifyJoinGameAccepted(InnerHandle, inId);
 		}
 
 		/// <summary>
@@ -298,7 +298,7 @@ namespace Epic.OnlineServices.Presence
 		{
 			Helper.TryRemoveCallbackByNotificationId(notificationId);
 
-			EOS_Presence_RemoveNotifyOnPresenceChanged(InnerHandle, notificationId);
+			Bindings.EOS_Presence_RemoveNotifyOnPresenceChanged(InnerHandle, notificationId);
 		}
 
 		/// <summary>
@@ -311,7 +311,7 @@ namespace Epic.OnlineServices.Presence
 		/// <param name="completionDelegate">Pointer to a function that handles receiving the completion information</param>
 		public void SetPresence(SetPresenceOptions options, object clientData, SetPresenceCompleteCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SetPresenceOptionsInternal, SetPresenceOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -319,7 +319,7 @@ namespace Epic.OnlineServices.Presence
 			var completionDelegateInternal = new SetPresenceCompleteCallbackInternal(SetPresenceCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Presence_SetPresence(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Presence_SetPresence(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -367,38 +367,5 @@ namespace Epic.OnlineServices.Presence
 				callback(callbackInfo);
 			}
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern ulong EOS_Presence_AddNotifyJoinGameAccepted(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnJoinGameAcceptedCallbackInternal notificationFn);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern ulong EOS_Presence_AddNotifyOnPresenceChanged(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnPresenceChangedCallbackInternal notificationHandler);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Presence_CopyPresence(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outPresence);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Presence_CreatePresenceModification(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outPresenceModificationHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Presence_GetJoinInfo(System.IntPtr handle, System.IntPtr options, System.IntPtr outBuffer, ref int inOutBufferLength);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern int EOS_Presence_HasPresence(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Presence_QueryPresence(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnQueryPresenceCompleteCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Presence_Info_Release(System.IntPtr presenceInfo);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Presence_RemoveNotifyJoinGameAccepted(System.IntPtr handle, ulong inId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Presence_RemoveNotifyOnPresenceChanged(System.IntPtr handle, ulong notificationId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Presence_SetPresence(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, SetPresenceCompleteCallbackInternal completionDelegate);
 	}
 }

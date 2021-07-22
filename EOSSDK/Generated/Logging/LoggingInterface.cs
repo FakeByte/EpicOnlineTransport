@@ -19,7 +19,7 @@ namespace Epic.OnlineServices.Logging
 			var callbackInternal = new LogMessageFuncInternal(LogMessageFuncInternalImplementation);
 			Helper.AddStaticCallback("LogMessageFuncInternalImplementation", callback, callbackInternal);
 
-			var funcResult = EOS_Logging_SetCallback(callbackInternal);
+			var funcResult = Bindings.EOS_Logging_SetCallback(callbackInternal);
 
 			return funcResult;
 		}
@@ -35,7 +35,7 @@ namespace Epic.OnlineServices.Logging
 		/// </returns>
 		public static Result SetLogLevel(LogCategory logCategory, LogLevel logLevel)
 		{
-			var funcResult = EOS_Logging_SetLogLevel(logCategory, logLevel);
+			var funcResult = Bindings.EOS_Logging_SetLogLevel(logCategory, logLevel);
 
 			return funcResult;
 		}
@@ -52,11 +52,5 @@ namespace Epic.OnlineServices.Logging
 				callback(messageObj);
 			}
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Logging_SetCallback(LogMessageFuncInternal callback);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Logging_SetLogLevel(LogCategory logCategory, LogLevel logLevel);
 	}
 }

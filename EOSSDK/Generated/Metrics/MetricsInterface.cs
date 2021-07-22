@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Metrics
 {
-	public sealed class MetricsInterface : Handle
+	public sealed partial class MetricsInterface : Handle
 	{
 		public MetricsInterface()
 		{
@@ -35,10 +35,10 @@ namespace Epic.OnlineServices.Metrics
 		/// </returns>
 		public Result BeginPlayerSession(BeginPlayerSessionOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<BeginPlayerSessionOptionsInternal, BeginPlayerSessionOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Metrics_BeginPlayerSession(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Metrics_BeginPlayerSession(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -57,20 +57,14 @@ namespace Epic.OnlineServices.Metrics
 		/// </returns>
 		public Result EndPlayerSession(EndPlayerSessionOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<EndPlayerSessionOptionsInternal, EndPlayerSessionOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Metrics_EndPlayerSession(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Metrics_EndPlayerSession(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			return funcResult;
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Metrics_BeginPlayerSession(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Metrics_EndPlayerSession(System.IntPtr handle, System.IntPtr options);
 	}
 }

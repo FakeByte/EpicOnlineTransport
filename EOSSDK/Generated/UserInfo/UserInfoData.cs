@@ -156,6 +156,7 @@ namespace Epic.OnlineServices.UserInfo
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_UserId);
 			Helper.TryMarshalDispose(ref m_Country);
 			Helper.TryMarshalDispose(ref m_DisplayName);
 			Helper.TryMarshalDispose(ref m_PreferredLanguage);

@@ -5,5 +5,6 @@ namespace Epic.OnlineServices.Connect
 {
 	public delegate void OnCreateDeviceIdCallback(CreateDeviceIdCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnCreateDeviceIdCallbackInternal(System.IntPtr data);
 }

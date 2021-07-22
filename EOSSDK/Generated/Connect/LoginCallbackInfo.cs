@@ -14,19 +14,19 @@ namespace Epic.OnlineServices.Connect
 		public Result ResultCode { get; private set; }
 
 		/// <summary>
-		/// Context that was passed into <see cref="ConnectInterface.Login" />
+		/// Context that was passed into <see cref="ConnectInterface.Login" />.
 		/// </summary>
 		public object ClientData { get; private set; }
 
 		/// <summary>
-		/// If login was succesful, this is the Product User ID of the local player that logged in
+		/// If login was succesful, this is the Product User ID of the local player that logged in.
 		/// </summary>
 		public ProductUserId LocalUserId { get; private set; }
 
 		/// <summary>
 		/// If the user was not found with credentials passed into <see cref="ConnectInterface.Login" />,
 		/// this continuance token can be passed to either <see cref="ConnectInterface.CreateUser" />
-		/// or <see cref="ConnectInterface.LinkAccount" /> to continue the flow
+		/// or <see cref="ConnectInterface.LinkAccount" /> to continue the flow.
 		/// </summary>
 		public ContinuanceToken ContinuanceToken { get; private set; }
 

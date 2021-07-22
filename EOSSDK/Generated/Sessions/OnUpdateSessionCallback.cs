@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Sessions
 	/// <param name="data">A <see cref="UpdateSessionCallbackInfo" /> containing the output information and result</param>
 	public delegate void OnUpdateSessionCallback(UpdateSessionCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnUpdateSessionCallbackInternal(System.IntPtr data);
 }

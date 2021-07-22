@@ -14,12 +14,12 @@ namespace Epic.OnlineServices.Connect
 		public Result ResultCode { get; private set; }
 
 		/// <summary>
-		/// Context that was passed into <see cref="ConnectInterface.CreateUser" />
+		/// Context that was passed into <see cref="ConnectInterface.CreateUser" />.
 		/// </summary>
 		public object ClientData { get; private set; }
 
 		/// <summary>
-		/// If the operation succeeded, this is the Product User ID of the local user who was created
+		/// If the operation succeeded, this is the Product User ID of the local user who was created.
 		/// </summary>
 		public ProductUserId LocalUserId { get; private set; }
 

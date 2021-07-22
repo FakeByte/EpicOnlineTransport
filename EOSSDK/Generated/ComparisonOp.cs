@@ -5,6 +5,8 @@ namespace Epic.OnlineServices
 {
 	/// <summary>
 	/// All comparison operators associated with parameters in a search query
+	/// <seealso cref="Lobby.LobbySearch.SetParameter" />
+	/// <seealso cref="Sessions.SessionSearch.SetParameter" />
 	/// </summary>
 	public enum ComparisonOp : int
 	{

@@ -4,7 +4,7 @@
 namespace Epic.OnlineServices.Connect
 {
 	/// <summary>
-	/// Structure containing information or the connect user login status change callback
+	/// Structure containing information or the connect user login status change callback.
 	/// </summary>
 	public class AddNotifyLoginStatusChangedOptions
 	{

@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.PlayerDataStorage
 {
-	public sealed class PlayerDataStorageInterface : Handle
+	public sealed partial class PlayerDataStorageInterface : Handle
 	{
 		public PlayerDataStorageInterface()
 		{
@@ -31,7 +31,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// </summary>
 		public const int FileMaxSizeBytes = (64 * 1024 * 1024);
 
-		public const int FilemetadataApiLatest = 1;
+		public const int FilemetadataApiLatest = 3;
 
 		/// <summary>
 		/// Maximum File Name Length in bytes
@@ -61,18 +61,18 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// </returns>
 		public Result CopyFileMetadataAtIndex(CopyFileMetadataAtIndexOptions copyFileMetadataOptions, out FileMetadata outMetadata)
 		{
-			System.IntPtr copyFileMetadataOptionsAddress = new System.IntPtr();
+			var copyFileMetadataOptionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyFileMetadataAtIndexOptionsInternal, CopyFileMetadataAtIndexOptions>(ref copyFileMetadataOptionsAddress, copyFileMetadataOptions);
 
 			var outMetadataAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_PlayerDataStorage_CopyFileMetadataAtIndex(InnerHandle, copyFileMetadataOptionsAddress, ref outMetadataAddress);
+			var funcResult = Bindings.EOS_PlayerDataStorage_CopyFileMetadataAtIndex(InnerHandle, copyFileMetadataOptionsAddress, ref outMetadataAddress);
 
 			Helper.TryMarshalDispose(ref copyFileMetadataOptionsAddress);
 
 			if (Helper.TryMarshalGet<FileMetadataInternal, FileMetadata>(outMetadataAddress, out outMetadata))
 			{
-				EOS_PlayerDataStorage_FileMetadata_Release(outMetadataAddress);
+				Bindings.EOS_PlayerDataStorage_FileMetadata_Release(outMetadataAddress);
 			}
 
 			return funcResult;
@@ -89,18 +89,18 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// </returns>
 		public Result CopyFileMetadataByFilename(CopyFileMetadataByFilenameOptions copyFileMetadataOptions, out FileMetadata outMetadata)
 		{
-			System.IntPtr copyFileMetadataOptionsAddress = new System.IntPtr();
+			var copyFileMetadataOptionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyFileMetadataByFilenameOptionsInternal, CopyFileMetadataByFilenameOptions>(ref copyFileMetadataOptionsAddress, copyFileMetadataOptions);
 
 			var outMetadataAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_PlayerDataStorage_CopyFileMetadataByFilename(InnerHandle, copyFileMetadataOptionsAddress, ref outMetadataAddress);
+			var funcResult = Bindings.EOS_PlayerDataStorage_CopyFileMetadataByFilename(InnerHandle, copyFileMetadataOptionsAddress, ref outMetadataAddress);
 
 			Helper.TryMarshalDispose(ref copyFileMetadataOptionsAddress);
 
 			if (Helper.TryMarshalGet<FileMetadataInternal, FileMetadata>(outMetadataAddress, out outMetadata))
 			{
-				EOS_PlayerDataStorage_FileMetadata_Release(outMetadataAddress);
+				Bindings.EOS_PlayerDataStorage_FileMetadata_Release(outMetadataAddress);
 			}
 
 			return funcResult;
@@ -118,7 +118,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// </returns>
 		public Result DeleteCache(DeleteCacheOptions options, object clientData, OnDeleteCacheCompleteCallback completionCallback)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<DeleteCacheOptionsInternal, DeleteCacheOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -126,7 +126,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 			var completionCallbackInternal = new OnDeleteCacheCompleteCallbackInternal(OnDeleteCacheCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionCallback, completionCallbackInternal);
 
-			var funcResult = EOS_PlayerDataStorage_DeleteCache(InnerHandle, optionsAddress, clientDataAddress, completionCallbackInternal);
+			var funcResult = Bindings.EOS_PlayerDataStorage_DeleteCache(InnerHandle, optionsAddress, clientDataAddress, completionCallbackInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -141,7 +141,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// <param name="completionCallback">This function is called when the delete operation completes</param>
 		public void DeleteFile(DeleteFileOptions deleteOptions, object clientData, OnDeleteFileCompleteCallback completionCallback)
 		{
-			System.IntPtr deleteOptionsAddress = new System.IntPtr();
+			var deleteOptionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<DeleteFileOptionsInternal, DeleteFileOptions>(ref deleteOptionsAddress, deleteOptions);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -149,7 +149,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 			var completionCallbackInternal = new OnDeleteFileCompleteCallbackInternal(OnDeleteFileCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionCallback, completionCallbackInternal);
 
-			EOS_PlayerDataStorage_DeleteFile(InnerHandle, deleteOptionsAddress, clientDataAddress, completionCallbackInternal);
+			Bindings.EOS_PlayerDataStorage_DeleteFile(InnerHandle, deleteOptionsAddress, clientDataAddress, completionCallbackInternal);
 
 			Helper.TryMarshalDispose(ref deleteOptionsAddress);
 		}
@@ -163,7 +163,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// <param name="completionCallback">This function is called when the duplicate operation completes</param>
 		public void DuplicateFile(DuplicateFileOptions duplicateOptions, object clientData, OnDuplicateFileCompleteCallback completionCallback)
 		{
-			System.IntPtr duplicateOptionsAddress = new System.IntPtr();
+			var duplicateOptionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<DuplicateFileOptionsInternal, DuplicateFileOptions>(ref duplicateOptionsAddress, duplicateOptions);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -171,7 +171,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 			var completionCallbackInternal = new OnDuplicateFileCompleteCallbackInternal(OnDuplicateFileCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionCallback, completionCallbackInternal);
 
-			EOS_PlayerDataStorage_DuplicateFile(InnerHandle, duplicateOptionsAddress, clientDataAddress, completionCallbackInternal);
+			Bindings.EOS_PlayerDataStorage_DuplicateFile(InnerHandle, duplicateOptionsAddress, clientDataAddress, completionCallbackInternal);
 
 			Helper.TryMarshalDispose(ref duplicateOptionsAddress);
 		}
@@ -187,12 +187,12 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// </returns>
 		public Result GetFileMetadataCount(GetFileMetadataCountOptions getFileMetadataCountOptions, out int outFileMetadataCount)
 		{
-			System.IntPtr getFileMetadataCountOptionsAddress = new System.IntPtr();
+			var getFileMetadataCountOptionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetFileMetadataCountOptionsInternal, GetFileMetadataCountOptions>(ref getFileMetadataCountOptionsAddress, getFileMetadataCountOptions);
 
 			outFileMetadataCount = Helper.GetDefault<int>();
 
-			var funcResult = EOS_PlayerDataStorage_GetFileMetadataCount(InnerHandle, getFileMetadataCountOptionsAddress, ref outFileMetadataCount);
+			var funcResult = Bindings.EOS_PlayerDataStorage_GetFileMetadataCount(InnerHandle, getFileMetadataCountOptionsAddress, ref outFileMetadataCount);
 
 			Helper.TryMarshalDispose(ref getFileMetadataCountOptionsAddress);
 
@@ -211,7 +211,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// <param name="completionCallback">This function is called when the query operation completes</param>
 		public void QueryFile(QueryFileOptions queryFileOptions, object clientData, OnQueryFileCompleteCallback completionCallback)
 		{
-			System.IntPtr queryFileOptionsAddress = new System.IntPtr();
+			var queryFileOptionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryFileOptionsInternal, QueryFileOptions>(ref queryFileOptionsAddress, queryFileOptions);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -219,7 +219,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 			var completionCallbackInternal = new OnQueryFileCompleteCallbackInternal(OnQueryFileCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionCallback, completionCallbackInternal);
 
-			EOS_PlayerDataStorage_QueryFile(InnerHandle, queryFileOptionsAddress, clientDataAddress, completionCallbackInternal);
+			Bindings.EOS_PlayerDataStorage_QueryFile(InnerHandle, queryFileOptionsAddress, clientDataAddress, completionCallbackInternal);
 
 			Helper.TryMarshalDispose(ref queryFileOptionsAddress);
 		}
@@ -236,7 +236,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// <param name="completionCallback">This function is called when the query operation completes</param>
 		public void QueryFileList(QueryFileListOptions queryFileListOptions, object clientData, OnQueryFileListCompleteCallback completionCallback)
 		{
-			System.IntPtr queryFileListOptionsAddress = new System.IntPtr();
+			var queryFileListOptionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryFileListOptionsInternal, QueryFileListOptions>(ref queryFileListOptionsAddress, queryFileListOptions);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -244,7 +244,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 			var completionCallbackInternal = new OnQueryFileListCompleteCallbackInternal(OnQueryFileListCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionCallback, completionCallbackInternal);
 
-			EOS_PlayerDataStorage_QueryFileList(InnerHandle, queryFileListOptionsAddress, clientDataAddress, completionCallbackInternal);
+			Bindings.EOS_PlayerDataStorage_QueryFileList(InnerHandle, queryFileListOptionsAddress, clientDataAddress, completionCallbackInternal);
 
 			Helper.TryMarshalDispose(ref queryFileListOptionsAddress);
 		}
@@ -263,7 +263,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// </returns>
 		public PlayerDataStorageFileTransferRequest ReadFile(ReadFileOptions readOptions, object clientData, OnReadFileCompleteCallback completionCallback)
 		{
-			System.IntPtr readOptionsAddress = new System.IntPtr();
+			var readOptionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<ReadFileOptionsInternal, ReadFileOptions>(ref readOptionsAddress, readOptions);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -271,7 +271,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 			var completionCallbackInternal = new OnReadFileCompleteCallbackInternal(OnReadFileCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionCallback, completionCallbackInternal, readOptions.ReadFileDataCallback, ReadFileOptionsInternal.ReadFileDataCallback, readOptions.FileTransferProgressCallback, ReadFileOptionsInternal.FileTransferProgressCallback);
 
-			var funcResult = EOS_PlayerDataStorage_ReadFile(InnerHandle, readOptionsAddress, clientDataAddress, completionCallbackInternal);
+			var funcResult = Bindings.EOS_PlayerDataStorage_ReadFile(InnerHandle, readOptionsAddress, clientDataAddress, completionCallbackInternal);
 
 			Helper.TryMarshalDispose(ref readOptionsAddress);
 
@@ -294,7 +294,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 		/// </returns>
 		public PlayerDataStorageFileTransferRequest WriteFile(WriteFileOptions writeOptions, object clientData, OnWriteFileCompleteCallback completionCallback)
 		{
-			System.IntPtr writeOptionsAddress = new System.IntPtr();
+			var writeOptionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<WriteFileOptionsInternal, WriteFileOptions>(ref writeOptionsAddress, writeOptions);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -302,7 +302,7 @@ namespace Epic.OnlineServices.PlayerDataStorage
 			var completionCallbackInternal = new OnWriteFileCompleteCallbackInternal(OnWriteFileCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionCallback, completionCallbackInternal, writeOptions.WriteFileDataCallback, WriteFileOptionsInternal.WriteFileDataCallback, writeOptions.FileTransferProgressCallback, WriteFileOptionsInternal.FileTransferProgressCallback);
 
-			var funcResult = EOS_PlayerDataStorage_WriteFile(InnerHandle, writeOptionsAddress, clientDataAddress, completionCallbackInternal);
+			var funcResult = Bindings.EOS_PlayerDataStorage_WriteFile(InnerHandle, writeOptionsAddress, clientDataAddress, completionCallbackInternal);
 
 			Helper.TryMarshalDispose(ref writeOptionsAddress);
 
@@ -442,38 +442,5 @@ namespace Epic.OnlineServices.PlayerDataStorage
 
 			return Helper.GetDefault<WriteResult>();
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_PlayerDataStorage_CopyFileMetadataAtIndex(System.IntPtr handle, System.IntPtr copyFileMetadataOptions, ref System.IntPtr outMetadata);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_PlayerDataStorage_CopyFileMetadataByFilename(System.IntPtr handle, System.IntPtr copyFileMetadataOptions, ref System.IntPtr outMetadata);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_PlayerDataStorage_DeleteCache(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnDeleteCacheCompleteCallbackInternal completionCallback);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_PlayerDataStorage_DeleteFile(System.IntPtr handle, System.IntPtr deleteOptions, System.IntPtr clientData, OnDeleteFileCompleteCallbackInternal completionCallback);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_PlayerDataStorage_DuplicateFile(System.IntPtr handle, System.IntPtr duplicateOptions, System.IntPtr clientData, OnDuplicateFileCompleteCallbackInternal completionCallback);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_PlayerDataStorage_GetFileMetadataCount(System.IntPtr handle, System.IntPtr getFileMetadataCountOptions, ref int outFileMetadataCount);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_PlayerDataStorage_QueryFile(System.IntPtr handle, System.IntPtr queryFileOptions, System.IntPtr clientData, OnQueryFileCompleteCallbackInternal completionCallback);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_PlayerDataStorage_QueryFileList(System.IntPtr handle, System.IntPtr queryFileListOptions, System.IntPtr clientData, OnQueryFileListCompleteCallbackInternal completionCallback);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_PlayerDataStorage_ReadFile(System.IntPtr handle, System.IntPtr readOptions, System.IntPtr clientData, OnReadFileCompleteCallbackInternal completionCallback);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_PlayerDataStorage_FileMetadata_Release(System.IntPtr fileMetadata);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_PlayerDataStorage_WriteFile(System.IntPtr handle, System.IntPtr writeOptions, System.IntPtr clientData, OnWriteFileCompleteCallbackInternal completionCallback);
 	}
 }

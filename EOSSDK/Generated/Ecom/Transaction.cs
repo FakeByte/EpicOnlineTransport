@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Ecom
 {
-	public sealed class Transaction : Handle
+	public sealed partial class Transaction : Handle
 	{
 		public Transaction()
 		{
@@ -37,18 +37,18 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public Result CopyEntitlementByIndex(TransactionCopyEntitlementByIndexOptions options, out Entitlement outEntitlement)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<TransactionCopyEntitlementByIndexOptionsInternal, TransactionCopyEntitlementByIndexOptions>(ref optionsAddress, options);
 
 			var outEntitlementAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Ecom_Transaction_CopyEntitlementByIndex(InnerHandle, optionsAddress, ref outEntitlementAddress);
+			var funcResult = Bindings.EOS_Ecom_Transaction_CopyEntitlementByIndex(InnerHandle, optionsAddress, ref outEntitlementAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<EntitlementInternal, Entitlement>(outEntitlementAddress, out outEntitlement))
 			{
-				EcomInterface.EOS_Ecom_Entitlement_Release(outEntitlementAddress);
+				Bindings.EOS_Ecom_Entitlement_Release(outEntitlementAddress);
 			}
 
 			return funcResult;
@@ -64,10 +64,10 @@ namespace Epic.OnlineServices.Ecom
 		/// </returns>
 		public uint GetEntitlementsCount(TransactionGetEntitlementsCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<TransactionGetEntitlementsCountOptionsInternal, TransactionGetEntitlementsCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Ecom_Transaction_GetEntitlementsCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_Transaction_GetEntitlementsCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -89,9 +89,9 @@ namespace Epic.OnlineServices.Ecom
 		{
 			System.IntPtr outBufferAddress = System.IntPtr.Zero;
 			int inOutBufferLength = EcomInterface.TransactionidMaximumLength + 1;
-			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength);
+			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength, out _);
 
-			var funcResult = EOS_Ecom_Transaction_GetTransactionId(InnerHandle, outBufferAddress, ref inOutBufferLength);
+			var funcResult = Bindings.EOS_Ecom_Transaction_GetTransactionId(InnerHandle, outBufferAddress, ref inOutBufferLength);
 
 			Helper.TryMarshalGet(outBufferAddress, out outBuffer);
 			Helper.TryMarshalDispose(ref outBufferAddress);
@@ -109,19 +109,7 @@ namespace Epic.OnlineServices.Ecom
 		/// <param name="transaction">A handle to a transaction.</param>
 		public void Release()
 		{
-			EOS_Ecom_Transaction_Release(InnerHandle);
+			Bindings.EOS_Ecom_Transaction_Release(InnerHandle);
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Ecom_Transaction_CopyEntitlementByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outEntitlement);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Ecom_Transaction_GetEntitlementsCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Ecom_Transaction_GetTransactionId(System.IntPtr handle, System.IntPtr outBuffer, ref int inOutBufferLength);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Ecom_Transaction_Release(System.IntPtr transaction);
 	}
 }

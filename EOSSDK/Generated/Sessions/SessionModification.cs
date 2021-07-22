@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Sessions
 {
-	public sealed class SessionModification : Handle
+	public sealed partial class SessionModification : Handle
 	{
 		public SessionModification()
 		{
@@ -29,12 +29,12 @@ namespace Epic.OnlineServices.Sessions
 		public const int SessionmodificationMaxSessionAttributes = 64;
 
 		/// <summary>
-		/// Maximum number of characters a session id override
+		/// Maximum number of characters allowed in the session id override
 		/// </summary>
 		public const int SessionmodificationMaxSessionidoverrideLength = 64;
 
 		/// <summary>
-		/// Minimum number of characters the session id override
+		/// Minimum number of characters allowed in the session id override
 		/// </summary>
 		public const int SessionmodificationMinSessionidoverrideLength = 16;
 
@@ -86,10 +86,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result AddAttribute(SessionModificationAddAttributeOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionModificationAddAttributeOptionsInternal, SessionModificationAddAttributeOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionModification_AddAttribute(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionModification_AddAttribute(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -105,7 +105,7 @@ namespace Epic.OnlineServices.Sessions
 		/// <param name="sessionModificationHandle">- The session modification handle to release</param>
 		public void Release()
 		{
-			EOS_SessionModification_Release(InnerHandle);
+			Bindings.EOS_SessionModification_Release(InnerHandle);
 		}
 
 		/// <summary>
@@ -119,10 +119,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result RemoveAttribute(SessionModificationRemoveAttributeOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionModificationRemoveAttributeOptionsInternal, SessionModificationRemoveAttributeOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionModification_RemoveAttribute(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionModification_RemoveAttribute(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -142,10 +142,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result SetBucketId(SessionModificationSetBucketIdOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionModificationSetBucketIdOptionsInternal, SessionModificationSetBucketIdOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionModification_SetBucketId(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionModification_SetBucketId(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -167,10 +167,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result SetHostAddress(SessionModificationSetHostAddressOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionModificationSetHostAddressOptionsInternal, SessionModificationSetHostAddressOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionModification_SetHostAddress(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionModification_SetHostAddress(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -188,10 +188,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result SetInvitesAllowed(SessionModificationSetInvitesAllowedOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionModificationSetInvitesAllowedOptionsInternal, SessionModificationSetInvitesAllowedOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionModification_SetInvitesAllowed(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionModification_SetInvitesAllowed(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -209,10 +209,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result SetJoinInProgressAllowed(SessionModificationSetJoinInProgressAllowedOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionModificationSetJoinInProgressAllowedOptionsInternal, SessionModificationSetJoinInProgressAllowedOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionModification_SetJoinInProgressAllowed(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionModification_SetJoinInProgressAllowed(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -230,10 +230,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result SetMaxPlayers(SessionModificationSetMaxPlayersOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionModificationSetMaxPlayersOptionsInternal, SessionModificationSetMaxPlayersOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionModification_SetMaxPlayers(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionModification_SetMaxPlayers(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -251,41 +251,14 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result SetPermissionLevel(SessionModificationSetPermissionLevelOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionModificationSetPermissionLevelOptionsInternal, SessionModificationSetPermissionLevelOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionModification_SetPermissionLevel(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionModification_SetPermissionLevel(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			return funcResult;
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionModification_AddAttribute(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_SessionModification_Release(System.IntPtr sessionModificationHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionModification_RemoveAttribute(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionModification_SetBucketId(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionModification_SetHostAddress(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionModification_SetInvitesAllowed(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionModification_SetJoinInProgressAllowed(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionModification_SetMaxPlayers(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionModification_SetPermissionLevel(System.IntPtr handle, System.IntPtr options);
 	}
 }

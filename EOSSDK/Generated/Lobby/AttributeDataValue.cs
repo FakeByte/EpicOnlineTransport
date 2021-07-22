@@ -99,17 +99,17 @@ namespace Epic.OnlineServices.Lobby
 			}
 		}
 
-		public static implicit operator AttributeDataValue(long? value)
+		public static implicit operator AttributeDataValue(long value)
 		{
 			return new AttributeDataValue() { AsInt64 = value };
 		}
 
-		public static implicit operator AttributeDataValue(double? value)
+		public static implicit operator AttributeDataValue(double value)
 		{
 			return new AttributeDataValue() { AsDouble = value };
 		}
 
-		public static implicit operator AttributeDataValue(bool? value)
+		public static implicit operator AttributeDataValue(bool value)
 		{
 			return new AttributeDataValue() { AsBool = value };
 		}

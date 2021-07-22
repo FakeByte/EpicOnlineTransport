@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Friends
 {
-	public sealed class FriendsInterface : Handle
+	public sealed partial class FriendsInterface : Handle
 	{
 		public FriendsInterface()
 		{
@@ -61,7 +61,7 @@ namespace Epic.OnlineServices.Friends
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
 		public void AcceptInvite(AcceptInviteOptions options, object clientData, OnAcceptInviteCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AcceptInviteOptionsInternal, AcceptInviteOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -69,7 +69,7 @@ namespace Epic.OnlineServices.Friends
 			var completionDelegateInternal = new OnAcceptInviteCallbackInternal(OnAcceptInviteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Friends_AcceptInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Friends_AcceptInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -85,7 +85,7 @@ namespace Epic.OnlineServices.Friends
 		/// </returns>
 		public ulong AddNotifyFriendsUpdate(AddNotifyFriendsUpdateOptions options, object clientData, OnFriendsUpdateCallback friendsUpdateHandler)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AddNotifyFriendsUpdateOptionsInternal, AddNotifyFriendsUpdateOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -93,7 +93,7 @@ namespace Epic.OnlineServices.Friends
 			var friendsUpdateHandlerInternal = new OnFriendsUpdateCallbackInternal(OnFriendsUpdateCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, friendsUpdateHandler, friendsUpdateHandlerInternal);
 
-			var funcResult = EOS_Friends_AddNotifyFriendsUpdate(InnerHandle, optionsAddress, clientDataAddress, friendsUpdateHandlerInternal);
+			var funcResult = Bindings.EOS_Friends_AddNotifyFriendsUpdate(InnerHandle, optionsAddress, clientDataAddress, friendsUpdateHandlerInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -115,10 +115,10 @@ namespace Epic.OnlineServices.Friends
 		/// </returns>
 		public EpicAccountId GetFriendAtIndex(GetFriendAtIndexOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetFriendAtIndexOptionsInternal, GetFriendAtIndexOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Friends_GetFriendAtIndex(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Friends_GetFriendAtIndex(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -137,10 +137,10 @@ namespace Epic.OnlineServices.Friends
 		/// </returns>
 		public int GetFriendsCount(GetFriendsCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetFriendsCountOptionsInternal, GetFriendsCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Friends_GetFriendsCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Friends_GetFriendsCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -161,10 +161,10 @@ namespace Epic.OnlineServices.Friends
 		/// </returns>
 		public FriendsStatus GetStatus(GetStatusOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetStatusOptionsInternal, GetStatusOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Friends_GetStatus(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Friends_GetStatus(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -181,7 +181,7 @@ namespace Epic.OnlineServices.Friends
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
 		public void QueryFriends(QueryFriendsOptions options, object clientData, OnQueryFriendsCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryFriendsOptionsInternal, QueryFriendsOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -189,7 +189,7 @@ namespace Epic.OnlineServices.Friends
 			var completionDelegateInternal = new OnQueryFriendsCallbackInternal(OnQueryFriendsCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Friends_QueryFriends(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Friends_QueryFriends(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -202,7 +202,7 @@ namespace Epic.OnlineServices.Friends
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
 		public void RejectInvite(RejectInviteOptions options, object clientData, OnRejectInviteCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<RejectInviteOptionsInternal, RejectInviteOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -210,7 +210,7 @@ namespace Epic.OnlineServices.Friends
 			var completionDelegateInternal = new OnRejectInviteCallbackInternal(OnRejectInviteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Friends_RejectInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Friends_RejectInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -223,7 +223,7 @@ namespace Epic.OnlineServices.Friends
 		{
 			Helper.TryRemoveCallbackByNotificationId(notificationId);
 
-			EOS_Friends_RemoveNotifyFriendsUpdate(InnerHandle, notificationId);
+			Bindings.EOS_Friends_RemoveNotifyFriendsUpdate(InnerHandle, notificationId);
 		}
 
 		/// <summary>
@@ -235,7 +235,7 @@ namespace Epic.OnlineServices.Friends
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
 		public void SendInvite(SendInviteOptions options, object clientData, OnSendInviteCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SendInviteOptionsInternal, SendInviteOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -243,7 +243,7 @@ namespace Epic.OnlineServices.Friends
 			var completionDelegateInternal = new OnSendInviteCallbackInternal(OnSendInviteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Friends_SendInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Friends_SendInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -302,32 +302,5 @@ namespace Epic.OnlineServices.Friends
 				callback(callbackInfo);
 			}
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Friends_AcceptInvite(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnAcceptInviteCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern ulong EOS_Friends_AddNotifyFriendsUpdate(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnFriendsUpdateCallbackInternal friendsUpdateHandler);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_Friends_GetFriendAtIndex(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern int EOS_Friends_GetFriendsCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern FriendsStatus EOS_Friends_GetStatus(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Friends_QueryFriends(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnQueryFriendsCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Friends_RejectInvite(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnRejectInviteCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Friends_RemoveNotifyFriendsUpdate(System.IntPtr handle, ulong notificationId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Friends_SendInvite(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnSendInviteCallbackInternal completionDelegate);
 	}
 }

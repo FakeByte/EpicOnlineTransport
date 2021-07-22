@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Achievements
 	/// <param name="data">An <see cref="OnAchievementsUnlockedCallbackV2Info" /> containing the output information and result</param>
 	public delegate void OnAchievementsUnlockedCallbackV2(OnAchievementsUnlockedCallbackV2Info data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnAchievementsUnlockedCallbackV2Internal(System.IntPtr data);
 }

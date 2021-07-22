@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Achievements
 	/// <param name="data">An <see cref="OnQueryDefinitionsCompleteCallbackInfo" /> containing the output information and result</param>
 	public delegate void OnQueryDefinitionsCompleteCallback(OnQueryDefinitionsCompleteCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnQueryDefinitionsCompleteCallbackInternal(System.IntPtr data);
 }

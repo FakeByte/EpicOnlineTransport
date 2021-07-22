@@ -9,7 +9,7 @@ namespace Epic.OnlineServices.Lobby
 	public class CopyLobbyDetailsHandleByUiEventIdOptions
 	{
 		/// <summary>
-		/// UI Event associated with the session
+		/// UI Event associated with the lobby
 		/// </summary>
 		public ulong UiEventId { get; set; }
 	}

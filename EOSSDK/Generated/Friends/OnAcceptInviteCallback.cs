@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Friends
 	/// <param name="data">A <see cref="AcceptInviteCallbackInfo" /> containing the output information and result.</param>
 	public delegate void OnAcceptInviteCallback(AcceptInviteCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnAcceptInviteCallbackInternal(System.IntPtr data);
 }

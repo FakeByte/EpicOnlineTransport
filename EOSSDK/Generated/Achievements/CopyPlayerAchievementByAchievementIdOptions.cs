@@ -9,28 +9,34 @@ namespace Epic.OnlineServices.Achievements
 	public class CopyPlayerAchievementByAchievementIdOptions
 	{
 		/// <summary>
-		/// The Product User ID for the user who is copying the achievement.
+		/// The Product User ID for the user whose achievement is to be retrieved.
 		/// </summary>
-		public ProductUserId UserId { get; set; }
+		public ProductUserId TargetUserId { get; set; }
 
 		/// <summary>
 		/// Achievement ID to search for when retrieving player achievement data from the cache.
 		/// </summary>
 		public string AchievementId { get; set; }
+
+		/// <summary>
+		/// The Product User ID for the user who is querying for a player achievement. For a Dedicated Server this should be null.
+		/// </summary>
+		public ProductUserId LocalUserId { get; set; }
 	}
 
 	[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 8)]
 	internal struct CopyPlayerAchievementByAchievementIdOptionsInternal : ISettable, System.IDisposable
 	{
 		private int m_ApiVersion;
-		private System.IntPtr m_UserId;
+		private System.IntPtr m_TargetUserId;
 		private System.IntPtr m_AchievementId;
+		private System.IntPtr m_LocalUserId;
 
-		public ProductUserId UserId
+		public ProductUserId TargetUserId
 		{
 			set
 			{
-				Helper.TryMarshalSet(ref m_UserId, value);
+				Helper.TryMarshalSet(ref m_TargetUserId, value);
 			}
 		}
 
@@ -42,13 +48,22 @@ namespace Epic.OnlineServices.Achievements
 			}
 		}
 
+		public ProductUserId LocalUserId
+		{
+			set
+			{
+				Helper.TryMarshalSet(ref m_LocalUserId, value);
+			}
+		}
+
 		public void Set(CopyPlayerAchievementByAchievementIdOptions other)
 		{
 			if (other != null)
 			{
 				m_ApiVersion = AchievementsInterface.CopyplayerachievementbyachievementidApiLatest;
-				UserId = other.UserId;
+				TargetUserId = other.TargetUserId;
 				AchievementId = other.AchievementId;
+				LocalUserId = other.LocalUserId;
 			}
 		}
 
@@ -59,7 +74,9 @@ namespace Epic.OnlineServices.Achievements
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_TargetUserId);
 			Helper.TryMarshalDispose(ref m_AchievementId);
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 		}
 	}
 }

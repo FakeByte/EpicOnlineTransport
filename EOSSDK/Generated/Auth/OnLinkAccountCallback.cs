@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.Auth
 	/// <param name="data">A <see cref="LinkAccountCallbackInfo" /> containing the output information and result</param>
 	public delegate void OnLinkAccountCallback(LinkAccountCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnLinkAccountCallbackInternal(System.IntPtr data);
 }

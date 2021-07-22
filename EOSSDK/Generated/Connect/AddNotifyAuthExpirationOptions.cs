@@ -4,7 +4,7 @@
 namespace Epic.OnlineServices.Connect
 {
 	/// <summary>
-	/// Structure containing information for the auth expiration notification callback
+	/// Structure containing information for the auth expiration notification callback.
 	/// </summary>
 	public class AddNotifyAuthExpirationOptions
 	{

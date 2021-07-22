@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Mods
 {
-	public sealed class ModsInterface : Handle
+	public sealed partial class ModsInterface : Handle
 	{
 		public ModsInterface()
 		{
@@ -61,18 +61,18 @@ namespace Epic.OnlineServices.Mods
 		/// </returns>
 		public Result CopyModInfo(CopyModInfoOptions options, out ModInfo outEnumeratedMods)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyModInfoOptionsInternal, CopyModInfoOptions>(ref optionsAddress, options);
 
 			var outEnumeratedModsAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Mods_CopyModInfo(InnerHandle, optionsAddress, ref outEnumeratedModsAddress);
+			var funcResult = Bindings.EOS_Mods_CopyModInfo(InnerHandle, optionsAddress, ref outEnumeratedModsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<ModInfoInternal, ModInfo>(outEnumeratedModsAddress, out outEnumeratedMods))
 			{
-				EOS_Mods_ModInfo_Release(outEnumeratedModsAddress);
+				Bindings.EOS_Mods_ModInfo_Release(outEnumeratedModsAddress);
 			}
 
 			return funcResult;
@@ -88,7 +88,7 @@ namespace Epic.OnlineServices.Mods
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
 		public void EnumerateMods(EnumerateModsOptions options, object clientData, OnEnumerateModsCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<EnumerateModsOptionsInternal, EnumerateModsOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -96,7 +96,7 @@ namespace Epic.OnlineServices.Mods
 			var completionDelegateInternal = new OnEnumerateModsCallbackInternal(OnEnumerateModsCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Mods_EnumerateMods(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Mods_EnumerateMods(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -110,7 +110,7 @@ namespace Epic.OnlineServices.Mods
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
 		public void InstallMod(InstallModOptions options, object clientData, OnInstallModCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<InstallModOptionsInternal, InstallModOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -118,7 +118,7 @@ namespace Epic.OnlineServices.Mods
 			var completionDelegateInternal = new OnInstallModCallbackInternal(OnInstallModCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Mods_InstallMod(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Mods_InstallMod(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -132,7 +132,7 @@ namespace Epic.OnlineServices.Mods
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
 		public void UninstallMod(UninstallModOptions options, object clientData, OnUninstallModCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<UninstallModOptionsInternal, UninstallModOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -140,7 +140,7 @@ namespace Epic.OnlineServices.Mods
 			var completionDelegateInternal = new OnUninstallModCallbackInternal(OnUninstallModCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Mods_UninstallMod(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Mods_UninstallMod(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -154,7 +154,7 @@ namespace Epic.OnlineServices.Mods
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error. If the mod is up to date then the operation will complete with success.</param>
 		public void UpdateMod(UpdateModOptions options, object clientData, OnUpdateModCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<UpdateModOptionsInternal, UpdateModOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -162,7 +162,7 @@ namespace Epic.OnlineServices.Mods
 			var completionDelegateInternal = new OnUpdateModCallbackInternal(OnUpdateModCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Mods_UpdateMod(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Mods_UpdateMod(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -210,23 +210,5 @@ namespace Epic.OnlineServices.Mods
 				callback(callbackInfo);
 			}
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Mods_CopyModInfo(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outEnumeratedMods);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Mods_EnumerateMods(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnEnumerateModsCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Mods_InstallMod(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnInstallModCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Mods_ModInfo_Release(System.IntPtr modInfo);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Mods_UninstallMod(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnUninstallModCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Mods_UpdateMod(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnUpdateModCallbackInternal completionDelegate);
 	}
 }

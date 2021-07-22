@@ -142,6 +142,7 @@ namespace Epic.OnlineServices.Metrics
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_Epic);
 			Helper.TryMarshalDispose(ref m_External, m_AccountIdType, MetricsAccountIdType.External);
 		}
 	}

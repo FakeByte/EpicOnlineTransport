@@ -13,7 +13,7 @@ namespace Epic.OnlineServices.Auth
 	/// <see cref="LoginCredentialType.ExchangeCode" /> - Token is the exchange code.
 	/// <see cref="LoginCredentialType.PersistentAuth" /> - If targeting console platforms, Token is the long lived refresh token. Otherwise N/A.
 	/// <see cref="LoginCredentialType.DeviceCode" /> - N/A.
-	/// <see cref="LoginCredentialType.Developer" /> - ID is the host (e.g. 127.0.0.1:10000), and Token is the credential name.
+	/// <see cref="LoginCredentialType.Developer" /> - ID is the host (e.g. localhost:6547), and Token is the credential name registered in the EOS Developer Authentication Tool.
 	/// <see cref="LoginCredentialType.RefreshToken" /> - Token is the refresh token.
 	/// <see cref="LoginCredentialType.AccountPortal" /> - SystemAuthCredentialsOptions may be required if targeting mobile platforms. Otherwise N/A.
 	/// <see cref="LoginCredentialType.ExternalAuth" /> - Token is the external auth token specified by ExternalType.
@@ -50,7 +50,7 @@ namespace Epic.OnlineServices.Auth
 		/// Type of external login. Needed to identify the external auth method to use.
 		/// Used when login type is set to <see cref="LoginCredentialType.ExternalAuth" />, ignored for other <see cref="LoginCredentialType" /> methods.
 		/// </summary>
-		public Connect.ExternalCredentialType ExternalType { get; set; }
+		public ExternalCredentialType ExternalType { get; set; }
 
 		internal void Set(CredentialsInternal? other)
 		{
@@ -78,7 +78,7 @@ namespace Epic.OnlineServices.Auth
 		private System.IntPtr m_Token;
 		private LoginCredentialType m_Type;
 		private System.IntPtr m_SystemAuthCredentialsOptions;
-		private Connect.ExternalCredentialType m_ExternalType;
+		private ExternalCredentialType m_ExternalType;
 
 		public string Id
 		{
@@ -136,7 +136,7 @@ namespace Epic.OnlineServices.Auth
 			}
 		}
 
-		public Connect.ExternalCredentialType ExternalType
+		public ExternalCredentialType ExternalType
 		{
 			get
 			{

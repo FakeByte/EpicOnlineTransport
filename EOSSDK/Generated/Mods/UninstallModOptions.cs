@@ -59,6 +59,7 @@ namespace Epic.OnlineServices.Mods
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 			Helper.TryMarshalDispose(ref m_Mod);
 		}
 	}

@@ -6,19 +6,19 @@ namespace Epic.OnlineServices.Connect
 	/// <summary>
 	/// A structure that contains external login credentials.
 	/// 
-	/// This is part of the input structure <see cref="LoginOptions" />
+	/// This is part of the input structure <see cref="LoginOptions" />.
 	/// <seealso cref="ExternalCredentialType" />
 	/// <seealso cref="ConnectInterface.Login" />
 	/// </summary>
 	public class Credentials : ISettable
 	{
 		/// <summary>
-		/// External token associated with the user logging in
+		/// External token associated with the user logging in.
 		/// </summary>
 		public string Token { get; set; }
 
 		/// <summary>
-		/// Type of external login; identifies the auth method to use
+		/// Type of external login; identifies the auth method to use.
 		/// </summary>
 		public ExternalCredentialType Type { get; set; }
 

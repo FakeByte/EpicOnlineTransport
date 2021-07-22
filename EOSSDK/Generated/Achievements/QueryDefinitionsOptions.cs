@@ -78,6 +78,8 @@ namespace Epic.OnlineServices.Achievements
 
 		public void Dispose()
 		{
+			Helper.TryMarshalDispose(ref m_LocalUserId);
+			Helper.TryMarshalDispose(ref m_EpicUserId_DEPRECATED);
 			Helper.TryMarshalDispose(ref m_HiddenAchievementIds_DEPRECATED);
 		}
 	}

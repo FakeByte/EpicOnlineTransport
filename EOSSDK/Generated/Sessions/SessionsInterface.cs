@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Sessions
 {
-	public sealed class SessionsInterface : Handle
+	public sealed partial class SessionsInterface : Handle
 	{
 		public SessionsInterface()
 		{
@@ -195,7 +195,7 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public ulong AddNotifyJoinSessionAccepted(AddNotifyJoinSessionAcceptedOptions options, object clientData, OnJoinSessionAcceptedCallback notificationFn)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AddNotifyJoinSessionAcceptedOptionsInternal, AddNotifyJoinSessionAcceptedOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -203,7 +203,7 @@ namespace Epic.OnlineServices.Sessions
 			var notificationFnInternal = new OnJoinSessionAcceptedCallbackInternal(OnJoinSessionAcceptedCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, notificationFn, notificationFnInternal);
 
-			var funcResult = EOS_Sessions_AddNotifyJoinSessionAccepted(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
+			var funcResult = Bindings.EOS_Sessions_AddNotifyJoinSessionAccepted(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -224,7 +224,7 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public ulong AddNotifySessionInviteAccepted(AddNotifySessionInviteAcceptedOptions options, object clientData, OnSessionInviteAcceptedCallback notificationFn)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AddNotifySessionInviteAcceptedOptionsInternal, AddNotifySessionInviteAcceptedOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -232,7 +232,7 @@ namespace Epic.OnlineServices.Sessions
 			var notificationFnInternal = new OnSessionInviteAcceptedCallbackInternal(OnSessionInviteAcceptedCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, notificationFn, notificationFnInternal);
 
-			var funcResult = EOS_Sessions_AddNotifySessionInviteAccepted(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
+			var funcResult = Bindings.EOS_Sessions_AddNotifySessionInviteAccepted(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -253,7 +253,7 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public ulong AddNotifySessionInviteReceived(AddNotifySessionInviteReceivedOptions options, object clientData, OnSessionInviteReceivedCallback notificationFn)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AddNotifySessionInviteReceivedOptionsInternal, AddNotifySessionInviteReceivedOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -261,7 +261,7 @@ namespace Epic.OnlineServices.Sessions
 			var notificationFnInternal = new OnSessionInviteReceivedCallbackInternal(OnSessionInviteReceivedCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, notificationFn, notificationFnInternal);
 
-			var funcResult = EOS_Sessions_AddNotifySessionInviteReceived(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
+			var funcResult = Bindings.EOS_Sessions_AddNotifySessionInviteReceived(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -283,12 +283,12 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result CopyActiveSessionHandle(CopyActiveSessionHandleOptions options, out ActiveSession outSessionHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyActiveSessionHandleOptionsInternal, CopyActiveSessionHandleOptions>(ref optionsAddress, options);
 
 			var outSessionHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Sessions_CopyActiveSessionHandle(InnerHandle, optionsAddress, ref outSessionHandleAddress);
+			var funcResult = Bindings.EOS_Sessions_CopyActiveSessionHandle(InnerHandle, optionsAddress, ref outSessionHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -313,12 +313,12 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result CopySessionHandleByInviteId(CopySessionHandleByInviteIdOptions options, out SessionDetails outSessionHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopySessionHandleByInviteIdOptionsInternal, CopySessionHandleByInviteIdOptions>(ref optionsAddress, options);
 
 			var outSessionHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Sessions_CopySessionHandleByInviteId(InnerHandle, optionsAddress, ref outSessionHandleAddress);
+			var funcResult = Bindings.EOS_Sessions_CopySessionHandleByInviteId(InnerHandle, optionsAddress, ref outSessionHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -343,12 +343,12 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result CopySessionHandleByUiEventId(CopySessionHandleByUiEventIdOptions options, out SessionDetails outSessionHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopySessionHandleByUiEventIdOptionsInternal, CopySessionHandleByUiEventIdOptions>(ref optionsAddress, options);
 
 			var outSessionHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Sessions_CopySessionHandleByUiEventId(InnerHandle, optionsAddress, ref outSessionHandleAddress);
+			var funcResult = Bindings.EOS_Sessions_CopySessionHandleByUiEventId(InnerHandle, optionsAddress, ref outSessionHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -373,12 +373,12 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result CopySessionHandleForPresence(CopySessionHandleForPresenceOptions options, out SessionDetails outSessionHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopySessionHandleForPresenceOptionsInternal, CopySessionHandleForPresenceOptions>(ref optionsAddress, options);
 
 			var outSessionHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Sessions_CopySessionHandleForPresence(InnerHandle, optionsAddress, ref outSessionHandleAddress);
+			var funcResult = Bindings.EOS_Sessions_CopySessionHandleForPresence(InnerHandle, optionsAddress, ref outSessionHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -401,12 +401,12 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result CreateSessionModification(CreateSessionModificationOptions options, out SessionModification outSessionModificationHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CreateSessionModificationOptionsInternal, CreateSessionModificationOptions>(ref optionsAddress, options);
 
 			var outSessionModificationHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Sessions_CreateSessionModification(InnerHandle, optionsAddress, ref outSessionModificationHandleAddress);
+			var funcResult = Bindings.EOS_Sessions_CreateSessionModification(InnerHandle, optionsAddress, ref outSessionModificationHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -430,12 +430,12 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result CreateSessionSearch(CreateSessionSearchOptions options, out SessionSearch outSessionSearchHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CreateSessionSearchOptionsInternal, CreateSessionSearchOptions>(ref optionsAddress, options);
 
 			var outSessionSearchHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Sessions_CreateSessionSearch(InnerHandle, optionsAddress, ref outSessionSearchHandleAddress);
+			var funcResult = Bindings.EOS_Sessions_CreateSessionSearch(InnerHandle, optionsAddress, ref outSessionSearchHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -458,7 +458,7 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public void DestroySession(DestroySessionOptions options, object clientData, OnDestroySessionCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<DestroySessionOptionsInternal, DestroySessionOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -466,7 +466,7 @@ namespace Epic.OnlineServices.Sessions
 			var completionDelegateInternal = new OnDestroySessionCallbackInternal(OnDestroySessionCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Sessions_DestroySession(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Sessions_DestroySession(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -482,10 +482,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result DumpSessionState(DumpSessionStateOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<DumpSessionStateOptionsInternal, DumpSessionStateOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Sessions_DumpSessionState(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Sessions_DumpSessionState(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -506,7 +506,7 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public void EndSession(EndSessionOptions options, object clientData, OnEndSessionCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<EndSessionOptionsInternal, EndSessionOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -514,7 +514,7 @@ namespace Epic.OnlineServices.Sessions
 			var completionDelegateInternal = new OnEndSessionCallbackInternal(OnEndSessionCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Sessions_EndSession(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Sessions_EndSession(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -528,10 +528,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public uint GetInviteCount(GetInviteCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetInviteCountOptionsInternal, GetInviteCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Sessions_GetInviteCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Sessions_GetInviteCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -551,14 +551,14 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result GetInviteIdByIndex(GetInviteIdByIndexOptions options, out string outBuffer)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetInviteIdByIndexOptionsInternal, GetInviteIdByIndexOptions>(ref optionsAddress, options);
 
 			System.IntPtr outBufferAddress = System.IntPtr.Zero;
 			int inOutBufferLength = InviteidMaxLength + 1;
-			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength);
+			Helper.TryMarshalAllocate(ref outBufferAddress, inOutBufferLength, out _);
 
-			var funcResult = EOS_Sessions_GetInviteIdByIndex(InnerHandle, optionsAddress, outBufferAddress, ref inOutBufferLength);
+			var funcResult = Bindings.EOS_Sessions_GetInviteIdByIndex(InnerHandle, optionsAddress, outBufferAddress, ref inOutBufferLength);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -582,10 +582,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result IsUserInSession(IsUserInSessionOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<IsUserInSessionOptionsInternal, IsUserInSessionOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Sessions_IsUserInSession(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Sessions_IsUserInSession(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -605,7 +605,7 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public void JoinSession(JoinSessionOptions options, object clientData, OnJoinSessionCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<JoinSessionOptionsInternal, JoinSessionOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -613,7 +613,7 @@ namespace Epic.OnlineServices.Sessions
 			var completionDelegateInternal = new OnJoinSessionCallbackInternal(OnJoinSessionCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Sessions_JoinSession(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Sessions_JoinSession(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -626,7 +626,7 @@ namespace Epic.OnlineServices.Sessions
 		/// <param name="completionDelegate">A callback that is fired when the query invites operation completes, either successfully or in error</param>
 		public void QueryInvites(QueryInvitesOptions options, object clientData, OnQueryInvitesCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryInvitesOptionsInternal, QueryInvitesOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -634,7 +634,7 @@ namespace Epic.OnlineServices.Sessions
 			var completionDelegateInternal = new OnQueryInvitesCallbackInternal(OnQueryInvitesCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Sessions_QueryInvites(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Sessions_QueryInvites(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -654,7 +654,7 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public void RegisterPlayers(RegisterPlayersOptions options, object clientData, OnRegisterPlayersCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<RegisterPlayersOptionsInternal, RegisterPlayersOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -662,7 +662,7 @@ namespace Epic.OnlineServices.Sessions
 			var completionDelegateInternal = new OnRegisterPlayersCallbackInternal(OnRegisterPlayersCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Sessions_RegisterPlayers(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Sessions_RegisterPlayers(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -680,7 +680,7 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public void RejectInvite(RejectInviteOptions options, object clientData, OnRejectInviteCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<RejectInviteOptionsInternal, RejectInviteOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -688,7 +688,7 @@ namespace Epic.OnlineServices.Sessions
 			var completionDelegateInternal = new OnRejectInviteCallbackInternal(OnRejectInviteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Sessions_RejectInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Sessions_RejectInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -701,7 +701,7 @@ namespace Epic.OnlineServices.Sessions
 		{
 			Helper.TryRemoveCallbackByNotificationId(inId);
 
-			EOS_Sessions_RemoveNotifyJoinSessionAccepted(InnerHandle, inId);
+			Bindings.EOS_Sessions_RemoveNotifyJoinSessionAccepted(InnerHandle, inId);
 		}
 
 		/// <summary>
@@ -712,7 +712,7 @@ namespace Epic.OnlineServices.Sessions
 		{
 			Helper.TryRemoveCallbackByNotificationId(inId);
 
-			EOS_Sessions_RemoveNotifySessionInviteAccepted(InnerHandle, inId);
+			Bindings.EOS_Sessions_RemoveNotifySessionInviteAccepted(InnerHandle, inId);
 		}
 
 		/// <summary>
@@ -723,7 +723,7 @@ namespace Epic.OnlineServices.Sessions
 		{
 			Helper.TryRemoveCallbackByNotificationId(inId);
 
-			EOS_Sessions_RemoveNotifySessionInviteReceived(InnerHandle, inId);
+			Bindings.EOS_Sessions_RemoveNotifySessionInviteReceived(InnerHandle, inId);
 		}
 
 		/// <summary>
@@ -739,7 +739,7 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public void SendInvite(SendInviteOptions options, object clientData, OnSendInviteCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SendInviteOptionsInternal, SendInviteOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -747,7 +747,7 @@ namespace Epic.OnlineServices.Sessions
 			var completionDelegateInternal = new OnSendInviteCallbackInternal(OnSendInviteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Sessions_SendInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Sessions_SendInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -766,7 +766,7 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public void StartSession(StartSessionOptions options, object clientData, OnStartSessionCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<StartSessionOptionsInternal, StartSessionOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -774,7 +774,7 @@ namespace Epic.OnlineServices.Sessions
 			var completionDelegateInternal = new OnStartSessionCallbackInternal(OnStartSessionCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Sessions_StartSession(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Sessions_StartSession(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -794,7 +794,7 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public void UnregisterPlayers(UnregisterPlayersOptions options, object clientData, OnUnregisterPlayersCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<UnregisterPlayersOptionsInternal, UnregisterPlayersOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -802,7 +802,7 @@ namespace Epic.OnlineServices.Sessions
 			var completionDelegateInternal = new OnUnregisterPlayersCallbackInternal(OnUnregisterPlayersCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Sessions_UnregisterPlayers(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Sessions_UnregisterPlayers(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -821,7 +821,7 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public void UpdateSession(UpdateSessionOptions options, object clientData, OnUpdateSessionCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<UpdateSessionOptionsInternal, UpdateSessionOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -829,7 +829,7 @@ namespace Epic.OnlineServices.Sessions
 			var completionDelegateInternal = new OnUpdateSessionCallbackInternal(OnUpdateSessionCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Sessions_UpdateSession(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Sessions_UpdateSession(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -848,12 +848,12 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result UpdateSessionModification(UpdateSessionModificationOptions options, out SessionModification outSessionModificationHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<UpdateSessionModificationOptionsInternal, UpdateSessionModificationOptions>(ref optionsAddress, options);
 
 			var outSessionModificationHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Sessions_UpdateSessionModification(InnerHandle, optionsAddress, ref outSessionModificationHandleAddress);
+			var funcResult = Bindings.EOS_Sessions_UpdateSessionModification(InnerHandle, optionsAddress, ref outSessionModificationHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -1004,86 +1004,5 @@ namespace Epic.OnlineServices.Sessions
 				callback(callbackInfo);
 			}
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern ulong EOS_Sessions_AddNotifyJoinSessionAccepted(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnJoinSessionAcceptedCallbackInternal notificationFn);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern ulong EOS_Sessions_AddNotifySessionInviteAccepted(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnSessionInviteAcceptedCallbackInternal notificationFn);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern ulong EOS_Sessions_AddNotifySessionInviteReceived(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnSessionInviteReceivedCallbackInternal notificationFn);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Sessions_CopyActiveSessionHandle(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outSessionHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Sessions_CopySessionHandleByInviteId(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outSessionHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Sessions_CopySessionHandleByUiEventId(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outSessionHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Sessions_CopySessionHandleForPresence(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outSessionHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Sessions_CreateSessionModification(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outSessionModificationHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Sessions_CreateSessionSearch(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outSessionSearchHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Sessions_DestroySession(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnDestroySessionCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Sessions_DumpSessionState(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Sessions_EndSession(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnEndSessionCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Sessions_GetInviteCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Sessions_GetInviteIdByIndex(System.IntPtr handle, System.IntPtr options, System.IntPtr outBuffer, ref int inOutBufferLength);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Sessions_IsUserInSession(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Sessions_JoinSession(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnJoinSessionCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Sessions_QueryInvites(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnQueryInvitesCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Sessions_RegisterPlayers(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnRegisterPlayersCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Sessions_RejectInvite(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnRejectInviteCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Sessions_RemoveNotifyJoinSessionAccepted(System.IntPtr handle, ulong inId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Sessions_RemoveNotifySessionInviteAccepted(System.IntPtr handle, ulong inId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Sessions_RemoveNotifySessionInviteReceived(System.IntPtr handle, ulong inId);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Sessions_SendInvite(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnSendInviteCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Sessions_StartSession(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnStartSessionCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Sessions_UnregisterPlayers(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnUnregisterPlayersCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Sessions_UpdateSession(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnUpdateSessionCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Sessions_UpdateSessionModification(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outSessionModificationHandle);
 	}
 }

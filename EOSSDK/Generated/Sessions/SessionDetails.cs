@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Sessions
 {
-	public sealed class SessionDetails : Handle
+	public sealed partial class SessionDetails : Handle
 	{
 		public SessionDetails()
 		{
@@ -64,18 +64,18 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result CopyInfo(SessionDetailsCopyInfoOptions options, out SessionDetailsInfo outSessionInfo)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionDetailsCopyInfoOptionsInternal, SessionDetailsCopyInfoOptions>(ref optionsAddress, options);
 
 			var outSessionInfoAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_SessionDetails_CopyInfo(InnerHandle, optionsAddress, ref outSessionInfoAddress);
+			var funcResult = Bindings.EOS_SessionDetails_CopyInfo(InnerHandle, optionsAddress, ref outSessionInfoAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<SessionDetailsInfoInternal, SessionDetailsInfo>(outSessionInfoAddress, out outSessionInfo))
 			{
-				EOS_SessionDetails_Info_Release(outSessionInfoAddress);
+				Bindings.EOS_SessionDetails_Info_Release(outSessionInfoAddress);
 			}
 
 			return funcResult;
@@ -97,18 +97,18 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result CopySessionAttributeByIndex(SessionDetailsCopySessionAttributeByIndexOptions options, out SessionDetailsAttribute outSessionAttribute)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionDetailsCopySessionAttributeByIndexOptionsInternal, SessionDetailsCopySessionAttributeByIndexOptions>(ref optionsAddress, options);
 
 			var outSessionAttributeAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_SessionDetails_CopySessionAttributeByIndex(InnerHandle, optionsAddress, ref outSessionAttributeAddress);
+			var funcResult = Bindings.EOS_SessionDetails_CopySessionAttributeByIndex(InnerHandle, optionsAddress, ref outSessionAttributeAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<SessionDetailsAttributeInternal, SessionDetailsAttribute>(outSessionAttributeAddress, out outSessionAttribute))
 			{
-				EOS_SessionDetails_Attribute_Release(outSessionAttributeAddress);
+				Bindings.EOS_SessionDetails_Attribute_Release(outSessionAttributeAddress);
 			}
 
 			return funcResult;
@@ -130,18 +130,18 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result CopySessionAttributeByKey(SessionDetailsCopySessionAttributeByKeyOptions options, out SessionDetailsAttribute outSessionAttribute)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionDetailsCopySessionAttributeByKeyOptionsInternal, SessionDetailsCopySessionAttributeByKeyOptions>(ref optionsAddress, options);
 
 			var outSessionAttributeAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_SessionDetails_CopySessionAttributeByKey(InnerHandle, optionsAddress, ref outSessionAttributeAddress);
+			var funcResult = Bindings.EOS_SessionDetails_CopySessionAttributeByKey(InnerHandle, optionsAddress, ref outSessionAttributeAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<SessionDetailsAttributeInternal, SessionDetailsAttribute>(outSessionAttributeAddress, out outSessionAttribute))
 			{
-				EOS_SessionDetails_Attribute_Release(outSessionAttributeAddress);
+				Bindings.EOS_SessionDetails_Attribute_Release(outSessionAttributeAddress);
 			}
 
 			return funcResult;
@@ -156,10 +156,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public uint GetSessionAttributeCount(SessionDetailsGetSessionAttributeCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionDetailsGetSessionAttributeCountOptionsInternal, SessionDetailsGetSessionAttributeCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionDetails_GetSessionAttributeCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionDetails_GetSessionAttributeCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -173,28 +173,7 @@ namespace Epic.OnlineServices.Sessions
 		/// <param name="sessionHandle">- The session handle to release</param>
 		public void Release()
 		{
-			EOS_SessionDetails_Release(InnerHandle);
+			Bindings.EOS_SessionDetails_Release(InnerHandle);
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionDetails_CopyInfo(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outSessionInfo);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionDetails_CopySessionAttributeByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outSessionAttribute);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionDetails_CopySessionAttributeByKey(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outSessionAttribute);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_SessionDetails_GetSessionAttributeCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_SessionDetails_Release(System.IntPtr sessionHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_SessionDetails_Attribute_Release(System.IntPtr sessionAttribute);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_SessionDetails_Info_Release(System.IntPtr sessionInfo);
 	}
 }

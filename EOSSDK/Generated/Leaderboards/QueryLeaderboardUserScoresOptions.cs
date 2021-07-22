@@ -27,6 +27,13 @@ namespace Epic.OnlineServices.Leaderboards
 		/// An optional POSIX timestamp, or <see cref="LeaderboardsInterface.TimeUndefined" />; results will only include scores made before this time
 		/// </summary>
 		public System.DateTimeOffset? EndTime { get; set; }
+
+		/// <summary>
+		/// Product User ID for user who is querying user scores.
+		/// Must be set when using a client policy that requires a valid logged in user.
+		/// Not used for Dedicated Server where no user is available.
+		/// </summary>
+		public ProductUserId LocalUserId { get; set; }
 	}
 
 	[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 8)]
@@ -39,6 +46,7 @@ namespace Epic.OnlineServices.Leaderboards
 		private uint m_StatInfoCount;
 		private long m_StartTime;
 		private long m_EndTime;
+		private System.IntPtr m_LocalUserId;
 
 		public ProductUserId[] UserIds
 		{
@@ -72,6 +80,14 @@ namespace Epic.OnlineServices.Leaderboards
 			}
 		}
 
+		public ProductUserId LocalUserId
+		{
+			set
+			{
+				Helper.TryMarshalSet(ref m_LocalUserId, value);
+			}
+		}
+
 		public void Set(QueryLeaderboardUserScoresOptions other)
 		{
 			if (other != null)
@@ -81,6 +97,7 @@ namespace Epic.OnlineServices.Leaderboards
 				StatInfo = other.StatInfo;
 				StartTime = other.StartTime;
 				EndTime = other.EndTime;
+				LocalUserId = other.LocalUserId;
 			}
 		}
 
@@ -93,6 +110,7 @@ namespace Epic.OnlineServices.Leaderboards
 		{
 			Helper.TryMarshalDispose(ref m_UserIds);
 			Helper.TryMarshalDispose(ref m_StatInfo);
+			Helper.TryMarshalDispose(ref m_LocalUserId);
 		}
 	}
 }

@@ -9,5 +9,6 @@ namespace Epic.OnlineServices.UserInfo
 	/// <param name="data">A <see cref="QueryUserInfoByExternalAccountCallbackInfo" /> containing the output information and result</param>
 	public delegate void OnQueryUserInfoByExternalAccountCallback(QueryUserInfoByExternalAccountCallbackInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnQueryUserInfoByExternalAccountCallbackInternal(System.IntPtr data);
 }

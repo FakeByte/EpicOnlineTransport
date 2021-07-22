@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.UI
 {
-	public sealed class UIInterface : Handle
+	public sealed partial class UIInterface : Handle
 	{
 		public UIInterface()
 		{
@@ -49,6 +49,16 @@ namespace Epic.OnlineServices.UI
 		public const int HidefriendsApiLatest = 1;
 
 		/// <summary>
+		/// The most recent version of the <see cref="PrePresent" /> API.
+		/// </summary>
+		public const int PrepresentApiLatest = 1;
+
+		/// <summary>
+		/// The most recent version of the <see cref="ReportKeyEvent" /> API.
+		/// </summary>
+		public const int ReportkeyeventApiLatest = 1;
+
+		/// <summary>
 		/// The most recent version of the <see cref="SetDisplayPreference" /> API.
 		/// </summary>
 		public const int SetdisplaypreferenceApiLatest = 1;
@@ -74,10 +84,10 @@ namespace Epic.OnlineServices.UI
 		/// </returns>
 		public Result AcknowledgeEventId(AcknowledgeEventIdOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AcknowledgeEventIdOptionsInternal, AcknowledgeEventIdOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_UI_AcknowledgeEventId(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_UI_AcknowledgeEventId(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -97,7 +107,7 @@ namespace Epic.OnlineServices.UI
 		/// </returns>
 		public ulong AddNotifyDisplaySettingsUpdated(AddNotifyDisplaySettingsUpdatedOptions options, object clientData, OnDisplaySettingsUpdatedCallback notificationFn)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<AddNotifyDisplaySettingsUpdatedOptionsInternal, AddNotifyDisplaySettingsUpdatedOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -105,7 +115,7 @@ namespace Epic.OnlineServices.UI
 			var notificationFnInternal = new OnDisplaySettingsUpdatedCallbackInternal(OnDisplaySettingsUpdatedCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, notificationFn, notificationFnInternal);
 
-			var funcResult = EOS_UI_AddNotifyDisplaySettingsUpdated(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
+			var funcResult = Bindings.EOS_UI_AddNotifyDisplaySettingsUpdated(InnerHandle, optionsAddress, clientDataAddress, notificationFnInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -123,10 +133,10 @@ namespace Epic.OnlineServices.UI
 		/// </returns>
 		public bool GetFriendsVisible(GetFriendsVisibleOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetFriendsVisibleOptionsInternal, GetFriendsVisibleOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_UI_GetFriendsVisible(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_UI_GetFriendsVisible(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -143,7 +153,7 @@ namespace Epic.OnlineServices.UI
 		/// </returns>
 		public NotificationLocation GetNotificationLocationPreference()
 		{
-			var funcResult = EOS_UI_GetNotificationLocationPreference(InnerHandle);
+			var funcResult = Bindings.EOS_UI_GetNotificationLocationPreference(InnerHandle);
 
 			return funcResult;
 		}
@@ -159,10 +169,10 @@ namespace Epic.OnlineServices.UI
 		/// </returns>
 		public KeyCombination GetToggleFriendsKey(GetToggleFriendsKeyOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetToggleFriendsKeyOptionsInternal, GetToggleFriendsKeyOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_UI_GetToggleFriendsKey(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_UI_GetToggleFriendsKey(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -183,7 +193,7 @@ namespace Epic.OnlineServices.UI
 		/// </returns>
 		public void HideFriends(HideFriendsOptions options, object clientData, OnHideFriendsCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<HideFriendsOptionsInternal, HideFriendsOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -191,7 +201,7 @@ namespace Epic.OnlineServices.UI
 			var completionDelegateInternal = new OnHideFriendsCallbackInternal(OnHideFriendsCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_UI_HideFriends(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_UI_HideFriends(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -207,7 +217,7 @@ namespace Epic.OnlineServices.UI
 		/// </returns>
 		public bool IsValidKeyCombination(KeyCombination keyCombination)
 		{
-			var funcResult = EOS_UI_IsValidKeyCombination(InnerHandle, keyCombination);
+			var funcResult = Bindings.EOS_UI_IsValidKeyCombination(InnerHandle, keyCombination);
 
 			bool funcResultReturn;
 			Helper.TryMarshalGet(funcResult, out funcResultReturn);
@@ -222,7 +232,7 @@ namespace Epic.OnlineServices.UI
 		{
 			Helper.TryRemoveCallbackByNotificationId(id);
 
-			EOS_UI_RemoveNotifyDisplaySettingsUpdated(InnerHandle, id);
+			Bindings.EOS_UI_RemoveNotifyDisplaySettingsUpdated(InnerHandle, id);
 		}
 
 		/// <summary>
@@ -237,10 +247,10 @@ namespace Epic.OnlineServices.UI
 		/// </returns>
 		public Result SetDisplayPreference(SetDisplayPreferenceOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SetDisplayPreferenceOptionsInternal, SetDisplayPreferenceOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_UI_SetDisplayPreference(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_UI_SetDisplayPreference(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -263,10 +273,10 @@ namespace Epic.OnlineServices.UI
 		/// </returns>
 		public Result SetToggleFriendsKey(SetToggleFriendsKeyOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SetToggleFriendsKeyOptionsInternal, SetToggleFriendsKeyOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_UI_SetToggleFriendsKey(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_UI_SetToggleFriendsKey(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -287,7 +297,7 @@ namespace Epic.OnlineServices.UI
 		/// </returns>
 		public void ShowFriends(ShowFriendsOptions options, object clientData, OnShowFriendsCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<ShowFriendsOptionsInternal, ShowFriendsOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -295,7 +305,7 @@ namespace Epic.OnlineServices.UI
 			var completionDelegateInternal = new OnShowFriendsCallbackInternal(OnShowFriendsCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_UI_ShowFriends(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_UI_ShowFriends(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -332,38 +342,5 @@ namespace Epic.OnlineServices.UI
 				callback(callbackInfo);
 			}
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_UI_AcknowledgeEventId(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern ulong EOS_UI_AddNotifyDisplaySettingsUpdated(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnDisplaySettingsUpdatedCallbackInternal notificationFn);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern int EOS_UI_GetFriendsVisible(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern NotificationLocation EOS_UI_GetNotificationLocationPreference(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern KeyCombination EOS_UI_GetToggleFriendsKey(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_UI_HideFriends(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnHideFriendsCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern int EOS_UI_IsValidKeyCombination(System.IntPtr handle, KeyCombination keyCombination);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_UI_RemoveNotifyDisplaySettingsUpdated(System.IntPtr handle, ulong id);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_UI_SetDisplayPreference(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_UI_SetToggleFriendsKey(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_UI_ShowFriends(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnShowFriendsCallbackInternal completionDelegate);
 	}
 }

@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Stats
 {
-	public sealed class StatsInterface : Handle
+	public sealed partial class StatsInterface : Handle
 	{
 		public StatsInterface()
 		{
@@ -41,7 +41,7 @@ namespace Epic.OnlineServices.Stats
 		/// <summary>
 		/// The most recent version of the <see cref="IngestStat" /> struct.
 		/// </summary>
-		public const int IngeststatApiLatest = 2;
+		public const int IngeststatApiLatest = 3;
 
 		/// <summary>
 		/// Maximum number of stats that can be ingested in a single <see cref="IngestStat" /> operation.
@@ -56,7 +56,7 @@ namespace Epic.OnlineServices.Stats
 		/// <summary>
 		/// The most recent version of the <see cref="QueryStats" /> struct.
 		/// </summary>
-		public const int QuerystatsApiLatest = 2;
+		public const int QuerystatsApiLatest = 3;
 
 		/// <summary>
 		/// The most recent version of the <see cref="Stat" /> struct.
@@ -81,18 +81,18 @@ namespace Epic.OnlineServices.Stats
 		/// </returns>
 		public Result CopyStatByIndex(CopyStatByIndexOptions options, out Stat outStat)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyStatByIndexOptionsInternal, CopyStatByIndexOptions>(ref optionsAddress, options);
 
 			var outStatAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Stats_CopyStatByIndex(InnerHandle, optionsAddress, ref outStatAddress);
+			var funcResult = Bindings.EOS_Stats_CopyStatByIndex(InnerHandle, optionsAddress, ref outStatAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<StatInternal, Stat>(outStatAddress, out outStat))
 			{
-				EOS_Stats_Stat_Release(outStatAddress);
+				Bindings.EOS_Stats_Stat_Release(outStatAddress);
 			}
 
 			return funcResult;
@@ -111,18 +111,18 @@ namespace Epic.OnlineServices.Stats
 		/// </returns>
 		public Result CopyStatByName(CopyStatByNameOptions options, out Stat outStat)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<CopyStatByNameOptionsInternal, CopyStatByNameOptions>(ref optionsAddress, options);
 
 			var outStatAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_Stats_CopyStatByName(InnerHandle, optionsAddress, ref outStatAddress);
+			var funcResult = Bindings.EOS_Stats_CopyStatByName(InnerHandle, optionsAddress, ref outStatAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<StatInternal, Stat>(outStatAddress, out outStat))
 			{
-				EOS_Stats_Stat_Release(outStatAddress);
+				Bindings.EOS_Stats_Stat_Release(outStatAddress);
 			}
 
 			return funcResult;
@@ -138,10 +138,10 @@ namespace Epic.OnlineServices.Stats
 		/// </returns>
 		public uint GetStatsCount(GetStatCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<GetStatCountOptionsInternal, GetStatCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_Stats_GetStatsCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Stats_GetStatsCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -163,7 +163,7 @@ namespace Epic.OnlineServices.Stats
 		/// </returns>
 		public void IngestStat(IngestStatOptions options, object clientData, OnIngestStatCompleteCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<IngestStatOptionsInternal, IngestStatOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -171,7 +171,7 @@ namespace Epic.OnlineServices.Stats
 			var completionDelegateInternal = new OnIngestStatCompleteCallbackInternal(OnIngestStatCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Stats_IngestStat(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Stats_IngestStat(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -189,7 +189,7 @@ namespace Epic.OnlineServices.Stats
 		/// </returns>
 		public void QueryStats(QueryStatsOptions options, object clientData, OnQueryStatsCompleteCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<QueryStatsOptionsInternal, QueryStatsOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -197,7 +197,7 @@ namespace Epic.OnlineServices.Stats
 			var completionDelegateInternal = new OnQueryStatsCompleteCallbackInternal(OnQueryStatsCompleteCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_Stats_QueryStats(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Stats_QueryStats(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -223,23 +223,5 @@ namespace Epic.OnlineServices.Stats
 				callback(callbackInfo);
 			}
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Stats_CopyStatByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outStat);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_Stats_CopyStatByName(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outStat);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_Stats_GetStatsCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Stats_IngestStat(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnIngestStatCompleteCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Stats_QueryStats(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, OnQueryStatsCompleteCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_Stats_Stat_Release(System.IntPtr stat);
 	}
 }

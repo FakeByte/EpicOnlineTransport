@@ -6,12 +6,15 @@ namespace Epic.OnlineServices.Connect
 	/// <summary>
 	/// Additional information about the local user.
 	/// 
-	/// As the information passed here is client-controlled and not part of the user authentication tokens, it is only treated as non-authoritative informational data to be used by some of the feature services. For example displaying player names in Leaderboards rankings.
+	/// As the information passed here is client-controlled and not part of the user authentication tokens,
+	/// it is only treated as non-authoritative informational data to be used by some of the feature services.
+	/// For example displaying player names in Leaderboards rankings.
 	/// </summary>
 	public class UserLoginInfo : ISettable
 	{
 		/// <summary>
-		/// The userâ€™s display name on the identity provider systems as UTF-8 encoded null-terminated string. The length of the name can be at maximum up to <see cref="ConnectInterface.UserlogininfoDisplaynameMaxLength" /> bytes.
+		/// The user's display name on the identity provider systems as UTF-8 encoded null-terminated string.
+		/// The length of the name can be at maximum up to <see cref="ConnectInterface.UserlogininfoDisplaynameMaxLength" /> bytes.
 		/// </summary>
 		public string DisplayName { get; set; }
 

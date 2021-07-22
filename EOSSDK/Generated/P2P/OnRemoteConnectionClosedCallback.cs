@@ -8,5 +8,6 @@ namespace Epic.OnlineServices.P2P
 	/// </summary>
 	public delegate void OnRemoteConnectionClosedCallback(OnRemoteConnectionClosedInfo data);
 
+	[System.Runtime.InteropServices.UnmanagedFunctionPointer(Config.LibraryCallingConvention)]
 	internal delegate void OnRemoteConnectionClosedCallbackInternal(System.IntPtr data);
 }

@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Sessions
 {
-	public sealed class SessionSearch : Handle
+	public sealed partial class SessionSearch : Handle
 	{
 		public SessionSearch()
 		{
@@ -68,12 +68,12 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result CopySearchResultByIndex(SessionSearchCopySearchResultByIndexOptions options, out SessionDetails outSessionHandle)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionSearchCopySearchResultByIndexOptionsInternal, SessionSearchCopySearchResultByIndexOptions>(ref optionsAddress, options);
 
 			var outSessionHandleAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_SessionSearch_CopySearchResultByIndex(InnerHandle, optionsAddress, ref outSessionHandleAddress);
+			var funcResult = Bindings.EOS_SessionSearch_CopySearchResultByIndex(InnerHandle, optionsAddress, ref outSessionHandleAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -96,7 +96,7 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public void Find(SessionSearchFindOptions options, object clientData, SessionSearchOnFindCallback completionDelegate)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionSearchFindOptionsInternal, SessionSearchFindOptions>(ref optionsAddress, options);
 
 			var clientDataAddress = System.IntPtr.Zero;
@@ -104,7 +104,7 @@ namespace Epic.OnlineServices.Sessions
 			var completionDelegateInternal = new SessionSearchOnFindCallbackInternal(OnFindCallbackInternalImplementation);
 			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			EOS_SessionSearch_Find(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_SessionSearch_Find(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 		}
@@ -118,10 +118,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public uint GetSearchResultCount(SessionSearchGetSearchResultCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionSearchGetSearchResultCountOptionsInternal, SessionSearchGetSearchResultCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionSearch_GetSearchResultCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionSearch_GetSearchResultCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -135,7 +135,7 @@ namespace Epic.OnlineServices.Sessions
 		/// <param name="sessionSearchHandle">- The session search handle to release</param>
 		public void Release()
 		{
-			EOS_SessionSearch_Release(InnerHandle);
+			Bindings.EOS_SessionSearch_Release(InnerHandle);
 		}
 
 		/// <summary>
@@ -151,10 +151,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result RemoveParameter(SessionSearchRemoveParameterOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionSearchRemoveParameterOptionsInternal, SessionSearchRemoveParameterOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionSearch_RemoveParameter(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionSearch_RemoveParameter(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -172,10 +172,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result SetMaxResults(SessionSearchSetMaxResultsOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionSearchSetMaxResultsOptionsInternal, SessionSearchSetMaxResultsOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionSearch_SetMaxResults(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionSearch_SetMaxResults(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -195,10 +195,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result SetParameter(SessionSearchSetParameterOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionSearchSetParameterOptionsInternal, SessionSearchSetParameterOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionSearch_SetParameter(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionSearch_SetParameter(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -216,10 +216,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result SetSessionId(SessionSearchSetSessionIdOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionSearchSetSessionIdOptionsInternal, SessionSearchSetSessionIdOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionSearch_SetSessionId(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionSearch_SetSessionId(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -238,10 +238,10 @@ namespace Epic.OnlineServices.Sessions
 		/// </returns>
 		public Result SetTargetUserId(SessionSearchSetTargetUserIdOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<SessionSearchSetTargetUserIdOptionsInternal, SessionSearchSetTargetUserIdOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_SessionSearch_SetTargetUserId(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_SessionSearch_SetTargetUserId(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -258,32 +258,5 @@ namespace Epic.OnlineServices.Sessions
 				callback(callbackInfo);
 			}
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionSearch_CopySearchResultByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outSessionHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_SessionSearch_Find(System.IntPtr handle, System.IntPtr options, System.IntPtr clientData, SessionSearchOnFindCallbackInternal completionDelegate);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_SessionSearch_GetSearchResultCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_SessionSearch_Release(System.IntPtr sessionSearchHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionSearch_RemoveParameter(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionSearch_SetMaxResults(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionSearch_SetParameter(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionSearch_SetSessionId(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_SessionSearch_SetTargetUserId(System.IntPtr handle, System.IntPtr options);
 	}
 }

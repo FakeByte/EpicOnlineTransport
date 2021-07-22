@@ -4,7 +4,8 @@
 namespace Epic.OnlineServices.Auth
 {
 	/// <summary>
-	/// A structure that contains an auth token. These structures are created by <see cref="AuthInterface.CopyUserAuthToken" /> and must be passed to <see cref="AuthInterface.Release" />.
+	/// A structure that contains an auth token.
+	/// These structures are created by <see cref="AuthInterface.CopyUserAuthToken" /> and must be passed to <see cref="AuthInterface.Release" />.
 	/// </summary>
 	public class Token : ISettable
 	{
@@ -45,20 +46,7 @@ namespace Epic.OnlineServices.Auth
 
 		/// <summary>
 		/// Refresh token.
-		/// 
-		/// @details This member has two separate use cases:
-		/// 1. Launching the game from Epic Games Launcher, having an intermediate process (such as another launcher) that uses
-		/// Epic authentication in-between.
-		/// In this use case, an intermediate launcher that has logged in the user using the <see cref="LoginCredentialType.ExchangeCode" /> login type
-		/// can copy the refresh token using the <see cref="AuthInterface.CopyUserAuthToken" /> API and pass it in launch parameters for the started
-		/// game client that can then login the user again using the refresh token this time with the <see cref="LoginCredentialType.RefreshToken" />
-		/// login type.
-		/// 2. Persistent auth on Console platforms, to remember user login across game sessions over longer period of times
-		/// without having to prompt the user to explicitly login each time they run the game.
-		/// In this use case, a local user is logged in with their Epic Account for the first time using the <see cref="LoginCredentialType.DeviceCode" />
-		/// login type. Specific to the <see cref="LoginCredentialType.DeviceCode" /> login type, the SDK receives a long-lived refresh token instead of a
-		/// regular short-lived refresh token. The game can use the <see cref="AuthInterface.CopyUserAuthToken" /> API to copy the long-lived refresh
-		/// token and store it locally for the currently logged in local user of the console device.
+		/// <seealso cref="LoginCredentialType" />::<seealso cref="LoginCredentialType.RefreshToken" />
 		/// </summary>
 		public string RefreshToken { get; set; }
 
@@ -281,6 +269,7 @@ namespace Epic.OnlineServices.Auth
 		{
 			Helper.TryMarshalDispose(ref m_App);
 			Helper.TryMarshalDispose(ref m_ClientId);
+			Helper.TryMarshalDispose(ref m_AccountId);
 			Helper.TryMarshalDispose(ref m_AccessToken);
 			Helper.TryMarshalDispose(ref m_ExpiresAt);
 			Helper.TryMarshalDispose(ref m_RefreshToken);

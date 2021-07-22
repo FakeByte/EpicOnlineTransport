@@ -14,12 +14,12 @@ namespace Epic.OnlineServices.Connect
 		public Result ResultCode { get; private set; }
 
 		/// <summary>
-		/// Context that was passed into <see cref="ConnectInterface.QueryExternalAccountMappings" />
+		/// Context that was passed into <see cref="ConnectInterface.QueryExternalAccountMappings" />.
 		/// </summary>
 		public object ClientData { get; private set; }
 
 		/// <summary>
-		/// The Product User ID of the existing, logged-in user who made the request
+		/// The Product User ID of the existing, logged-in user who made the request.
 		/// </summary>
 		public ProductUserId LocalUserId { get; private set; }
 

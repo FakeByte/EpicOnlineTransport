@@ -4,9 +4,9 @@
 namespace Epic.OnlineServices.Auth
 {
 	/// <summary>
-	/// Intermediate data needed to complete the <see cref="LoginCredentialType.DeviceCode" /> login flow, returned by <see cref="LoginCallbackInfo" />.
-	/// The data inside should be exposed to the user for entry on a secondary device
-	/// All data must be copied out before the completion of this callback
+	/// Intermediate data needed to complete the <see cref="LoginCredentialType.DeviceCode" /> and <see cref="LoginCredentialType.ExternalAuth" /> login flows, returned by <see cref="LoginCallbackInfo" />.
+	/// The data inside should be exposed to the user for entry on a secondary device.
+	/// All data must be copied out before the completion of this callback.
 	/// </summary>
 	public class PinGrantInfo : ISettable
 	{

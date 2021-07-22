@@ -14,12 +14,12 @@ namespace Epic.OnlineServices.Connect
 		public Result ResultCode { get; private set; }
 
 		/// <summary>
-		/// Context that was passed into <see cref="ConnectInterface.LinkAccount" />
+		/// Context that was passed into <see cref="ConnectInterface.LinkAccount" />.
 		/// </summary>
 		public object ClientData { get; private set; }
 
 		/// <summary>
-		/// The Product User ID of the existing, logged-in user whose account was linked (on success)
+		/// The Product User ID of the existing, logged-in user whose account was linked (on success).
 		/// </summary>
 		public ProductUserId LocalUserId { get; private set; }
 

@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.Lobby
 {
-	public sealed class LobbyDetails : Handle
+	public sealed partial class LobbyDetails : Handle
 	{
 		public LobbyDetails()
 		{
@@ -81,18 +81,18 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result CopyAttributeByIndex(LobbyDetailsCopyAttributeByIndexOptions options, out Attribute outAttribute)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyDetailsCopyAttributeByIndexOptionsInternal, LobbyDetailsCopyAttributeByIndexOptions>(ref optionsAddress, options);
 
 			var outAttributeAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_LobbyDetails_CopyAttributeByIndex(InnerHandle, optionsAddress, ref outAttributeAddress);
+			var funcResult = Bindings.EOS_LobbyDetails_CopyAttributeByIndex(InnerHandle, optionsAddress, ref outAttributeAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<AttributeInternal, Attribute>(outAttributeAddress, out outAttribute))
 			{
-				LobbyInterface.EOS_Lobby_Attribute_Release(outAttributeAddress);
+				Bindings.EOS_Lobby_Attribute_Release(outAttributeAddress);
 			}
 
 			return funcResult;
@@ -114,18 +114,18 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result CopyAttributeByKey(LobbyDetailsCopyAttributeByKeyOptions options, out Attribute outAttribute)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyDetailsCopyAttributeByKeyOptionsInternal, LobbyDetailsCopyAttributeByKeyOptions>(ref optionsAddress, options);
 
 			var outAttributeAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_LobbyDetails_CopyAttributeByKey(InnerHandle, optionsAddress, ref outAttributeAddress);
+			var funcResult = Bindings.EOS_LobbyDetails_CopyAttributeByKey(InnerHandle, optionsAddress, ref outAttributeAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<AttributeInternal, Attribute>(outAttributeAddress, out outAttribute))
 			{
-				LobbyInterface.EOS_Lobby_Attribute_Release(outAttributeAddress);
+				Bindings.EOS_Lobby_Attribute_Release(outAttributeAddress);
 			}
 
 			return funcResult;
@@ -147,18 +147,18 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result CopyInfo(LobbyDetailsCopyInfoOptions options, out LobbyDetailsInfo outLobbyDetailsInfo)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyDetailsCopyInfoOptionsInternal, LobbyDetailsCopyInfoOptions>(ref optionsAddress, options);
 
 			var outLobbyDetailsInfoAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_LobbyDetails_CopyInfo(InnerHandle, optionsAddress, ref outLobbyDetailsInfoAddress);
+			var funcResult = Bindings.EOS_LobbyDetails_CopyInfo(InnerHandle, optionsAddress, ref outLobbyDetailsInfoAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<LobbyDetailsInfoInternal, LobbyDetailsInfo>(outLobbyDetailsInfoAddress, out outLobbyDetailsInfo))
 			{
-				EOS_LobbyDetails_Info_Release(outLobbyDetailsInfoAddress);
+				Bindings.EOS_LobbyDetails_Info_Release(outLobbyDetailsInfoAddress);
 			}
 
 			return funcResult;
@@ -180,18 +180,18 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result CopyMemberAttributeByIndex(LobbyDetailsCopyMemberAttributeByIndexOptions options, out Attribute outAttribute)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyDetailsCopyMemberAttributeByIndexOptionsInternal, LobbyDetailsCopyMemberAttributeByIndexOptions>(ref optionsAddress, options);
 
 			var outAttributeAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_LobbyDetails_CopyMemberAttributeByIndex(InnerHandle, optionsAddress, ref outAttributeAddress);
+			var funcResult = Bindings.EOS_LobbyDetails_CopyMemberAttributeByIndex(InnerHandle, optionsAddress, ref outAttributeAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<AttributeInternal, Attribute>(outAttributeAddress, out outAttribute))
 			{
-				LobbyInterface.EOS_Lobby_Attribute_Release(outAttributeAddress);
+				Bindings.EOS_Lobby_Attribute_Release(outAttributeAddress);
 			}
 
 			return funcResult;
@@ -213,18 +213,18 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public Result CopyMemberAttributeByKey(LobbyDetailsCopyMemberAttributeByKeyOptions options, out Attribute outAttribute)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyDetailsCopyMemberAttributeByKeyOptionsInternal, LobbyDetailsCopyMemberAttributeByKeyOptions>(ref optionsAddress, options);
 
 			var outAttributeAddress = System.IntPtr.Zero;
 
-			var funcResult = EOS_LobbyDetails_CopyMemberAttributeByKey(InnerHandle, optionsAddress, ref outAttributeAddress);
+			var funcResult = Bindings.EOS_LobbyDetails_CopyMemberAttributeByKey(InnerHandle, optionsAddress, ref outAttributeAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
 			if (Helper.TryMarshalGet<AttributeInternal, Attribute>(outAttributeAddress, out outAttribute))
 			{
-				LobbyInterface.EOS_Lobby_Attribute_Release(outAttributeAddress);
+				Bindings.EOS_Lobby_Attribute_Release(outAttributeAddress);
 			}
 
 			return funcResult;
@@ -239,10 +239,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public uint GetAttributeCount(LobbyDetailsGetAttributeCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyDetailsGetAttributeCountOptionsInternal, LobbyDetailsGetAttributeCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbyDetails_GetAttributeCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbyDetails_GetAttributeCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -258,10 +258,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public ProductUserId GetLobbyOwner(LobbyDetailsGetLobbyOwnerOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyDetailsGetLobbyOwnerOptionsInternal, LobbyDetailsGetLobbyOwnerOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbyDetails_GetLobbyOwner(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbyDetails_GetLobbyOwner(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -281,10 +281,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public uint GetMemberAttributeCount(LobbyDetailsGetMemberAttributeCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyDetailsGetMemberAttributeCountOptionsInternal, LobbyDetailsGetMemberAttributeCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbyDetails_GetMemberAttributeCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbyDetails_GetMemberAttributeCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -302,10 +302,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public ProductUserId GetMemberByIndex(LobbyDetailsGetMemberByIndexOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyDetailsGetMemberByIndexOptionsInternal, LobbyDetailsGetMemberByIndexOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbyDetails_GetMemberByIndex(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbyDetails_GetMemberByIndex(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -323,10 +323,10 @@ namespace Epic.OnlineServices.Lobby
 		/// </returns>
 		public uint GetMemberCount(LobbyDetailsGetMemberCountOptions options)
 		{
-			System.IntPtr optionsAddress = new System.IntPtr();
+			var optionsAddress = System.IntPtr.Zero;
 			Helper.TryMarshalSet<LobbyDetailsGetMemberCountOptionsInternal, LobbyDetailsGetMemberCountOptions>(ref optionsAddress, options);
 
-			var funcResult = EOS_LobbyDetails_GetMemberCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_LobbyDetails_GetMemberCount(InnerHandle, optionsAddress);
 
 			Helper.TryMarshalDispose(ref optionsAddress);
 
@@ -340,43 +340,7 @@ namespace Epic.OnlineServices.Lobby
 		/// <param name="lobbyHandle">- The lobby handle to release</param>
 		public void Release()
 		{
-			EOS_LobbyDetails_Release(InnerHandle);
+			Bindings.EOS_LobbyDetails_Release(InnerHandle);
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbyDetails_CopyAttributeByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outAttribute);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbyDetails_CopyAttributeByKey(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outAttribute);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbyDetails_CopyInfo(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outLobbyDetailsInfo);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbyDetails_CopyMemberAttributeByIndex(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outAttribute);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_LobbyDetails_CopyMemberAttributeByKey(System.IntPtr handle, System.IntPtr options, ref System.IntPtr outAttribute);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_LobbyDetails_GetAttributeCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_LobbyDetails_GetLobbyOwner(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_LobbyDetails_GetMemberAttributeCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern System.IntPtr EOS_LobbyDetails_GetMemberByIndex(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern uint EOS_LobbyDetails_GetMemberCount(System.IntPtr handle, System.IntPtr options);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_LobbyDetails_Release(System.IntPtr lobbyHandle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_LobbyDetails_Info_Release(System.IntPtr lobbyDetailsInfo);
 	}
 }

@@ -104,12 +104,14 @@ public class EOSLobby : MonoBehaviour {
     /// <param name="presenceEnabled">Use Epic's overlay to display information to others.</param>
     /// <param name="lobbyData">Optional data that you can to the lobby. By default, there is an empty attribute for searching and an attribute which holds the host's network address.</param>
     public virtual void CreateLobby(uint maxConnections, LobbyPermissionLevel permissionLevel, bool presenceEnabled, AttributeData[] lobbyData = null) {
+
         EOSSDKComponent.GetLobbyInterface().CreateLobby(new CreateLobbyOptions {
             //lobby options
             LocalUserId = EOSSDKComponent.LocalUserProductId,
             MaxLobbyMembers = maxConnections,
             PermissionLevel = permissionLevel,
             PresenceEnabled = presenceEnabled,
+            BucketId = DefaultAttributeKey,
         }, null, (CreateLobbyCallbackInfo callback) => {
             List<Attribute> lobbyReturnData = new List<Attribute>();
 
@@ -141,6 +143,7 @@ public class EOSLobby : MonoBehaviour {
 
             //update the lobby
             EOSSDKComponent.GetLobbyInterface().UpdateLobby(new UpdateLobbyOptions { LobbyModificationHandle = modHandle }, null, (UpdateLobbyCallbackInfo updateCallback) => {
+
                 //if there was an error while updating the lobby, invoke an error event and return
                 if (updateCallback.ResultCode != Result.Success) {
                     CreateLobbyFailed?.Invoke("There was an error while updating the lobby. Error: " + updateCallback.ResultCode);
@@ -373,5 +376,13 @@ public class EOSLobby : MonoBehaviour {
     public void UpdateLobbyAttribute(string key, string newValue) {
         AttributeData data = new AttributeData { Key = key, Value = newValue };
         UpdateAttribute(data);
+    }
+
+    /// <summary>
+    /// Returns the current lobby id
+    /// </summary>
+    /// <returns>current lobby id</returns>
+    public string GetCurrentLobbyId() {
+        return currentLobbyId;
     }
 }

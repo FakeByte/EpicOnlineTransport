@@ -6,7 +6,7 @@ namespace Epic.OnlineServices.Platform
 	[System.Flags]
 	public enum PlatformFlags : ulong
 	{
-		None = 0x00000,
+		None = 0x0,
 		/// <summary>
 		/// A bit that indicates the SDK is being loaded in a game editor, like Unity or UE4 Play-in-Editor
 		/// </summary>

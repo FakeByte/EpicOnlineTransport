@@ -14,7 +14,7 @@ namespace Epic.OnlineServices.Friends
 		public Result ResultCode { get; private set; }
 
 		/// <summary>
-		/// Context that was passed into to <see cref="FriendsInterface.AcceptInvite" />
+		/// Context that is passed into <see cref="FriendsInterface.AcceptInvite" />
 		/// </summary>
 		public object ClientData { get; private set; }
 

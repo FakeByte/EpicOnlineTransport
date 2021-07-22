@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.TitleStorage
 {
-	public sealed class TitleStorageFileTransferRequest : Handle
+	public sealed partial class TitleStorageFileTransferRequest : Handle
 	{
 		public TitleStorageFileTransferRequest()
 		{
@@ -21,7 +21,7 @@ namespace Epic.OnlineServices.TitleStorage
 		/// </returns>
 		public Result CancelRequest()
 		{
-			var funcResult = EOS_TitleStorageFileTransferRequest_CancelRequest(InnerHandle);
+			var funcResult = Bindings.EOS_TitleStorageFileTransferRequest_CancelRequest(InnerHandle);
 
 			return funcResult;
 		}
@@ -34,7 +34,7 @@ namespace Epic.OnlineServices.TitleStorage
 		/// </returns>
 		public Result GetFileRequestState()
 		{
-			var funcResult = EOS_TitleStorageFileTransferRequest_GetFileRequestState(InnerHandle);
+			var funcResult = Bindings.EOS_TitleStorageFileTransferRequest_GetFileRequestState(InnerHandle);
 
 			return funcResult;
 		}
@@ -53,9 +53,9 @@ namespace Epic.OnlineServices.TitleStorage
 		{
 			System.IntPtr outStringBufferAddress = System.IntPtr.Zero;
 			int outStringLength = TitleStorageInterface.FilenameMaxLengthBytes;
-			Helper.TryMarshalAllocate(ref outStringBufferAddress, outStringLength);
+			Helper.TryMarshalAllocate(ref outStringBufferAddress, outStringLength, out _);
 
-			var funcResult = EOS_TitleStorageFileTransferRequest_GetFilename(InnerHandle, (uint)outStringLength, outStringBufferAddress, ref outStringLength);
+			var funcResult = Bindings.EOS_TitleStorageFileTransferRequest_GetFilename(InnerHandle, (uint)outStringLength, outStringBufferAddress, ref outStringLength);
 
 			Helper.TryMarshalGet(outStringBufferAddress, out outStringBuffer);
 			Helper.TryMarshalDispose(ref outStringBufferAddress);
@@ -68,19 +68,7 @@ namespace Epic.OnlineServices.TitleStorage
 		/// </summary>
 		public void Release()
 		{
-			EOS_TitleStorageFileTransferRequest_Release(InnerHandle);
+			Bindings.EOS_TitleStorageFileTransferRequest_Release(InnerHandle);
 		}
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_TitleStorageFileTransferRequest_CancelRequest(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_TitleStorageFileTransferRequest_GetFileRequestState(System.IntPtr handle);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern Result EOS_TitleStorageFileTransferRequest_GetFilename(System.IntPtr handle, uint filenameStringBufferSizeBytes, System.IntPtr outStringBuffer, ref int outStringLength);
-
-		[System.Runtime.InteropServices.DllImport(Config.BinaryName)]
-		internal static extern void EOS_TitleStorageFileTransferRequest_Release(System.IntPtr titleStorageFileTransferHandle);
 	}
 }
