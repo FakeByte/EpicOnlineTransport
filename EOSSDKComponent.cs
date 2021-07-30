@@ -149,7 +149,7 @@ namespace EpicTransport {
 
         // If we're in editor, we should dynamically load and unload the SDK between play sessions.
         // This allows us to initialize the SDK each time the game is run in editor.
-#if UNITY_EDITOR && EOS_PLATFORM_WINDOWS_64
+#if UNITY_EDITOR_WIN
         [DllImport("Kernel32.dll")]
         private static extern IntPtr LoadLibrary(string lpLibFileName);
 
@@ -162,7 +162,7 @@ namespace EpicTransport {
         private IntPtr libraryPointer;
 #endif
         
-#if UNITY_EDITOR && PLATFORM_LINUX
+#if UNITY_EDITOR_LINUX
         [DllImport("libdl.so", EntryPoint = "dlopen")]
         private static extern IntPtr LoadLibrary(String lpFileName, int flags = 2);   
 
