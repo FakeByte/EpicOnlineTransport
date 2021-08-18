@@ -6,17 +6,23 @@ This is our [Epic Online Services](https://dev.epicgames.com/en-US/services) (EO
 [Video Tutorials](https://youtube.com/playlist?list=PLMS9RDQ9ar-dQuAjG8KOBpwhBZa1V7y2_)
 
 ## Dependencies
--Mirror
-
--Epic Online Service C# SDK
+- Mirror
+- Epic Online Service C# SDK
 
 ## Installation
-1. Import the unitypackage file found under releases
-2. In Unity -> Project Settings -> Player -> Other Settings -> Scripting define symbols set PLATFORM_64BITS for Win64 or PLATFORM_32BITS for Win32. For other platforms see Epic.OnlineServices.Config in the SDK for their defines
-3. Attach the EOSSDKComponent to a gameobject in your scene
-4. Fill out all the SDK keys on the EOSSDKComponent, you can find them in the Epic Online Services Dev Portal
-5. Attach the EosTransport component to  the same gameobject as the NetworkManager
-6. Move the EosTransport reference into the 'Transport' slot on the NetworkManager
+1. Import the unitypackage file found under releases (Assets -> Import Package -> Custom Package...)
+2. Visit the [Mirror Asset Store Page](https://assetstore.unity.com/packages/tools/network/mirror-129321) and add Mirror to My Assets
+3. Import Mirror with Package Manager (Window -> Package Manager -> Packages: My Assets -> Mirror -> Import)
+4. In Unity -> Project Settings -> Player -> PC, Mac & Linux Standalone -> Other Settings -> Scripting Define Symbols set PLATFORM_64BITS for Win64 or PLATFORM_32BITS for Win32. For other platforms see Epic.OnlineServices.Config.cs in the SDK for their defines
+5. Attach the EOSSDKComponent to a GameObject in your Scene
+6. Right click in the Project View and create an EOS API Key Asset (Create -> EOS -> API Key)
+7. Fill out all the SDK keys on the EOS API Key Asset, you can find them in the Epic Online Services Dev Portal
+8. Move the EOS API Key Asset into the 'Api Keys' slot on the EOSSDKComponent
+9. Attach an EosTransport component to the same GameObject as the NetworkManager
+10. Move the EosTransport component into the 'Transport' slot on the NetworkManager
+
+## Building for Android
+In Unity -> Project Settings -> Player -> Android -> Publishing Settings enable Custom Main Gradle Template and Custom Gradle Properties Template. This ensures that the EOS SDK and its dependencies are built into the APK.
 
 ## Testing multiplayer on one device
 Running multiple instances of your game on one device for testing requires you to have multiple epic accounts.
