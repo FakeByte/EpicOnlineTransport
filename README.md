@@ -1,28 +1,48 @@
 # EpicOnlineTransport for Mirror
 
 Hi! 
-This is our [Epic Online Services](https://dev.epicgames.com/en-US/services) (EOS) transport for [Mirror](https://github.com/vis2k/Mirror). We developed it for our game **[Nimoyd](https://www.nimoyd.com/)** , it is still under development, but already working without any problems.
+This is our [Epic Online Services](https://dev.epicgames.com/en-US/services) (EOS) transport for [Mirror](https://github.com/vis2k/Mirror). We developed it for our game **[Nimoyd](https://www.nimoyd.com/)**, it is still under development, but already working without any problems.
 
 [Video Tutorials](https://youtube.com/playlist?list=PLMS9RDQ9ar-dQuAjG8KOBpwhBZa1V7y2_)
 
 ## Dependencies
-- Mirror
-- Epic Online Service C# SDK
+- Mirror ([Documentation](https://mirror-networking.gitbook.io/docs/))
+- Epic Online Services C# SDK ([Documentation](https://dev.epicgames.com/docs/services/en-US/index.html))
+
+## Setting Up Epic Online Services and Obtaining API Keys
+1. Login to the [Epic Games Dev Portal](https://dev.epicgames.com/portal) with an Epic Games Account
+2. Create a new Product
+3. Go to Product Settings -> Clients and add a new Client Policy
+4. Name your Client Policy and set the Client Policy Type to Peer2Peer, then Save & Exit
+5. Add a new Client
+6. Name your Client and set the Client Policy to the Client Policy you just created, then Save & Exit
+7. Go to Epic Account Services -> Configure Application
+8. Set Application Name to what you want your users to see when signing in with the Account Portal, then Save Draft
+9. Go to Permissions and set all permissions to Required, then Save
+10. Go to Clients and set the Client to the Client you just created, then Save
+11. Go back, then click Back to Organization
+12. Go to SDK -> SDK Credentials -> Get Credentials
+13. Copy and paste all of your credentials into the EOS API Key Asset once your project is set up
 
 ## Installation
-1. Import the unitypackage file found under releases (Assets -> Import Package -> Custom Package...)
-2. Visit the [Mirror Asset Store Page](https://assetstore.unity.com/packages/tools/network/mirror-129321) and add Mirror to My Assets
-3. Import Mirror with Package Manager (Window -> Package Manager -> Packages: My Assets -> Mirror -> Import)
-4. In Unity -> Project Settings -> Player -> PC, Mac & Linux Standalone -> Other Settings -> Scripting Define Symbols set PLATFORM_64BITS for Win64 or PLATFORM_32BITS for Win32. For other platforms see Epic.OnlineServices.Config.cs in the SDK for their defines
-5. Attach the EOSSDKComponent to a GameObject in your Scene
-6. Right click in the Project View and create an EOS API Key Asset (Create -> EOS -> API Key)
-7. Fill out all the SDK keys on the EOS API Key Asset, you can find them in the Epic Online Services Dev Portal
-8. Move the EOS API Key Asset into the 'Api Keys' slot on the EOSSDKComponent
+1. Visit the [Mirror Asset Store Page](https://assetstore.unity.com/packages/tools/network/mirror-129321) and add Mirror to My Assets
+2. Import Mirror with Package Manager (Window -> Package Manager -> Packages: My Assets -> Mirror -> Download)
+3. Import the EpicOnlineTransport.unitypackage file found under releases (Assets -> Import Package -> Custom Package...)
+4. Attach an EOSSDKComponent to a GameObject in your Scene
+5. Right click in the Project View and create an EOS API Key Asset (Create -> EOS -> API Key)
+6. Fill out all the SDK keys on the EOS API Key Asset, you can find them in the Epic Online Services Dev Portal (SDK -> SDK Credentials -> Get Credentials)
+7. Move the EOS API Key Asset into the 'Api Keys' slot on the EOSSDKComponent
+8. Attach a NetworkManager to a GameObject in your Scene
 9. Attach an EosTransport component to the same GameObject as the NetworkManager
 10. Move the EosTransport component into the 'Transport' slot on the NetworkManager
+11. (Optional) Add an EOSLobbyUI component, a NetworkManagerHUD component, or a NetworkDiscoveryHUD component to test that the transport is working properly
+12. Change the [Auth Interface Credential Type](https://dev.epicgames.com/docs/services/en-US/API/Members/Enums/Auth/EOS_ELoginCredentialType/index.html) and [Connect Interface Credential Types](https://dev.epicgames.com/docs/services/en-US/API/Members/Enums/NoInterface/EOS_EExternalCredentialType/index.html) on the EOSSDKComponent to suit the needs of your project
 
 ## Building for Android
-In Unity -> Project Settings -> Player -> Android -> Publishing Settings enable Custom Main Gradle Template and Custom Gradle Properties Template. This ensures that the EOS SDK and its dependencies are built into the APK.
+0. Install the Android Module through Unity Hub
+1. Switch platform to Android in Build Settings
+2. In Unity -> Edit -> Project Settings... -> Player -> Android -> Other Settings -> Identification set Minimum API Level to Android 6.0 'Marshmallow' (API Level 23) as required by the EOS Android SDK
+3. (Optional) Install Android Logcat through Package Manager to see logs when running on Android device over USB (Window -> Package Manager -> Packages: Unity Registry -> Android Logcat -> Install) then open with Alt+6 or Window -> Analysis -> Android Logcat
 
 ## Testing multiplayer on one device
 Running multiple instances of your game on one device for testing requires you to have multiple epic accounts.
