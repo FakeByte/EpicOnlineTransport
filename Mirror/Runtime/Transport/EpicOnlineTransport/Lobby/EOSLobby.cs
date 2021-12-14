@@ -256,8 +256,7 @@ public class EOSLobby : MonoBehaviour {
         });
     }
 
-    public virtual void JoinLobbyByID(string lobbyID)
-    {
+    public virtual void JoinLobbyByID(string lobbyID){
         LobbySearch search = new LobbySearch();
         EOSSDKComponent.GetLobbyInterface().CreateLobbySearch(new CreateLobbySearchOptions { MaxResults = 1 }, out search);
         search.SetLobbyId(new LobbySearchSetLobbyIdOptions {LobbyId = lobbyID});
@@ -278,12 +277,10 @@ public class EOSLobby : MonoBehaviour {
                 foundLobbies.Add(lobbyInformation);
             }
 
-            if (foundLobbies.Count > 0)
-            {
+            if (foundLobbies.Count > 0) {
                 JoinLobby(foundLobbies[0]);
             }
-        });
-        
+        });     
     }
 
     /// <summary>
