@@ -15,9 +15,10 @@ using UnityEngine;
 /// In the unity editor the OnDestroy function will not run so that we dont have to restart the editor after play.
 /// </summary>
 namespace EpicTransport {
+    
     [DefaultExecutionOrder(-32000)]
     public class EOSSDKComponent : MonoBehaviour {
-
+        
         // Unity Inspector shown variables
         
         [SerializeField]
@@ -143,6 +144,15 @@ namespace EpicTransport {
         }
 
         public static void Tick() {
+            if (instance == null)
+            {
+                Debug.LogError("INSTANCE NULL");
+
+            }
+            else
+            {
+                Debug.Log(instance.gameObject.name);
+            }
             instance.platformTickTimer -= Time.deltaTime;
             instance.EOS.Tick();
         }
@@ -161,7 +171,7 @@ namespace EpicTransport {
 
         private IntPtr libraryPointer;
 #endif
-        
+
 #if UNITY_EDITOR_LINUX
         [DllImport("libdl.so", EntryPoint = "dlopen")]
         private static extern IntPtr LoadLibrary(String lpFileName, int flags = 2);   
@@ -187,7 +197,35 @@ namespace EpicTransport {
         }    
         private IntPtr libraryPointer;
 #endif
+#if UNITY_EDITOR_OSX
+        [DllImport("libdl.dylib", EntryPoint = "dlopen")]
+        private static extern IntPtr LoadLibrary(String lpFileName, int flags = 2);
 
+        [DllImport("libdl.dylib", EntryPoint = "dlclose")]
+        private static extern int FreeLibrary(IntPtr hLibModule);
+
+        [DllImport("libdl.dylib")]
+        private static extern IntPtr dlsym(IntPtr handle, String symbol);
+
+        [DllImport("libdl.dylib")]
+        private static extern IntPtr dlerror();
+
+        private static IntPtr GetProcAddress(IntPtr hModule, string lpProcName)
+        {
+            // clear previous errors if any
+            dlerror();
+            var res = dlsym(hModule, lpProcName);
+            var errPtr = dlerror();
+            if (errPtr != IntPtr.Zero)
+            {
+                throw new Exception("dlsym: " + Marshal.PtrToStringAnsi(errPtr));
+            }
+
+            return res;
+        }
+        private IntPtr libraryPointer;
+
+#endif
         private void Awake() {
             // Initialize Java version of the SDK with a reference to the VM with JNI
             // See https://eoshelp.epicgames.com/s/question/0D54z00006ufJBNCA2/cant-get-createdeviceid-to-work-in-unity-android-c-sdk?language=en_US
@@ -199,13 +237,15 @@ namespace EpicTransport {
                 AndroidJavaClass EOS_SDK_JAVA = new AndroidJavaClass("com.epicgames.mobile.eossdk.EOSSDK");
                 EOS_SDK_JAVA.CallStatic("init", context);
             }
-            
+
             // Prevent multiple instances
+         
             if (instance != null) {
                 Destroy(gameObject);
                 return;
             }
             instance = this;
+            DontDestroyOnLoad(instance);
 
 #if UNITY_EDITOR
             var libraryPath = "Assets/Mirror/Runtime/Transport/EpicOnlineTransport/EOSSDK/" + Config.LibraryName;
@@ -412,21 +452,25 @@ namespace EpicTransport {
         }
 
         private void OnApplicationQuit() {
-            if (EOS != null) {
+#if !UNITY_EDITOR
+            if (EOS != null)
+            {
                 EOS.Release();
                 EOS = null;
                 PlatformInterface.Shutdown();
             }
-
+#endif 
             // Unhook the library in the editor, this makes it possible to load the library again after stopping to play
 #if UNITY_EDITOR
             if (libraryPointer != IntPtr.Zero) {
-                Bindings.Unhook();
+            Bindings.Unhook();
 
-                // Free until the module ref count is 0
-                while (FreeLibrary(libraryPointer) != 0) { }
-
+                //    // Free until the module ref count is 0
+                while (FreeLibrary(libraryPointer) != 0)
+                {
+                }
                 libraryPointer = IntPtr.Zero;
+
             }
 #endif
         }
