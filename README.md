@@ -51,7 +51,8 @@ This is our [Epic Online Services](https://dev.epicgames.com/en-US/services) (EO
 3. Download EOSSDK.framework from Epic Developer Portal -> SDK -> iOSSDK
 4. Extract the .zip file, and navigate to the folder ->  SDK -> Bin -> IOS to find EOSSDK.framework (appears as a folder)
 5. Copy EOSSDK.framework or move it into the EOSSDK folder (EpicOnlineTransport/EOSSDK)
-6. (Optional) In the generated XCode Project, verify bitcode is set to NO on Unity-iPhone and UnityFramework, which should be automatically completed by iOSPostProcessBuild.cs
+6. In Unity Editor, select EOSSDK.framework and in Inspector, check Add to Embedded Binaries and Load on startup
+7. (Optional) In the generated XCode Project, verify bitcode is set to NO on Unity-iPhone and UnityFramework, which should be automatically completed by iOSPostProcessBuild.cs
 
 ## Testing multiplayer on one device
 Running multiple instances of your game on one device for testing requires you to have multiple epic accounts.
