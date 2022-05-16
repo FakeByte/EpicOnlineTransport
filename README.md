@@ -27,7 +27,7 @@ This is our [Epic Online Services](https://dev.epicgames.com/en-US/services) (EO
 ## Installation
 1. Visit the [Mirror Asset Store Page](https://assetstore.unity.com/packages/tools/network/mirror-129321) and add Mirror to My Assets
 2. Import Mirror with Package Manager (Window -> Package Manager -> Packages: My Assets -> Mirror -> Download)
-3. Import the EpicOnlineTransport.unitypackage file found under releases (Assets -> Import Package -> Custom Package...)
+3. Download [the latest master branch](https://github.com/FakeByte/EpicOnlineTransport/archive/refs/heads/master.zip), unpack it and copy the *Plugin* and the *Mirror* folder into your project (merge with already existing folders).
 4. Attach an EOSSDKComponent to a GameObject in your Scene
 5. Right click in the Project View and create an EOS API Key Asset (Create -> EOS -> API Key)
 6. Fill out all the SDK keys on the EOS API Key Asset, you can find them in the Epic Online Services Dev Portal (SDK -> SDK Credentials -> Get Credentials)
