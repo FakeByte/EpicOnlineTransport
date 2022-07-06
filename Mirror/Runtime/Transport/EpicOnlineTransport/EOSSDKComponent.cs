@@ -143,6 +143,17 @@ namespace EpicTransport {
         }
 
         public static void Tick() {
+            if (instance == null)
+            {
+                Debug.LogError("INSTANCE NULL");
+                return;
+            }
+
+            if (instance.EOS == null) {
+                Debug.LogError("EOS NULL");
+                return;
+            }
+            
             instance.platformTickTimer -= Time.deltaTime;
             instance.EOS.Tick();
         }
@@ -185,6 +196,35 @@ namespace EpicTransport {
             }
             return res;
         }    
+        private IntPtr libraryPointer;
+#endif
+        
+#if UNITY_EDITOR_OSX
+        [DllImport("libdl.dylib", EntryPoint = "dlopen")]
+        private static extern IntPtr LoadLibrary(String lpFileName, int flags = 2);
+
+        [DllImport("libdl.dylib", EntryPoint = "dlclose")]
+        private static extern int FreeLibrary(IntPtr hLibModule);
+
+        [DllImport("libdl.dylib")]
+        private static extern IntPtr dlsym(IntPtr handle, String symbol);
+
+        [DllImport("libdl.dylib")]
+        private static extern IntPtr dlerror();
+
+        private static IntPtr GetProcAddress(IntPtr hModule, string lpProcName)
+        {
+            // clear previous errors if any
+            dlerror();
+            var res = dlsym(hModule, lpProcName);
+            var errPtr = dlerror();
+            if (errPtr != IntPtr.Zero)
+            {
+                throw new Exception("dlsym: " + Marshal.PtrToStringAnsi(errPtr));
+            }
+
+            return res;
+        }
         private IntPtr libraryPointer;
 #endif
 
@@ -231,7 +271,7 @@ namespace EpicTransport {
                 ProductVersion = apiKeys.epicProductVersion
             };
 
-            var initializeResult = PlatformInterface.Initialize(initializeOptions);
+            var initializeResult = PlatformInterface.Initialize(ref initializeOptions);
 
             // This code is called each time the game is run in the editor, so we catch the case where the SDK has already been initialized in the editor.
             var isAlreadyConfiguredInEditor = Application.isEditor && initializeResult == Result.AlreadyConfigured;
@@ -242,7 +282,7 @@ namespace EpicTransport {
             // The SDK outputs lots of information that is useful for debugging.
             // Make sure to set up the logging interface as early as possible: after initializing.
             LoggingInterface.SetLogLevel(LogCategory.AllCategories, epicLoggerLevel);
-            LoggingInterface.SetCallback(message => Logger.EpicDebugLog(message));
+            LoggingInterface.SetCallback((ref LogMessage message) => Logger.EpicDebugLog(message));
 
             var options = new Options() {
                 ProductId = apiKeys.epicProductId,
@@ -255,7 +295,7 @@ namespace EpicTransport {
                 TickBudgetInMilliseconds = tickBudgetInMilliseconds
             };
 
-            EOS = PlatformInterface.Create(options);
+            EOS = PlatformInterface.Create(ref options);
             if (EOS == null) {
                 throw new System.Exception("Failed to create platform");
             }
@@ -293,13 +333,13 @@ namespace EpicTransport {
                     ScopeFlags = Epic.OnlineServices.Auth.AuthScopeFlags.BasicProfile | Epic.OnlineServices.Auth.AuthScopeFlags.FriendsList | Epic.OnlineServices.Auth.AuthScopeFlags.Presence
                 };
 
-                EOS.GetAuthInterface().Login(loginOptions, null, OnAuthInterfaceLogin);
+                EOS.GetAuthInterface().Login(ref loginOptions, null, OnAuthInterfaceLogin);
             } else {
                 // Login to Connect Interface
                 if (connectInterfaceCredentialType == Epic.OnlineServices.ExternalCredentialType.DeviceidAccessToken) {
                     Epic.OnlineServices.Connect.CreateDeviceIdOptions createDeviceIdOptions = new Epic.OnlineServices.Connect.CreateDeviceIdOptions();
                     createDeviceIdOptions.DeviceModel = deviceModel;
-                    EOS.GetConnectInterface().CreateDeviceId(createDeviceIdOptions, null, OnCreateDeviceId);
+                    EOS.GetConnectInterface().CreateDeviceId(ref createDeviceIdOptions, null, OnCreateDeviceId);
                 } else {
                     ConnectInterfaceLogin();
                 }
@@ -314,11 +354,11 @@ namespace EpicTransport {
             Instance.InitializeImplementation();
         }
 
-        private void OnAuthInterfaceLogin(Epic.OnlineServices.Auth.LoginCallbackInfo loginCallbackInfo) {
+        private void OnAuthInterfaceLogin(ref Epic.OnlineServices.Auth.LoginCallbackInfo loginCallbackInfo) {
             if (loginCallbackInfo.ResultCode == Result.Success) {
                 Debug.Log("Auth Interface Login succeeded");
 
-                string accountIdString;
+                Utf8String accountIdString;
                 Result result = loginCallbackInfo.LocalUserId.ToString(out accountIdString);
                 if (Result.Success == result) {
                     Debug.Log("EOS User ID:" + accountIdString);
@@ -333,7 +373,7 @@ namespace EpicTransport {
             }
         }
 
-        private void OnCreateDeviceId(Epic.OnlineServices.Connect.CreateDeviceIdCallbackInfo createDeviceIdCallbackInfo) {
+        private void OnCreateDeviceId(ref Epic.OnlineServices.Connect.CreateDeviceIdCallbackInfo createDeviceIdCallbackInfo) {
             if (createDeviceIdCallbackInfo.ResultCode == Result.Success || createDeviceIdCallbackInfo.ResultCode == Result.DuplicateNotAllowed) {
                 ConnectInterfaceLogin();
             } else if(Epic.OnlineServices.Common.IsOperationComplete(createDeviceIdCallbackInfo.ResultCode)) {
@@ -345,31 +385,61 @@ namespace EpicTransport {
             var loginOptions = new Epic.OnlineServices.Connect.LoginOptions();
 
             if (connectInterfaceCredentialType == Epic.OnlineServices.ExternalCredentialType.Epic) {
-                Epic.OnlineServices.Auth.Token token;
-                Result result = EOS.GetAuthInterface().CopyUserAuthToken(new Epic.OnlineServices.Auth.CopyUserAuthTokenOptions(), localUserAccountId, out token);
+                Epic.OnlineServices.Auth.Token? token;
+                var copyUserAuthTokenOptions = new Epic.OnlineServices.Auth.CopyUserAuthTokenOptions();
+                Result result = EOS.GetAuthInterface().CopyUserAuthToken(ref copyUserAuthTokenOptions, localUserAccountId, out token);
 
                 if (result == Result.Success) {
-                    connectInterfaceCredentialToken = token.AccessToken;
+                    connectInterfaceCredentialToken = token?.AccessToken;
                 } else {
                     Debug.LogError("Failed to retrieve User Auth Token");
                 }
             } else if (connectInterfaceCredentialType == Epic.OnlineServices.ExternalCredentialType.DeviceidAccessToken) {
-                loginOptions.UserLoginInfo = new Epic.OnlineServices.Connect.UserLoginInfo();
-                loginOptions.UserLoginInfo.DisplayName = displayName;
+                loginOptions.UserLoginInfo = new Epic.OnlineServices.Connect.UserLoginInfo() {
+                    DisplayName = displayName
+                };
             }
 
-            loginOptions.Credentials = new Epic.OnlineServices.Connect.Credentials();
-            loginOptions.Credentials.Type = connectInterfaceCredentialType;
-            loginOptions.Credentials.Token = connectInterfaceCredentialToken;
+            loginOptions.Credentials = new Epic.OnlineServices.Connect.Credentials() {
+                Type = connectInterfaceCredentialType,
+                Token = connectInterfaceCredentialToken
+            };
 
-            EOS.GetConnectInterface().Login(loginOptions, null, OnConnectInterfaceLogin);
+            EOS.GetConnectInterface().Login(ref loginOptions, null, OnConnectInterfaceLogin);
         }
 
-        private void OnConnectInterfaceLogin(Epic.OnlineServices.Connect.LoginCallbackInfo loginCallbackInfo) {
+        private void OnApplicationFocus(bool hasFocus) {
+            SetApplicationStatus(hasFocus);
+        }
+
+        private void SetApplicationStatus(bool focus) {
+            if (!initialized || isConnecting) return;
+            
+            ApplicationStatus status = ApplicationStatus.Foreground;
+            
+            if (!focus) {
+#if UNITY_IOS
+                status = ApplicationStatus.BackgroundSuspended;
+#elif UNITY_ANDROID
+                status = Application.runInBackground
+                    ? ApplicationStatus.BackgroundConstrained
+                    : ApplicationStatus.BackgroundSuspended;
+#else
+                status = Application.runInBackground
+                    ? ApplicationStatus.BackgroundUnconstrained
+                    : ApplicationStatus.BackgroundSuspended;
+#endif
+            }
+
+            Result setApplicationStatusResult = EOS.SetApplicationStatus(status);
+            Debug.Log("EOS Set Application Status: " + status);
+        }
+
+        private void OnConnectInterfaceLogin(ref Epic.OnlineServices.Connect.LoginCallbackInfo loginCallbackInfo) {
             if (loginCallbackInfo.ResultCode == Result.Success) {
                 Debug.Log("Connect Interface Login succeeded");
 
-                string productIdString;
+                Utf8String productIdString;
                 Result result = loginCallbackInfo.LocalUserId.ToString(out productIdString);
                 if (Result.Success == result) {
                     Debug.Log("EOS User Product ID:" + productIdString);
@@ -380,12 +450,17 @@ namespace EpicTransport {
                 
                 initialized = true;
                 isConnecting = false;
+                
+                SetApplicationStatus(true);
+                EOS.SetNetworkStatus(NetworkStatus.Online);
 
                 var authExpirationOptions = new Epic.OnlineServices.Connect.AddNotifyAuthExpirationOptions();
-                authExpirationHandle = EOS.GetConnectInterface().AddNotifyAuthExpiration(authExpirationOptions, null, OnAuthExpiration);
+                authExpirationHandle = EOS.GetConnectInterface().AddNotifyAuthExpiration(ref authExpirationOptions, null, OnAuthExpiration);
             } else if (Epic.OnlineServices.Common.IsOperationComplete(loginCallbackInfo.ResultCode)) {
                 Debug.Log("Login returned " + loginCallbackInfo.ResultCode + "\nRetrying...");
-                EOS.GetConnectInterface().CreateUser(new Epic.OnlineServices.Connect.CreateUserOptions() { ContinuanceToken = loginCallbackInfo.ContinuanceToken }, null, (Epic.OnlineServices.Connect.CreateUserCallbackInfo cb) => {
+                var createUserOptions = new Epic.OnlineServices.Connect.CreateUserOptions()
+                    { ContinuanceToken = loginCallbackInfo.ContinuanceToken };
+                EOS.GetConnectInterface().CreateUser(ref createUserOptions, null, (ref Epic.OnlineServices.Connect.CreateUserCallbackInfo cb) => {
                     if (cb.ResultCode != Result.Success) { Debug.Log(cb.ResultCode); return; }
                     localUserProductId = cb.LocalUserId;
                     ConnectInterfaceLogin();
@@ -393,7 +468,7 @@ namespace EpicTransport {
             }
         }
         
-        private void OnAuthExpiration(Epic.OnlineServices.Connect.AuthExpirationCallbackInfo authExpirationCallbackInfo) {
+        private void OnAuthExpiration(ref Epic.OnlineServices.Connect.AuthExpirationCallbackInfo authExpirationCallbackInfo) {
             Debug.Log("AuthExpiration callback");
             EOS.GetConnectInterface().RemoveNotifyAuthExpiration(authExpirationHandle);
             ConnectInterfaceLogin();
@@ -412,11 +487,13 @@ namespace EpicTransport {
         }
 
         private void OnApplicationQuit() {
+#if !UNITY_EDITOR
             if (EOS != null) {
                 EOS.Release();
                 EOS = null;
                 PlatformInterface.Shutdown();
             }
+#endif
 
             // Unhook the library in the editor, this makes it possible to load the library again after stopping to play
 #if UNITY_EDITOR

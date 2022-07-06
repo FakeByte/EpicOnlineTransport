@@ -6,21 +6,21 @@ namespace Epic.OnlineServices.Presence
 	/// <summary>
 	/// Data for the <see cref="PresenceInterface.CopyPresence" /> function.
 	/// </summary>
-	public class CopyPresenceOptions
+	public struct CopyPresenceOptions
 	{
 		/// <summary>
-		/// The Epic Online Services Account ID of the local, logged-in user making the request
+		/// The Epic Account ID of the local, logged-in user making the request
 		/// </summary>
 		public EpicAccountId LocalUserId { get; set; }
 
 		/// <summary>
-		/// The Epic Online Services Account ID of the user whose cached presence data you want to copy from the cache
+		/// The Epic Account ID of the user whose cached presence data you want to copy from the cache
 		/// </summary>
 		public EpicAccountId TargetUserId { get; set; }
 	}
 
 	[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 8)]
-	internal struct CopyPresenceOptionsInternal : ISettable, System.IDisposable
+	internal struct CopyPresenceOptionsInternal : ISettable<CopyPresenceOptions>, System.IDisposable
 	{
 		private int m_ApiVersion;
 		private System.IntPtr m_LocalUserId;
@@ -30,7 +30,7 @@ namespace Epic.OnlineServices.Presence
 		{
 			set
 			{
-				Helper.TryMarshalSet(ref m_LocalUserId, value);
+				Helper.Set(value, ref m_LocalUserId);
 			}
 		}
 
@@ -38,29 +38,31 @@ namespace Epic.OnlineServices.Presence
 		{
 			set
 			{
-				Helper.TryMarshalSet(ref m_TargetUserId, value);
+				Helper.Set(value, ref m_TargetUserId);
 			}
 		}
 
-		public void Set(CopyPresenceOptions other)
+		public void Set(ref CopyPresenceOptions other)
 		{
-			if (other != null)
+			m_ApiVersion = PresenceInterface.CopypresenceApiLatest;
+			LocalUserId = other.LocalUserId;
+			TargetUserId = other.TargetUserId;
+		}
+
+		public void Set(ref CopyPresenceOptions? other)
+		{
+			if (other.HasValue)
 			{
 				m_ApiVersion = PresenceInterface.CopypresenceApiLatest;
-				LocalUserId = other.LocalUserId;
-				TargetUserId = other.TargetUserId;
+				LocalUserId = other.Value.LocalUserId;
+				TargetUserId = other.Value.TargetUserId;
 			}
-		}
-
-		public void Set(object other)
-		{
-			Set(other as CopyPresenceOptions);
 		}
 
 		public void Dispose()
 		{
-			Helper.TryMarshalDispose(ref m_LocalUserId);
-			Helper.TryMarshalDispose(ref m_TargetUserId);
+			Helper.Dispose(ref m_LocalUserId);
+			Helper.Dispose(ref m_TargetUserId);
 		}
 	}
 }

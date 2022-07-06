@@ -59,19 +59,17 @@ namespace Epic.OnlineServices
 		#elif EOS_PLATFORM_WINDOWS_64
 			"EOSSDK-Win64-Shipping.dll"
 
-		#elif EOS_PLATFORM_OSX && EOS_UNITY
+		#elif UNITY_EDITOR_OSX
 			"libEOSSDK-Mac-Shipping"
 		#elif EOS_PLATFORM_OSX
 			"libEOSSDK-Mac-Shipping.dylib"
 
 		#elif EOS_PLATFORM_LINUX && EOS_UNITY
-			"libEOSSDK-Linux-Shipping.so"
+			"EOSSDK-Linux-Shipping"
 		#elif EOS_PLATFORM_LINUX
-			"libEOSSDK-Linux-Shipping.so"
+			"EOSSDK-Linux-Shipping.so"
 
-		#elif EOS_PLATFORM_IOS && EOS_UNITY && !EOS_EDITOR
-			"__Internal"
-		#elif EOS_PLATFORM_IOS && EOS_UNITY
+		#elif EOS_PLATFORM_IOS && EOS_UNITY && EOS_EDITOR
 			"EOSSDK"
 		#elif EOS_PLATFORM_IOS
 			"EOSSDK.framework/EOSSDK"

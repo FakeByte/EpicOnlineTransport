@@ -6,21 +6,21 @@ namespace Epic.OnlineServices.Ecom
 	/// <summary>
 	/// Input parameters for the <see cref="EcomInterface.CopyEntitlementById" /> function.
 	/// </summary>
-	public class CopyEntitlementByIdOptions
+	public struct CopyEntitlementByIdOptions
 	{
 		/// <summary>
-		/// The Epic Online Services Account ID of the local user whose entitlement is being copied
+		/// The Epic Account ID of the local user whose entitlement is being copied
 		/// </summary>
 		public EpicAccountId LocalUserId { get; set; }
 
 		/// <summary>
 		/// ID of the entitlement to retrieve from the cache
 		/// </summary>
-		public string EntitlementId { get; set; }
+		public Utf8String EntitlementId { get; set; }
 	}
 
 	[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 8)]
-	internal struct CopyEntitlementByIdOptionsInternal : ISettable, System.IDisposable
+	internal struct CopyEntitlementByIdOptionsInternal : ISettable<CopyEntitlementByIdOptions>, System.IDisposable
 	{
 		private int m_ApiVersion;
 		private System.IntPtr m_LocalUserId;
@@ -30,37 +30,39 @@ namespace Epic.OnlineServices.Ecom
 		{
 			set
 			{
-				Helper.TryMarshalSet(ref m_LocalUserId, value);
+				Helper.Set(value, ref m_LocalUserId);
 			}
 		}
 
-		public string EntitlementId
+		public Utf8String EntitlementId
 		{
 			set
 			{
-				Helper.TryMarshalSet(ref m_EntitlementId, value);
+				Helper.Set(value, ref m_EntitlementId);
 			}
 		}
 
-		public void Set(CopyEntitlementByIdOptions other)
+		public void Set(ref CopyEntitlementByIdOptions other)
 		{
-			if (other != null)
+			m_ApiVersion = EcomInterface.CopyentitlementbyidApiLatest;
+			LocalUserId = other.LocalUserId;
+			EntitlementId = other.EntitlementId;
+		}
+
+		public void Set(ref CopyEntitlementByIdOptions? other)
+		{
+			if (other.HasValue)
 			{
 				m_ApiVersion = EcomInterface.CopyentitlementbyidApiLatest;
-				LocalUserId = other.LocalUserId;
-				EntitlementId = other.EntitlementId;
+				LocalUserId = other.Value.LocalUserId;
+				EntitlementId = other.Value.EntitlementId;
 			}
-		}
-
-		public void Set(object other)
-		{
-			Set(other as CopyEntitlementByIdOptions);
 		}
 
 		public void Dispose()
 		{
-			Helper.TryMarshalDispose(ref m_LocalUserId);
-			Helper.TryMarshalDispose(ref m_EntitlementId);
+			Helper.Dispose(ref m_LocalUserId);
+			Helper.Dispose(ref m_EntitlementId);
 		}
 	}
 }

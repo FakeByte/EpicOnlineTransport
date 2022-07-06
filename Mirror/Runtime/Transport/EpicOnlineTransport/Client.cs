@@ -113,23 +113,24 @@ namespace EpicTransport {
             OnReceivedData.Invoke(data, channel);
         }
 
-        protected override void OnNewConnection(OnIncomingConnectionRequestInfo result) {
+        protected override void OnNewConnection(ref OnIncomingConnectionRequestInfo result) {
             if (ignoreAllMessages) {
                 return;
             }
 
-            if (deadSockets.Contains(result.SocketId.SocketName)) {
+            if (deadSockets.Contains(result.SocketId?.SocketName)) {
                 Debug.LogError("Received incoming connection request from dead socket");
                 return;
             }
 
             if (hostProductId == result.RemoteUserId) {
+                var acceptConnectionOptions = new AcceptConnectionOptions() {
+                    LocalUserId = EOSSDKComponent.LocalUserProductId,
+                    RemoteUserId = result.RemoteUserId,
+                    SocketId = result.SocketId
+                };
                 EOSSDKComponent.GetP2PInterface().AcceptConnection(
-                    new AcceptConnectionOptions() {
-                        LocalUserId = EOSSDKComponent.LocalUserProductId,
-                        RemoteUserId = result.RemoteUserId,
-                        SocketId = result.SocketId
-                    });
+                    ref acceptConnectionOptions);
             } else {
                 Debug.LogError("P2P Acceptance Request from unknown host ID.");
             }

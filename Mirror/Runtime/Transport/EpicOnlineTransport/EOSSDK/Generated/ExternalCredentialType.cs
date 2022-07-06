@@ -16,23 +16,26 @@ namespace Epic.OnlineServices
 	public enum ExternalCredentialType : int
 	{
 		/// <summary>
-		/// Epic Games User Token
+		/// Epic Account Services Token
 		/// 
-		/// Acquired using <see cref="Auth.AuthInterface.CopyUserAuthToken" /> that returns <see cref="Auth.Token" />::AccessToken.
+		/// Using ID Token is preferred, retrieved with <see cref="Auth.AuthInterface.CopyIdToken" /> that returns <see cref="Auth.IdToken.JsonWebToken" />.
+		/// Using Auth Token is supported for backwards compatibility, retrieved with <see cref="Auth.AuthInterface.CopyUserAuthToken" /> that returns <see cref="Auth.Token.AccessToken" />.
 		/// 
 		/// Supported with <see cref="Connect.ConnectInterface.Login" />.
+		/// <seealso cref="Auth.AuthInterface.CopyIdToken" />
+		/// <seealso cref="Auth.AuthInterface.CopyUserAuthToken" />
 		/// </summary>
 		Epic = 0,
 		/// <summary>
 		/// Steam Encrypted App Ticket
 		/// 
 		/// Generated using the ISteamUser::RequestEncryptedAppTicket API of Steamworks SDK.
-		/// For ticket generation parameters, use pDataToInclude(NULL) and cbDataToInclude(0).
+		/// For ticket generation parameters, use pDataToInclude(<see langword="null" />) and cbDataToInclude(0).
 		/// 
-		/// The retrieved App Ticket byte buffer needs to be converted into a hex-encoded UTF-8 string (e.g. "FA87097A..") before passing it to the <see cref="Auth.AuthInterface.Login" /> or <see cref="Connect.ConnectInterface.Login" /> APIs.
+		/// The retrieved App Ticket byte buffer needs to be converted into a hex-encoded UTF-8 string (e.g. "FA87097A..") before passing it to the <see cref="Connect.ConnectInterface.Login" /> API.
 		/// <see cref="Common.ToString" /> can be used for this conversion.
 		/// 
-		/// Supported with <see cref="Auth.AuthInterface.Login" />, <see cref="Connect.ConnectInterface.Login" />.
+		/// Supported with <see cref="Connect.ConnectInterface.Login" />.
 		/// </summary>
 		SteamAppTicket = 1,
 		/// <summary>
@@ -63,7 +66,7 @@ namespace Epic.OnlineServices
 		/// GOG Galaxy Encrypted App Ticket
 		/// 
 		/// Generated using the IUser::RequestEncryptedAppTicket API of GOG Galaxy SDK.
-		/// For ticket generation parameters, use data(NULL) and dataSize(0).
+		/// For ticket generation parameters, use data(<see langword="null" />) and dataSize(0).
 		/// 
 		/// The retrieved App Ticket byte buffer needs to be converted into a hex-encoded UTF-8 string (e.g. "FA87097A..") before passing it to the <see cref="Connect.ConnectInterface.Login" /> API.
 		/// For C/C++ API integration, use the <see cref="Common.ToString" /> API for the conversion.
@@ -169,6 +172,31 @@ namespace Epic.OnlineServices
 		/// 
 		/// Supported with <see cref="Connect.ConnectInterface.Login" />.
 		/// </summary>
-		ItchioKey = 15
+		ItchioKey = 15,
+		/// <summary>
+		/// Epic Games ID Token
+		/// 
+		/// Acquired using <see cref="Auth.AuthInterface.CopyIdToken" /> that returns <see cref="Auth.IdToken.JsonWebToken" />.
+		/// 
+		/// Supported with <see cref="Connect.ConnectInterface.Login" />.
+		/// </summary>
+		EpicIdToken = 16,
+		/// <summary>
+		/// Amazon Access Token
+		/// 
+		/// Supported with <see cref="Connect.ConnectInterface.Login" />.
+		/// </summary>
+		AmazonAccessToken = 17,
+		/// <summary>
+		/// Steam Auth Session Ticket
+		/// 
+		/// Generated using the ISteamUser::GetAuthSessionTicket API of Steamworks SDK.
+		/// 
+		/// The retrieved Auth Session Ticket byte buffer needs to be converted into a hex-encoded UTF-8 string (e.g. "FA87097A..") before passing it to the <see cref="Auth.AuthInterface.Login" /> or <see cref="Connect.ConnectInterface.Login" /> APIs.
+		/// <see cref="Common.ToString" /> can be used for this conversion.
+		/// 
+		/// Supported with <see cref="Auth.AuthInterface.Login" />, <see cref="Connect.ConnectInterface.Login" />.
+		/// </summary>
+		SteamSessionTicket = 18
 	}
 }

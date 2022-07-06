@@ -59,19 +59,19 @@ namespace Epic.OnlineServices.Friends
 		/// <param name="options">structure containing the logged in account and the inviting account</param>
 		/// <param name="clientData">arbitrary data that is passed back to you in the CompletionDelegate</param>
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
-		public void AcceptInvite(AcceptInviteOptions options, object clientData, OnAcceptInviteCallback completionDelegate)
+		public void AcceptInvite(ref AcceptInviteOptions options, object clientData, OnAcceptInviteCallback completionDelegate)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<AcceptInviteOptionsInternal, AcceptInviteOptions>(ref optionsAddress, options);
+			AcceptInviteOptionsInternal optionsInternal = new AcceptInviteOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var clientDataAddress = System.IntPtr.Zero;
 
 			var completionDelegateInternal = new OnAcceptInviteCallbackInternal(OnAcceptInviteCallbackInternalImplementation);
-			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
+			Helper.AddCallback(out clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			Bindings.EOS_Friends_AcceptInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Friends_AcceptInvite(InnerHandle, ref optionsInternal, clientDataAddress, completionDelegateInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 		}
 
 		/// <summary>
@@ -83,47 +83,47 @@ namespace Epic.OnlineServices.Friends
 		/// <returns>
 		/// A valid notification ID if successfully bound, or <see cref="Common.InvalidNotificationid" /> otherwise
 		/// </returns>
-		public ulong AddNotifyFriendsUpdate(AddNotifyFriendsUpdateOptions options, object clientData, OnFriendsUpdateCallback friendsUpdateHandler)
+		public ulong AddNotifyFriendsUpdate(ref AddNotifyFriendsUpdateOptions options, object clientData, OnFriendsUpdateCallback friendsUpdateHandler)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<AddNotifyFriendsUpdateOptionsInternal, AddNotifyFriendsUpdateOptions>(ref optionsAddress, options);
+			AddNotifyFriendsUpdateOptionsInternal optionsInternal = new AddNotifyFriendsUpdateOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var clientDataAddress = System.IntPtr.Zero;
 
 			var friendsUpdateHandlerInternal = new OnFriendsUpdateCallbackInternal(OnFriendsUpdateCallbackInternalImplementation);
-			Helper.AddCallback(ref clientDataAddress, clientData, friendsUpdateHandler, friendsUpdateHandlerInternal);
+			Helper.AddCallback(out clientDataAddress, clientData, friendsUpdateHandler, friendsUpdateHandlerInternal);
 
-			var funcResult = Bindings.EOS_Friends_AddNotifyFriendsUpdate(InnerHandle, optionsAddress, clientDataAddress, friendsUpdateHandlerInternal);
+			var funcResult = Bindings.EOS_Friends_AddNotifyFriendsUpdate(InnerHandle, ref optionsInternal, clientDataAddress, friendsUpdateHandlerInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
-			Helper.TryAssignNotificationIdToCallback(clientDataAddress, funcResult);
+			Helper.AssignNotificationIdToCallback(clientDataAddress, funcResult);
 
 			return funcResult;
 		}
 
 		/// <summary>
-		/// Retrieves the Epic Online Services Account ID of an entry from the friends list that has already been retrieved by the <see cref="QueryFriends" /> API.
-		/// The Epic Online Services Account ID returned by this function may belong to an account that has been invited to be a friend or that has invited the local user to be a friend.
-		/// To determine if the Epic Online Services Account ID returned by this function is a friend or a pending friend invitation, use the <see cref="GetStatus" /> function.
+		/// Retrieves the Epic Account ID of an entry from the friends list that has already been retrieved by the <see cref="QueryFriends" /> API.
+		/// The Epic Account ID returned by this function may belong to an account that has been invited to be a friend or that has invited the local user to be a friend.
+		/// To determine if the Epic Account ID returned by this function is a friend or a pending friend invitation, use the <see cref="GetStatus" /> function.
 		/// <seealso cref="GetFriendsCount" />
 		/// <seealso cref="GetStatus" />
 		/// </summary>
-		/// <param name="options">structure containing the Epic Online Services Account ID of the owner of the friends list and the index into the list</param>
+		/// <param name="options">structure containing the Epic Account ID of the owner of the friends list and the index into the list</param>
 		/// <returns>
-		/// the Epic Online Services Account ID of the friend. Note that if the index provided is out of bounds, the returned Epic Online Services Account ID will be a "null" account ID.
+		/// the Epic Account ID of the friend. Note that if the index provided is out of bounds, the returned Epic Account ID will be a "null" account ID.
 		/// </returns>
-		public EpicAccountId GetFriendAtIndex(GetFriendAtIndexOptions options)
+		public EpicAccountId GetFriendAtIndex(ref GetFriendAtIndexOptions options)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<GetFriendAtIndexOptionsInternal, GetFriendAtIndexOptions>(ref optionsAddress, options);
+			GetFriendAtIndexOptionsInternal optionsInternal = new GetFriendAtIndexOptionsInternal();
+			optionsInternal.Set(ref options);
 
-			var funcResult = Bindings.EOS_Friends_GetFriendAtIndex(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Friends_GetFriendAtIndex(InnerHandle, ref optionsInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
 			EpicAccountId funcResultReturn;
-			Helper.TryMarshalGet(funcResult, out funcResultReturn);
+			Helper.Get(funcResult, out funcResultReturn);
 			return funcResultReturn;
 		}
 
@@ -131,18 +131,18 @@ namespace Epic.OnlineServices.Friends
 		/// Retrieves the number of friends on the friends list that has already been retrieved by the <see cref="QueryFriends" /> API.
 		/// <seealso cref="GetFriendAtIndex" />
 		/// </summary>
-		/// <param name="options">structure containing the Epic Online Services Account ID of user who owns the friends list</param>
+		/// <param name="options">structure containing the Epic Account ID of user who owns the friends list</param>
 		/// <returns>
 		/// the number of friends on the list
 		/// </returns>
-		public int GetFriendsCount(GetFriendsCountOptions options)
+		public int GetFriendsCount(ref GetFriendsCountOptions options)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<GetFriendsCountOptionsInternal, GetFriendsCountOptions>(ref optionsAddress, options);
+			GetFriendsCountOptionsInternal optionsInternal = new GetFriendsCountOptionsInternal();
+			optionsInternal.Set(ref options);
 
-			var funcResult = Bindings.EOS_Friends_GetFriendsCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Friends_GetFriendsCount(InnerHandle, ref optionsInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
 			return funcResult;
 		}
@@ -151,7 +151,7 @@ namespace Epic.OnlineServices.Friends
 		/// Retrieve the friendship status between the local user and another user.
 		/// <seealso cref="FriendsStatus" />
 		/// </summary>
-		/// <param name="options">structure containing the Epic Online Services Account ID of the friend list to check and the account of the user to test friendship status</param>
+		/// <param name="options">structure containing the Epic Account ID of the friend list to check and the account of the user to test friendship status</param>
 		/// <returns>
 		/// A value indicating whether the two accounts have a friendship, pending invites in either direction, or no relationship
 		/// <see cref="FriendsStatus.Friends" /> is returned for two users that have confirmed friendship
@@ -159,39 +159,38 @@ namespace Epic.OnlineServices.Friends
 		/// <see cref="FriendsStatus.InviteReceived" /> is returned when the other user has sent a friend invitation to the local user
 		/// <see cref="FriendsStatus.NotFriends" /> is returned when there is no known relationship
 		/// </returns>
-		public FriendsStatus GetStatus(GetStatusOptions options)
+		public FriendsStatus GetStatus(ref GetStatusOptions options)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<GetStatusOptionsInternal, GetStatusOptions>(ref optionsAddress, options);
+			GetStatusOptionsInternal optionsInternal = new GetStatusOptionsInternal();
+			optionsInternal.Set(ref options);
 
-			var funcResult = Bindings.EOS_Friends_GetStatus(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Friends_GetStatus(InnerHandle, ref optionsInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
 			return funcResult;
 		}
 
 		/// <summary>
 		/// Starts an asynchronous task that reads the user's friends list from the backend service, caching it for future use.
-		/// 
-		/// @note When the Social Overlay is enabled then this will be called automatically. The Social Overlay is enabled by default (see <see cref="Platform.PlatformFlags.DisableSocialOverlay" />).
+		/// When the Social Overlay is enabled then this will be called automatically. The Social Overlay is enabled by default (see EOS_PF_DISABLE_SOCIAL_OVERLAY).
 		/// </summary>
 		/// <param name="options">structure containing the account for which to retrieve the friends list</param>
 		/// <param name="clientData">arbitrary data that is passed back to you in the CompletionDelegate</param>
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
-		public void QueryFriends(QueryFriendsOptions options, object clientData, OnQueryFriendsCallback completionDelegate)
+		public void QueryFriends(ref QueryFriendsOptions options, object clientData, OnQueryFriendsCallback completionDelegate)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<QueryFriendsOptionsInternal, QueryFriendsOptions>(ref optionsAddress, options);
+			QueryFriendsOptionsInternal optionsInternal = new QueryFriendsOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var clientDataAddress = System.IntPtr.Zero;
 
 			var completionDelegateInternal = new OnQueryFriendsCallbackInternal(OnQueryFriendsCallbackInternalImplementation);
-			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
+			Helper.AddCallback(out clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			Bindings.EOS_Friends_QueryFriends(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Friends_QueryFriends(InnerHandle, ref optionsInternal, clientDataAddress, completionDelegateInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 		}
 
 		/// <summary>
@@ -200,19 +199,19 @@ namespace Epic.OnlineServices.Friends
 		/// <param name="options">structure containing the logged in account and the inviting account</param>
 		/// <param name="clientData">arbitrary data that is passed back to you in the CompletionDelegate</param>
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
-		public void RejectInvite(RejectInviteOptions options, object clientData, OnRejectInviteCallback completionDelegate)
+		public void RejectInvite(ref RejectInviteOptions options, object clientData, OnRejectInviteCallback completionDelegate)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<RejectInviteOptionsInternal, RejectInviteOptions>(ref optionsAddress, options);
+			RejectInviteOptionsInternal optionsInternal = new RejectInviteOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var clientDataAddress = System.IntPtr.Zero;
 
 			var completionDelegateInternal = new OnRejectInviteCallbackInternal(OnRejectInviteCallbackInternalImplementation);
-			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
+			Helper.AddCallback(out clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			Bindings.EOS_Friends_RejectInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Friends_RejectInvite(InnerHandle, ref optionsInternal, clientDataAddress, completionDelegateInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 		}
 
 		/// <summary>
@@ -221,9 +220,9 @@ namespace Epic.OnlineServices.Friends
 		/// <param name="notificationId">The previously bound notification ID.</param>
 		public void RemoveNotifyFriendsUpdate(ulong notificationId)
 		{
-			Helper.TryRemoveCallbackByNotificationId(notificationId);
-
 			Bindings.EOS_Friends_RemoveNotifyFriendsUpdate(InnerHandle, notificationId);
+
+			Helper.RemoveCallbackByNotificationId(notificationId);
 		}
 
 		/// <summary>
@@ -233,73 +232,73 @@ namespace Epic.OnlineServices.Friends
 		/// <param name="options">structure containing the account to send the invite from and the account to send the invite to</param>
 		/// <param name="clientData">arbitrary data that is passed back to you in the CompletionDelegate</param>
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
-		public void SendInvite(SendInviteOptions options, object clientData, OnSendInviteCallback completionDelegate)
+		public void SendInvite(ref SendInviteOptions options, object clientData, OnSendInviteCallback completionDelegate)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<SendInviteOptionsInternal, SendInviteOptions>(ref optionsAddress, options);
+			SendInviteOptionsInternal optionsInternal = new SendInviteOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var clientDataAddress = System.IntPtr.Zero;
 
 			var completionDelegateInternal = new OnSendInviteCallbackInternal(OnSendInviteCallbackInternalImplementation);
-			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
+			Helper.AddCallback(out clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			Bindings.EOS_Friends_SendInvite(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Friends_SendInvite(InnerHandle, ref optionsInternal, clientDataAddress, completionDelegateInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 		}
 
 		[MonoPInvokeCallback(typeof(OnAcceptInviteCallbackInternal))]
-		internal static void OnAcceptInviteCallbackInternalImplementation(System.IntPtr data)
+		internal static void OnAcceptInviteCallbackInternalImplementation(ref AcceptInviteCallbackInfoInternal data)
 		{
 			OnAcceptInviteCallback callback;
 			AcceptInviteCallbackInfo callbackInfo;
-			if (Helper.TryGetAndRemoveCallback<OnAcceptInviteCallback, AcceptInviteCallbackInfoInternal, AcceptInviteCallbackInfo>(data, out callback, out callbackInfo))
+			if (Helper.TryGetAndRemoveCallback(ref data, out callback, out callbackInfo))
 			{
-				callback(callbackInfo);
+				callback(ref callbackInfo);
 			}
 		}
 
 		[MonoPInvokeCallback(typeof(OnFriendsUpdateCallbackInternal))]
-		internal static void OnFriendsUpdateCallbackInternalImplementation(System.IntPtr data)
+		internal static void OnFriendsUpdateCallbackInternalImplementation(ref OnFriendsUpdateInfoInternal data)
 		{
 			OnFriendsUpdateCallback callback;
 			OnFriendsUpdateInfo callbackInfo;
-			if (Helper.TryGetAndRemoveCallback<OnFriendsUpdateCallback, OnFriendsUpdateInfoInternal, OnFriendsUpdateInfo>(data, out callback, out callbackInfo))
+			if (Helper.TryGetAndRemoveCallback(ref data, out callback, out callbackInfo))
 			{
-				callback(callbackInfo);
+				callback(ref callbackInfo);
 			}
 		}
 
 		[MonoPInvokeCallback(typeof(OnQueryFriendsCallbackInternal))]
-		internal static void OnQueryFriendsCallbackInternalImplementation(System.IntPtr data)
+		internal static void OnQueryFriendsCallbackInternalImplementation(ref QueryFriendsCallbackInfoInternal data)
 		{
 			OnQueryFriendsCallback callback;
 			QueryFriendsCallbackInfo callbackInfo;
-			if (Helper.TryGetAndRemoveCallback<OnQueryFriendsCallback, QueryFriendsCallbackInfoInternal, QueryFriendsCallbackInfo>(data, out callback, out callbackInfo))
+			if (Helper.TryGetAndRemoveCallback(ref data, out callback, out callbackInfo))
 			{
-				callback(callbackInfo);
+				callback(ref callbackInfo);
 			}
 		}
 
 		[MonoPInvokeCallback(typeof(OnRejectInviteCallbackInternal))]
-		internal static void OnRejectInviteCallbackInternalImplementation(System.IntPtr data)
+		internal static void OnRejectInviteCallbackInternalImplementation(ref RejectInviteCallbackInfoInternal data)
 		{
 			OnRejectInviteCallback callback;
 			RejectInviteCallbackInfo callbackInfo;
-			if (Helper.TryGetAndRemoveCallback<OnRejectInviteCallback, RejectInviteCallbackInfoInternal, RejectInviteCallbackInfo>(data, out callback, out callbackInfo))
+			if (Helper.TryGetAndRemoveCallback(ref data, out callback, out callbackInfo))
 			{
-				callback(callbackInfo);
+				callback(ref callbackInfo);
 			}
 		}
 
 		[MonoPInvokeCallback(typeof(OnSendInviteCallbackInternal))]
-		internal static void OnSendInviteCallbackInternalImplementation(System.IntPtr data)
+		internal static void OnSendInviteCallbackInternalImplementation(ref SendInviteCallbackInfoInternal data)
 		{
 			OnSendInviteCallback callback;
 			SendInviteCallbackInfo callbackInfo;
-			if (Helper.TryGetAndRemoveCallback<OnSendInviteCallback, SendInviteCallbackInfoInternal, SendInviteCallbackInfo>(data, out callback, out callbackInfo))
+			if (Helper.TryGetAndRemoveCallback(ref data, out callback, out callbackInfo))
 			{
-				callback(callbackInfo);
+				callback(ref callbackInfo);
 			}
 		}
 	}
