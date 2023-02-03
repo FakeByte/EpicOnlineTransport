@@ -231,6 +231,12 @@ namespace EpicTransport {
 
             for(int i  = 0; i < packets.Length; i++) {
                 if (connectionId == int.MinValue) {
+                    if (client == null)
+                    {
+                        OnClientDisconnected.Invoke();
+                        return;
+                    }
+                    
                     client.Send(packets[i].ToBytes(), channelId);
                 } else {
                     server.SendAll(connectionId, packets[i].ToBytes(), channelId);
