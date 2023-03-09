@@ -46,7 +46,7 @@ public class EOSLobbyUI : EOSLobby {
         showLobbyList = false;
 
         NetworkManager netManager = GetComponent<NetworkManager>();
-        netManager.networkAddress = attributes.Find((x) => x.Data?.Key == hostAddressKey).Data.Value.ToString();
+        netManager.networkAddress = attributes.Find((x) => x.Data?.Key == hostAddressKey).Data.Value.Value.AsUtf8;
         netManager.StartClient();
     }
 
@@ -153,7 +153,7 @@ public class EOSLobbyUI : EOSLobby {
             //draw the lobby result
             GUILayout.BeginHorizontal(GUILayout.Width(400), GUILayout.MaxWidth(400));
             //draw lobby name
-            GUILayout.Label(lobbyNameAttribute?.Data.Value.ToString().Length > 30 ? lobbyNameAttribute?.Data.Value.ToString().Substring(0, 27).Trim() + "..." : lobbyNameAttribute?.Data.Value.ToString(), GUILayout.Width(175));
+            GUILayout.Label(lobbyNameAttribute?.Data.Value.Value.AsUtf8.Length > 30 ? lobbyNameAttribute?.Data.Value.Value.AsUtf8.Substring(0, 27).Trim() + "..." : lobbyNameAttribute?.Data.Value.Value.AsUtf8, GUILayout.Width(175));
             GUILayout.Space(75);
             //draw player count
             var lobbyDetailsGetMemberCountOptions = new LobbyDetailsGetMemberCountOptions { };
@@ -171,7 +171,7 @@ public class EOSLobbyUI : EOSLobby {
 
     private void DrawLobbyMenu() {
         //draws the lobby name
-        GUILayout.Label("Name: " + lobbyData.Find((x) => x.Data?.Key == AttributeKeys[0]).Data.Value.ToString());
+        GUILayout.Label("Name: " + lobbyData.Find((x) => x.Data?.Key == AttributeKeys[0]).Data.Value.Value.AsUtf8);
 
         //draws players
         var lobbyDetailsGetMemberCountOptions = new LobbyDetailsGetMemberCountOptions { };
