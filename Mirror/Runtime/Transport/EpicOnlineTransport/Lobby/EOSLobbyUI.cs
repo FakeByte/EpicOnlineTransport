@@ -46,7 +46,7 @@ public class EOSLobbyUI : EOSLobby {
         showLobbyList = false;
 
         NetworkManager netManager = GetComponent<NetworkManager>();
-        netManager.networkAddress = attributes.Find((x) => x.Data.Key == hostAddressKey).Data.Value.AsUtf8;
+        netManager.networkAddress = attributes.Find((x) => x.Data?.Key == hostAddressKey).Data.Value.Value.AsUtf8;
         netManager.StartClient();
     }
 
@@ -144,16 +144,20 @@ public class EOSLobbyUI : EOSLobby {
         //draw lobbies
         foreach (LobbyDetails lobby in foundLobbies) {
             //get lobby name
-            Attribute lobbyNameAttribute = new Attribute();
-            lobby.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = AttributeKeys[0] }, out lobbyNameAttribute);
+            Attribute? lobbyNameAttribute = new Attribute();
+            var lobbyDetailsCopyAttributeByKeyOptions = new LobbyDetailsCopyAttributeByKeyOptions {
+                AttrKey = AttributeKeys[0]
+            };
+            lobby.CopyAttributeByKey(ref lobbyDetailsCopyAttributeByKeyOptions, out lobbyNameAttribute);
 
             //draw the lobby result
             GUILayout.BeginHorizontal(GUILayout.Width(400), GUILayout.MaxWidth(400));
             //draw lobby name
-            GUILayout.Label(lobbyNameAttribute.Data.Value.AsUtf8.Length > 30 ? lobbyNameAttribute.Data.Value.AsUtf8.Substring(0, 27).Trim() + "..." : lobbyNameAttribute.Data.Value.AsUtf8, GUILayout.Width(175));
+            GUILayout.Label(lobbyNameAttribute?.Data.Value.Value.AsUtf8.Length > 30 ? lobbyNameAttribute?.Data.Value.Value.AsUtf8.Substring(0, 27).Trim() + "..." : lobbyNameAttribute?.Data.Value.Value.AsUtf8, GUILayout.Width(175));
             GUILayout.Space(75);
             //draw player count
-            GUILayout.Label(lobby.GetMemberCount(new LobbyDetailsGetMemberCountOptions { }).ToString());
+            var lobbyDetailsGetMemberCountOptions = new LobbyDetailsGetMemberCountOptions { };
+            GUILayout.Label(lobby.GetMemberCount(ref lobbyDetailsGetMemberCountOptions).ToString());
             GUILayout.Space(75);
 
             //draw join button
@@ -167,10 +171,11 @@ public class EOSLobbyUI : EOSLobby {
 
     private void DrawLobbyMenu() {
         //draws the lobby name
-        GUILayout.Label("Name: " + lobbyData.Find((x) => x.Data.Key == AttributeKeys[0]).Data.Value.AsUtf8);
+        GUILayout.Label("Name: " + lobbyData.Find((x) => x.Data?.Key == AttributeKeys[0]).Data.Value.Value.AsUtf8);
 
         //draws players
-        for (int i = 0; i < ConnectedLobbyDetails.GetMemberCount(new LobbyDetailsGetMemberCountOptions { }); i++) {
+        var lobbyDetailsGetMemberCountOptions = new LobbyDetailsGetMemberCountOptions { };
+        for (int i = 0; i < ConnectedLobbyDetails.GetMemberCount(ref lobbyDetailsGetMemberCountOptions); i++) {
             GUILayout.Label("Player " + i);
         }
     }

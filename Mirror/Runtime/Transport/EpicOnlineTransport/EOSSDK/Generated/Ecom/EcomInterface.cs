@@ -26,12 +26,22 @@ namespace Epic.OnlineServices.Ecom
 		/// <summary>
 		/// The most recent version of the <see cref="CatalogOffer" /> struct.
 		/// </summary>
-		public const int CatalogofferApiLatest = 3;
+		public const int CatalogofferApiLatest = 5;
+
+		/// <summary>
+		/// Timestamp value representing an undefined EffectiveDateTimestamp for <see cref="CatalogOffer" />
+		/// </summary>
+		public const int CatalogofferEffectivedatetimestampUndefined = -1;
 
 		/// <summary>
 		/// Timestamp value representing an undefined ExpirationTimestamp for <see cref="CatalogOffer" />
 		/// </summary>
 		public const int CatalogofferExpirationtimestampUndefined = -1;
+
+		/// <summary>
+		/// Timestamp value representing an undefined ReleaseDateTimestamp for <see cref="CatalogOffer" />
+		/// </summary>
+		public const int CatalogofferReleasedatetimestampUndefined = -1;
 
 		/// <summary>
 		/// The most recent version of the <see cref="CatalogRelease" /> struct.
@@ -84,14 +94,19 @@ namespace Epic.OnlineServices.Ecom
 		public const int CopyitemreleasebyindexApiLatest = 1;
 
 		/// <summary>
+		/// The most recent version of the <see cref="CopyLastRedeemedEntitlementByIndex" /> API.
+		/// </summary>
+		public const int CopylastredeemedentitlementbyindexApiLatest = 1;
+
+		/// <summary>
 		/// The most recent version of the <see cref="CopyOfferById" /> API.
 		/// </summary>
-		public const int CopyofferbyidApiLatest = 2;
+		public const int CopyofferbyidApiLatest = 3;
 
 		/// <summary>
 		/// The most recent version of the <see cref="CopyOfferByIndex" /> API.
 		/// </summary>
-		public const int CopyofferbyindexApiLatest = 2;
+		public const int CopyofferbyindexApiLatest = 3;
 
 		/// <summary>
 		/// The most recent version of the <see cref="CopyOfferImageInfoByIndex" /> API.
@@ -124,6 +139,11 @@ namespace Epic.OnlineServices.Ecom
 		public const int EntitlementEndtimestampUndefined = -1;
 
 		/// <summary>
+		/// The maximum length of an entitlement ID
+		/// </summary>
+		public const int EntitlementidMaxLength = 32;
+
+		/// <summary>
 		/// The most recent version of the <see cref="GetEntitlementsByNameCount" /> API.
 		/// </summary>
 		public const int GetentitlementsbynamecountApiLatest = 1;
@@ -142,6 +162,11 @@ namespace Epic.OnlineServices.Ecom
 		/// The most recent version of the <see cref="GetItemReleaseCount" /> API.
 		/// </summary>
 		public const int GetitemreleasecountApiLatest = 1;
+
+		/// <summary>
+		/// The most recent version of the <see cref="GetLastRedeemedEntitlementsCount" /> API.
+		/// </summary>
+		public const int GetlastredeemedentitlementscountApiLatest = 1;
 
 		/// <summary>
 		/// The most recent version of the <see cref="GetOfferCount" /> API.
@@ -184,6 +209,16 @@ namespace Epic.OnlineServices.Ecom
 		public const int QueryentitlementsMaxEntitlementIds = 32;
 
 		/// <summary>
+		/// The most recent version of the <see cref="QueryEntitlementToken" /> API.
+		/// </summary>
+		public const int QueryentitlementtokenApiLatest = 1;
+
+		/// <summary>
+		/// The maximum number of entitlements that may be queried in a single pass.
+		/// </summary>
+		public const int QueryentitlementtokenMaxEntitlementIds = 32;
+
+		/// <summary>
 		/// The most recent version of the <see cref="QueryOffers" /> API.
 		/// </summary>
 		public const int QueryoffersApiLatest = 1;
@@ -196,7 +231,7 @@ namespace Epic.OnlineServices.Ecom
 		/// <summary>
 		/// The maximum number of catalog items that may be queried in a single pass
 		/// </summary>
-		public const int QueryownershipMaxCatalogIds = 32;
+		public const int QueryownershipMaxCatalogIds = 50;
 
 		/// <summary>
 		/// The most recent version of the <see cref="QueryOwnershipToken" /> API.
@@ -211,7 +246,7 @@ namespace Epic.OnlineServices.Ecom
 		/// <summary>
 		/// The most recent version of the <see cref="RedeemEntitlements" /> API.
 		/// </summary>
-		public const int RedeementitlementsApiLatest = 1;
+		public const int RedeementitlementsApiLatest = 2;
 
 		/// <summary>
 		/// The maximum number of entitlement IDs that may be redeemed in a single pass
@@ -233,19 +268,19 @@ namespace Epic.OnlineServices.Ecom
 		/// <param name="options">structure containing filter criteria</param>
 		/// <param name="clientData">arbitrary data that is passed back to you in the CompletionDelegate</param>
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
-		public void Checkout(CheckoutOptions options, object clientData, OnCheckoutCallback completionDelegate)
+		public void Checkout(ref CheckoutOptions options, object clientData, OnCheckoutCallback completionDelegate)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<CheckoutOptionsInternal, CheckoutOptions>(ref optionsAddress, options);
+			CheckoutOptionsInternal optionsInternal = new CheckoutOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var clientDataAddress = System.IntPtr.Zero;
 
 			var completionDelegateInternal = new OnCheckoutCallbackInternal(OnCheckoutCallbackInternalImplementation);
-			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
+			Helper.AddCallback(out clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			Bindings.EOS_Ecom_Checkout(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Ecom_Checkout(InnerHandle, ref optionsInternal, clientDataAddress, completionDelegateInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 		}
 
 		/// <summary>
@@ -253,7 +288,7 @@ namespace Epic.OnlineServices.Ecom
 		/// <seealso cref="CopyEntitlementByNameAndIndex" />
 		/// <seealso cref="Release" />
 		/// </summary>
-		/// <param name="options">structure containing the Epic Online Services Account ID and entitlement ID being accessed</param>
+		/// <param name="options">structure containing the Epic Account ID and entitlement ID being accessed</param>
 		/// <param name="outEntitlement">the entitlement for the given ID, if it exists and is valid, use <see cref="Release" /> when finished</param>
 		/// <returns>
 		/// <see cref="Result.Success" /> if the information is available and passed out in OutEntitlement
@@ -261,18 +296,19 @@ namespace Epic.OnlineServices.Ecom
 		/// <see cref="Result.InvalidParameters" /> if you pass a null pointer for the out parameter
 		/// <see cref="Result.NotFound" /> if the entitlement is not found
 		/// </returns>
-		public Result CopyEntitlementById(CopyEntitlementByIdOptions options, out Entitlement outEntitlement)
+		public Result CopyEntitlementById(ref CopyEntitlementByIdOptions options, out Entitlement? outEntitlement)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<CopyEntitlementByIdOptionsInternal, CopyEntitlementByIdOptions>(ref optionsAddress, options);
+			CopyEntitlementByIdOptionsInternal optionsInternal = new CopyEntitlementByIdOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var outEntitlementAddress = System.IntPtr.Zero;
 
-			var funcResult = Bindings.EOS_Ecom_CopyEntitlementById(InnerHandle, optionsAddress, ref outEntitlementAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyEntitlementById(InnerHandle, ref optionsInternal, ref outEntitlementAddress);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
-			if (Helper.TryMarshalGet<EntitlementInternal, Entitlement>(outEntitlementAddress, out outEntitlement))
+			Helper.Get<EntitlementInternal, Entitlement>(outEntitlementAddress, out outEntitlement);
+			if (outEntitlement != null)
 			{
 				Bindings.EOS_Ecom_Entitlement_Release(outEntitlementAddress);
 			}
@@ -284,7 +320,7 @@ namespace Epic.OnlineServices.Ecom
 		/// Fetches an entitlement from a given index.
 		/// <seealso cref="Release" />
 		/// </summary>
-		/// <param name="options">structure containing the Epic Online Services Account ID and index being accessed</param>
+		/// <param name="options">structure containing the Epic Account ID and index being accessed</param>
 		/// <param name="outEntitlement">the entitlement for the given index, if it exists and is valid, use <see cref="Release" /> when finished</param>
 		/// <returns>
 		/// <see cref="Result.Success" /> if the information is available and passed out in OutEntitlement
@@ -292,18 +328,19 @@ namespace Epic.OnlineServices.Ecom
 		/// <see cref="Result.InvalidParameters" /> if you pass a null pointer for the out parameter
 		/// <see cref="Result.NotFound" /> if the entitlement is not found
 		/// </returns>
-		public Result CopyEntitlementByIndex(CopyEntitlementByIndexOptions options, out Entitlement outEntitlement)
+		public Result CopyEntitlementByIndex(ref CopyEntitlementByIndexOptions options, out Entitlement? outEntitlement)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<CopyEntitlementByIndexOptionsInternal, CopyEntitlementByIndexOptions>(ref optionsAddress, options);
+			CopyEntitlementByIndexOptionsInternal optionsInternal = new CopyEntitlementByIndexOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var outEntitlementAddress = System.IntPtr.Zero;
 
-			var funcResult = Bindings.EOS_Ecom_CopyEntitlementByIndex(InnerHandle, optionsAddress, ref outEntitlementAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyEntitlementByIndex(InnerHandle, ref optionsInternal, ref outEntitlementAddress);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
-			if (Helper.TryMarshalGet<EntitlementInternal, Entitlement>(outEntitlementAddress, out outEntitlement))
+			Helper.Get<EntitlementInternal, Entitlement>(outEntitlementAddress, out outEntitlement);
+			if (outEntitlement != null)
 			{
 				Bindings.EOS_Ecom_Entitlement_Release(outEntitlementAddress);
 			}
@@ -317,7 +354,7 @@ namespace Epic.OnlineServices.Ecom
 		/// one less than the result from <see cref="GetEntitlementsByNameCount" />.
 		/// <seealso cref="Release" />
 		/// </summary>
-		/// <param name="options">structure containing the Epic Online Services Account ID, entitlement name, and index being accessed</param>
+		/// <param name="options">structure containing the Epic Account ID, entitlement name, and index being accessed</param>
 		/// <param name="outEntitlement">the entitlement for the given name index pair, if it exists and is valid, use <see cref="Release" /> when finished</param>
 		/// <returns>
 		/// <see cref="Result.Success" /> if the information is available and passed out in OutEntitlement
@@ -325,18 +362,19 @@ namespace Epic.OnlineServices.Ecom
 		/// <see cref="Result.InvalidParameters" /> if you pass a null pointer for the out parameter
 		/// <see cref="Result.NotFound" /> if the entitlement is not found
 		/// </returns>
-		public Result CopyEntitlementByNameAndIndex(CopyEntitlementByNameAndIndexOptions options, out Entitlement outEntitlement)
+		public Result CopyEntitlementByNameAndIndex(ref CopyEntitlementByNameAndIndexOptions options, out Entitlement? outEntitlement)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<CopyEntitlementByNameAndIndexOptionsInternal, CopyEntitlementByNameAndIndexOptions>(ref optionsAddress, options);
+			CopyEntitlementByNameAndIndexOptionsInternal optionsInternal = new CopyEntitlementByNameAndIndexOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var outEntitlementAddress = System.IntPtr.Zero;
 
-			var funcResult = Bindings.EOS_Ecom_CopyEntitlementByNameAndIndex(InnerHandle, optionsAddress, ref outEntitlementAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyEntitlementByNameAndIndex(InnerHandle, ref optionsInternal, ref outEntitlementAddress);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
-			if (Helper.TryMarshalGet<EntitlementInternal, Entitlement>(outEntitlementAddress, out outEntitlement))
+			Helper.Get<EntitlementInternal, Entitlement>(outEntitlementAddress, out outEntitlement);
+			if (outEntitlement != null)
 			{
 				Bindings.EOS_Ecom_Entitlement_Release(outEntitlementAddress);
 			}
@@ -358,18 +396,19 @@ namespace Epic.OnlineServices.Ecom
 		/// <see cref="Result.InvalidParameters" /> if you pass a null pointer for the out parameter
 		/// <see cref="Result.NotFound" /> if the offer is not found
 		/// </returns>
-		public Result CopyItemById(CopyItemByIdOptions options, out CatalogItem outItem)
+		public Result CopyItemById(ref CopyItemByIdOptions options, out CatalogItem? outItem)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<CopyItemByIdOptionsInternal, CopyItemByIdOptions>(ref optionsAddress, options);
+			CopyItemByIdOptionsInternal optionsInternal = new CopyItemByIdOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var outItemAddress = System.IntPtr.Zero;
 
-			var funcResult = Bindings.EOS_Ecom_CopyItemById(InnerHandle, optionsAddress, ref outItemAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyItemById(InnerHandle, ref optionsInternal, ref outItemAddress);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
-			if (Helper.TryMarshalGet<CatalogItemInternal, CatalogItem>(outItemAddress, out outItem))
+			Helper.Get<CatalogItemInternal, CatalogItem>(outItemAddress, out outItem);
+			if (outItem != null)
 			{
 				Bindings.EOS_Ecom_CatalogItem_Release(outItemAddress);
 			}
@@ -389,18 +428,19 @@ namespace Epic.OnlineServices.Ecom
 		/// <see cref="Result.EcomCatalogItemStale" /> if the associated item information is stale
 		/// <see cref="Result.NotFound" /> if the image is not found
 		/// </returns>
-		public Result CopyItemImageInfoByIndex(CopyItemImageInfoByIndexOptions options, out KeyImageInfo outImageInfo)
+		public Result CopyItemImageInfoByIndex(ref CopyItemImageInfoByIndexOptions options, out KeyImageInfo? outImageInfo)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<CopyItemImageInfoByIndexOptionsInternal, CopyItemImageInfoByIndexOptions>(ref optionsAddress, options);
+			CopyItemImageInfoByIndexOptionsInternal optionsInternal = new CopyItemImageInfoByIndexOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var outImageInfoAddress = System.IntPtr.Zero;
 
-			var funcResult = Bindings.EOS_Ecom_CopyItemImageInfoByIndex(InnerHandle, optionsAddress, ref outImageInfoAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyItemImageInfoByIndex(InnerHandle, ref optionsInternal, ref outImageInfoAddress);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
-			if (Helper.TryMarshalGet<KeyImageInfoInternal, KeyImageInfo>(outImageInfoAddress, out outImageInfo))
+			Helper.Get<KeyImageInfoInternal, KeyImageInfo>(outImageInfoAddress, out outImageInfo);
+			if (outImageInfo != null)
 			{
 				Bindings.EOS_Ecom_KeyImageInfo_Release(outImageInfoAddress);
 			}
@@ -420,21 +460,57 @@ namespace Epic.OnlineServices.Ecom
 		/// <see cref="Result.EcomCatalogItemStale" /> if the associated item information is stale
 		/// <see cref="Result.NotFound" /> if the release is not found
 		/// </returns>
-		public Result CopyItemReleaseByIndex(CopyItemReleaseByIndexOptions options, out CatalogRelease outRelease)
+		public Result CopyItemReleaseByIndex(ref CopyItemReleaseByIndexOptions options, out CatalogRelease? outRelease)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<CopyItemReleaseByIndexOptionsInternal, CopyItemReleaseByIndexOptions>(ref optionsAddress, options);
+			CopyItemReleaseByIndexOptionsInternal optionsInternal = new CopyItemReleaseByIndexOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var outReleaseAddress = System.IntPtr.Zero;
 
-			var funcResult = Bindings.EOS_Ecom_CopyItemReleaseByIndex(InnerHandle, optionsAddress, ref outReleaseAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyItemReleaseByIndex(InnerHandle, ref optionsInternal, ref outReleaseAddress);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
-			if (Helper.TryMarshalGet<CatalogReleaseInternal, CatalogRelease>(outReleaseAddress, out outRelease))
+			Helper.Get<CatalogReleaseInternal, CatalogRelease>(outReleaseAddress, out outRelease);
+			if (outRelease != null)
 			{
 				Bindings.EOS_Ecom_CatalogRelease_Release(outReleaseAddress);
 			}
+
+			return funcResult;
+		}
+
+		/// <summary>
+		/// Fetches a redeemed entitlement id from a given index.
+		/// Only entitlements that were redeemed during the last <see cref="RedeemEntitlements" /> call can be copied.
+		/// <seealso cref="EntitlementidMaxLength" />
+		/// </summary>
+		/// <param name="options">structure containing the Epic Account ID and index being accessed</param>
+		/// <param name="outRedeemedEntitlementId">The ID of the redeemed entitlement. Must be long enough to hold a string of <see cref="EntitlementidMaxLength" />.</param>
+		/// <param name="inOutRedeemedEntitlementIdLength">
+		/// The size of the OutRedeemedEntitlementId in characters.
+		/// The input buffer should include enough space to be null-terminated.
+		/// When the function returns, this parameter will be filled with the length of the string copied into OutRedeemedEntitlementId.
+		/// </param>
+		/// <returns>
+		/// <see cref="Result.Success" /> if the information is available and passed out in OutRedeemedEntitlementId
+		/// <see cref="Result.InvalidParameters" /> if you pass a null pointer for the out parameter
+		/// <see cref="Result.NotFound" /> if the entitlement id is not found
+		/// </returns>
+		public Result CopyLastRedeemedEntitlementByIndex(ref CopyLastRedeemedEntitlementByIndexOptions options, out Utf8String outRedeemedEntitlementId)
+		{
+			CopyLastRedeemedEntitlementByIndexOptionsInternal optionsInternal = new CopyLastRedeemedEntitlementByIndexOptionsInternal();
+			optionsInternal.Set(ref options);
+
+			int inOutRedeemedEntitlementIdLength = EntitlementidMaxLength + 1;
+			System.IntPtr outRedeemedEntitlementIdAddress = Helper.AddAllocation(inOutRedeemedEntitlementIdLength);
+
+			var funcResult = Bindings.EOS_Ecom_CopyLastRedeemedEntitlementByIndex(InnerHandle, ref optionsInternal, outRedeemedEntitlementIdAddress, ref inOutRedeemedEntitlementIdLength);
+
+			Helper.Dispose(ref optionsInternal);
+
+			Helper.Get(outRedeemedEntitlementIdAddress, out outRedeemedEntitlementId);
+			Helper.Dispose(ref outRedeemedEntitlementIdAddress);
 
 			return funcResult;
 		}
@@ -444,7 +520,7 @@ namespace Epic.OnlineServices.Ecom
 		/// <seealso cref="Release" />
 		/// <seealso cref="GetOfferItemCount" />
 		/// </summary>
-		/// <param name="options">structure containing the Epic Online Services Account ID and offer ID being accessed</param>
+		/// <param name="options">structure containing the Epic Account ID and offer ID being accessed</param>
 		/// <param name="outOffer">the offer for the given index, if it exists and is valid, use <see cref="Release" /> when finished</param>
 		/// <returns>
 		/// <see cref="Result.Success" /> if the information is available and passed out in OutOffer
@@ -453,18 +529,19 @@ namespace Epic.OnlineServices.Ecom
 		/// <see cref="Result.InvalidParameters" /> if you pass a null pointer for the out parameter
 		/// <see cref="Result.NotFound" /> if the offer is not found
 		/// </returns>
-		public Result CopyOfferById(CopyOfferByIdOptions options, out CatalogOffer outOffer)
+		public Result CopyOfferById(ref CopyOfferByIdOptions options, out CatalogOffer? outOffer)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<CopyOfferByIdOptionsInternal, CopyOfferByIdOptions>(ref optionsAddress, options);
+			CopyOfferByIdOptionsInternal optionsInternal = new CopyOfferByIdOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var outOfferAddress = System.IntPtr.Zero;
 
-			var funcResult = Bindings.EOS_Ecom_CopyOfferById(InnerHandle, optionsAddress, ref outOfferAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyOfferById(InnerHandle, ref optionsInternal, ref outOfferAddress);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
-			if (Helper.TryMarshalGet<CatalogOfferInternal, CatalogOffer>(outOfferAddress, out outOffer))
+			Helper.Get<CatalogOfferInternal, CatalogOffer>(outOfferAddress, out outOffer);
+			if (outOffer != null)
 			{
 				Bindings.EOS_Ecom_CatalogOffer_Release(outOfferAddress);
 			}
@@ -477,7 +554,7 @@ namespace Epic.OnlineServices.Ecom
 		/// <seealso cref="Release" />
 		/// <seealso cref="GetOfferItemCount" />
 		/// </summary>
-		/// <param name="options">structure containing the Epic Online Services Account ID and index being accessed</param>
+		/// <param name="options">structure containing the Epic Account ID and index being accessed</param>
 		/// <param name="outOffer">the offer for the given index, if it exists and is valid, use <see cref="Release" /> when finished</param>
 		/// <returns>
 		/// <see cref="Result.Success" /> if the information is available and passed out in OutOffer
@@ -486,18 +563,19 @@ namespace Epic.OnlineServices.Ecom
 		/// <see cref="Result.InvalidParameters" /> if you pass a null pointer for the out parameter
 		/// <see cref="Result.NotFound" /> if the offer is not found
 		/// </returns>
-		public Result CopyOfferByIndex(CopyOfferByIndexOptions options, out CatalogOffer outOffer)
+		public Result CopyOfferByIndex(ref CopyOfferByIndexOptions options, out CatalogOffer? outOffer)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<CopyOfferByIndexOptionsInternal, CopyOfferByIndexOptions>(ref optionsAddress, options);
+			CopyOfferByIndexOptionsInternal optionsInternal = new CopyOfferByIndexOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var outOfferAddress = System.IntPtr.Zero;
 
-			var funcResult = Bindings.EOS_Ecom_CopyOfferByIndex(InnerHandle, optionsAddress, ref outOfferAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyOfferByIndex(InnerHandle, ref optionsInternal, ref outOfferAddress);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
-			if (Helper.TryMarshalGet<CatalogOfferInternal, CatalogOffer>(outOfferAddress, out outOffer))
+			Helper.Get<CatalogOfferInternal, CatalogOffer>(outOfferAddress, out outOffer);
+			if (outOffer != null)
 			{
 				Bindings.EOS_Ecom_CatalogOffer_Release(outOfferAddress);
 			}
@@ -517,18 +595,19 @@ namespace Epic.OnlineServices.Ecom
 		/// <see cref="Result.EcomCatalogOfferStale" /> if the associated offer information is stale
 		/// <see cref="Result.NotFound" /> if the image is not found
 		/// </returns>
-		public Result CopyOfferImageInfoByIndex(CopyOfferImageInfoByIndexOptions options, out KeyImageInfo outImageInfo)
+		public Result CopyOfferImageInfoByIndex(ref CopyOfferImageInfoByIndexOptions options, out KeyImageInfo? outImageInfo)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<CopyOfferImageInfoByIndexOptionsInternal, CopyOfferImageInfoByIndexOptions>(ref optionsAddress, options);
+			CopyOfferImageInfoByIndexOptionsInternal optionsInternal = new CopyOfferImageInfoByIndexOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var outImageInfoAddress = System.IntPtr.Zero;
 
-			var funcResult = Bindings.EOS_Ecom_CopyOfferImageInfoByIndex(InnerHandle, optionsAddress, ref outImageInfoAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyOfferImageInfoByIndex(InnerHandle, ref optionsInternal, ref outImageInfoAddress);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
-			if (Helper.TryMarshalGet<KeyImageInfoInternal, KeyImageInfo>(outImageInfoAddress, out outImageInfo))
+			Helper.Get<KeyImageInfoInternal, KeyImageInfo>(outImageInfoAddress, out outImageInfo);
+			if (outImageInfo != null)
 			{
 				Bindings.EOS_Ecom_KeyImageInfo_Release(outImageInfoAddress);
 			}
@@ -542,7 +621,7 @@ namespace Epic.OnlineServices.Ecom
 		/// <seealso cref="GetItemImageInfoCount" />
 		/// <seealso cref="GetItemReleaseCount" />
 		/// </summary>
-		/// <param name="options">structure containing the Epic Online Services Account ID and index being accessed</param>
+		/// <param name="options">structure containing the Epic Account ID and index being accessed</param>
 		/// <param name="outItem">the item for the given index, if it exists and is valid, use <see cref="Release" /> when finished</param>
 		/// <returns>
 		/// <see cref="Result.Success" /> if the information is available and passed out in OutItem
@@ -550,18 +629,19 @@ namespace Epic.OnlineServices.Ecom
 		/// <see cref="Result.EcomCatalogItemStale" /> if the item information is stale
 		/// <see cref="Result.NotFound" /> if the item is not found
 		/// </returns>
-		public Result CopyOfferItemByIndex(CopyOfferItemByIndexOptions options, out CatalogItem outItem)
+		public Result CopyOfferItemByIndex(ref CopyOfferItemByIndexOptions options, out CatalogItem? outItem)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<CopyOfferItemByIndexOptionsInternal, CopyOfferItemByIndexOptions>(ref optionsAddress, options);
+			CopyOfferItemByIndexOptionsInternal optionsInternal = new CopyOfferItemByIndexOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var outItemAddress = System.IntPtr.Zero;
 
-			var funcResult = Bindings.EOS_Ecom_CopyOfferItemByIndex(InnerHandle, optionsAddress, ref outItemAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyOfferItemByIndex(InnerHandle, ref optionsInternal, ref outItemAddress);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
-			if (Helper.TryMarshalGet<CatalogItemInternal, CatalogItem>(outItemAddress, out outItem))
+			Helper.Get<CatalogItemInternal, CatalogItem>(outItemAddress, out outItem);
+			if (outItem != null)
 			{
 				Bindings.EOS_Ecom_CatalogItem_Release(outItemAddress);
 			}
@@ -574,24 +654,24 @@ namespace Epic.OnlineServices.Ecom
 		/// <seealso cref="CheckoutCallbackInfo" />
 		/// <seealso cref="Transaction.Release" />
 		/// </summary>
-		/// <param name="options">structure containing the Epic Online Services Account ID and transaction ID being accessed</param>
+		/// <param name="options">structure containing the Epic Account ID and transaction ID being accessed</param>
 		/// <returns>
 		/// <see cref="Result.Success" /> if the information is available and passed out in OutTransaction
 		/// <see cref="Result.InvalidParameters" /> if you pass a null pointer for the out parameter
 		/// <see cref="Result.NotFound" /> if the transaction is not found
 		/// </returns>
-		public Result CopyTransactionById(CopyTransactionByIdOptions options, out Transaction outTransaction)
+		public Result CopyTransactionById(ref CopyTransactionByIdOptions options, out Transaction outTransaction)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<CopyTransactionByIdOptionsInternal, CopyTransactionByIdOptions>(ref optionsAddress, options);
+			CopyTransactionByIdOptionsInternal optionsInternal = new CopyTransactionByIdOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var outTransactionAddress = System.IntPtr.Zero;
 
-			var funcResult = Bindings.EOS_Ecom_CopyTransactionById(InnerHandle, optionsAddress, ref outTransactionAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyTransactionById(InnerHandle, ref optionsInternal, ref outTransactionAddress);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
-			Helper.TryMarshalGet(outTransactionAddress, out outTransaction);
+			Helper.Get(outTransactionAddress, out outTransaction);
 
 			return funcResult;
 		}
@@ -601,24 +681,24 @@ namespace Epic.OnlineServices.Ecom
 		/// <seealso cref="CheckoutCallbackInfo" />
 		/// <seealso cref="Transaction.Release" />
 		/// </summary>
-		/// <param name="options">structure containing the Epic Online Services Account ID and index being accessed</param>
+		/// <param name="options">structure containing the Epic Account ID and index being accessed</param>
 		/// <returns>
 		/// <see cref="Result.Success" /> if the information is available and passed out in OutTransaction
 		/// <see cref="Result.InvalidParameters" /> if you pass a null pointer for the out parameter
 		/// <see cref="Result.NotFound" /> if the transaction is not found
 		/// </returns>
-		public Result CopyTransactionByIndex(CopyTransactionByIndexOptions options, out Transaction outTransaction)
+		public Result CopyTransactionByIndex(ref CopyTransactionByIndexOptions options, out Transaction outTransaction)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<CopyTransactionByIndexOptionsInternal, CopyTransactionByIndexOptions>(ref optionsAddress, options);
+			CopyTransactionByIndexOptionsInternal optionsInternal = new CopyTransactionByIndexOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var outTransactionAddress = System.IntPtr.Zero;
 
-			var funcResult = Bindings.EOS_Ecom_CopyTransactionByIndex(InnerHandle, optionsAddress, ref outTransactionAddress);
+			var funcResult = Bindings.EOS_Ecom_CopyTransactionByIndex(InnerHandle, ref optionsInternal, ref outTransactionAddress);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
-			Helper.TryMarshalGet(outTransactionAddress, out outTransaction);
+			Helper.Get(outTransactionAddress, out outTransaction);
 
 			return funcResult;
 		}
@@ -627,18 +707,18 @@ namespace Epic.OnlineServices.Ecom
 		/// Fetch the number of entitlements with the given Entitlement Name that are cached for a given local user.
 		/// <seealso cref="CopyEntitlementByNameAndIndex" />
 		/// </summary>
-		/// <param name="options">structure containing the Epic Online Services Account ID and name being accessed</param>
+		/// <param name="options">structure containing the Epic Account ID and name being accessed</param>
 		/// <returns>
 		/// the number of entitlements found.
 		/// </returns>
-		public uint GetEntitlementsByNameCount(GetEntitlementsByNameCountOptions options)
+		public uint GetEntitlementsByNameCount(ref GetEntitlementsByNameCountOptions options)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<GetEntitlementsByNameCountOptionsInternal, GetEntitlementsByNameCountOptions>(ref optionsAddress, options);
+			GetEntitlementsByNameCountOptionsInternal optionsInternal = new GetEntitlementsByNameCountOptionsInternal();
+			optionsInternal.Set(ref options);
 
-			var funcResult = Bindings.EOS_Ecom_GetEntitlementsByNameCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetEntitlementsByNameCount(InnerHandle, ref optionsInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
 			return funcResult;
 		}
@@ -647,18 +727,18 @@ namespace Epic.OnlineServices.Ecom
 		/// Fetch the number of entitlements that are cached for a given local user.
 		/// <seealso cref="CopyEntitlementByIndex" />
 		/// </summary>
-		/// <param name="options">structure containing the Epic Online Services Account ID being accessed</param>
+		/// <param name="options">structure containing the Epic Account ID being accessed</param>
 		/// <returns>
 		/// the number of entitlements found.
 		/// </returns>
-		public uint GetEntitlementsCount(GetEntitlementsCountOptions options)
+		public uint GetEntitlementsCount(ref GetEntitlementsCountOptions options)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<GetEntitlementsCountOptionsInternal, GetEntitlementsCountOptions>(ref optionsAddress, options);
+			GetEntitlementsCountOptionsInternal optionsInternal = new GetEntitlementsCountOptionsInternal();
+			optionsInternal.Set(ref options);
 
-			var funcResult = Bindings.EOS_Ecom_GetEntitlementsCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetEntitlementsCount(InnerHandle, ref optionsInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
 			return funcResult;
 		}
@@ -669,14 +749,14 @@ namespace Epic.OnlineServices.Ecom
 		/// <returns>
 		/// the number of images found.
 		/// </returns>
-		public uint GetItemImageInfoCount(GetItemImageInfoCountOptions options)
+		public uint GetItemImageInfoCount(ref GetItemImageInfoCountOptions options)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<GetItemImageInfoCountOptionsInternal, GetItemImageInfoCountOptions>(ref optionsAddress, options);
+			GetItemImageInfoCountOptionsInternal optionsInternal = new GetItemImageInfoCountOptionsInternal();
+			optionsInternal.Set(ref options);
 
-			var funcResult = Bindings.EOS_Ecom_GetItemImageInfoCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetItemImageInfoCount(InnerHandle, ref optionsInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
 			return funcResult;
 		}
@@ -687,14 +767,34 @@ namespace Epic.OnlineServices.Ecom
 		/// <returns>
 		/// the number of releases found.
 		/// </returns>
-		public uint GetItemReleaseCount(GetItemReleaseCountOptions options)
+		public uint GetItemReleaseCount(ref GetItemReleaseCountOptions options)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<GetItemReleaseCountOptionsInternal, GetItemReleaseCountOptions>(ref optionsAddress, options);
+			GetItemReleaseCountOptionsInternal optionsInternal = new GetItemReleaseCountOptionsInternal();
+			optionsInternal.Set(ref options);
 
-			var funcResult = Bindings.EOS_Ecom_GetItemReleaseCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetItemReleaseCount(InnerHandle, ref optionsInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
+
+			return funcResult;
+		}
+
+		/// <summary>
+		/// Fetch the number of entitlements that were redeemed during the last <see cref="RedeemEntitlements" /> call.
+		/// <seealso cref="CopyLastRedeemedEntitlementByIndex" />
+		/// </summary>
+		/// <param name="options">structure containing the Epic Account ID</param>
+		/// <returns>
+		/// the number of the redeemed entitlements.
+		/// </returns>
+		public uint GetLastRedeemedEntitlementsCount(ref GetLastRedeemedEntitlementsCountOptions options)
+		{
+			GetLastRedeemedEntitlementsCountOptionsInternal optionsInternal = new GetLastRedeemedEntitlementsCountOptionsInternal();
+			optionsInternal.Set(ref options);
+
+			var funcResult = Bindings.EOS_Ecom_GetLastRedeemedEntitlementsCount(InnerHandle, ref optionsInternal);
+
+			Helper.Dispose(ref optionsInternal);
 
 			return funcResult;
 		}
@@ -703,18 +803,18 @@ namespace Epic.OnlineServices.Ecom
 		/// Fetch the number of offers that are cached for a given local user.
 		/// <seealso cref="CopyOfferByIndex" />
 		/// </summary>
-		/// <param name="options">structure containing the Epic Online Services Account ID being accessed</param>
+		/// <param name="options">structure containing the Epic Account ID being accessed</param>
 		/// <returns>
 		/// the number of offers found.
 		/// </returns>
-		public uint GetOfferCount(GetOfferCountOptions options)
+		public uint GetOfferCount(ref GetOfferCountOptions options)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<GetOfferCountOptionsInternal, GetOfferCountOptions>(ref optionsAddress, options);
+			GetOfferCountOptionsInternal optionsInternal = new GetOfferCountOptionsInternal();
+			optionsInternal.Set(ref options);
 
-			var funcResult = Bindings.EOS_Ecom_GetOfferCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetOfferCount(InnerHandle, ref optionsInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
 			return funcResult;
 		}
@@ -725,14 +825,14 @@ namespace Epic.OnlineServices.Ecom
 		/// <returns>
 		/// the number of images found.
 		/// </returns>
-		public uint GetOfferImageInfoCount(GetOfferImageInfoCountOptions options)
+		public uint GetOfferImageInfoCount(ref GetOfferImageInfoCountOptions options)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<GetOfferImageInfoCountOptionsInternal, GetOfferImageInfoCountOptions>(ref optionsAddress, options);
+			GetOfferImageInfoCountOptionsInternal optionsInternal = new GetOfferImageInfoCountOptionsInternal();
+			optionsInternal.Set(ref options);
 
-			var funcResult = Bindings.EOS_Ecom_GetOfferImageInfoCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetOfferImageInfoCount(InnerHandle, ref optionsInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
 			return funcResult;
 		}
@@ -743,14 +843,14 @@ namespace Epic.OnlineServices.Ecom
 		/// <returns>
 		/// the number of items found.
 		/// </returns>
-		public uint GetOfferItemCount(GetOfferItemCountOptions options)
+		public uint GetOfferItemCount(ref GetOfferItemCountOptions options)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<GetOfferItemCountOptionsInternal, GetOfferItemCountOptions>(ref optionsAddress, options);
+			GetOfferItemCountOptionsInternal optionsInternal = new GetOfferItemCountOptionsInternal();
+			optionsInternal.Set(ref options);
 
-			var funcResult = Bindings.EOS_Ecom_GetOfferItemCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetOfferItemCount(InnerHandle, ref optionsInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
 			return funcResult;
 		}
@@ -763,16 +863,39 @@ namespace Epic.OnlineServices.Ecom
 		/// <returns>
 		/// the number of transactions found.
 		/// </returns>
-		public uint GetTransactionCount(GetTransactionCountOptions options)
+		public uint GetTransactionCount(ref GetTransactionCountOptions options)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<GetTransactionCountOptionsInternal, GetTransactionCountOptions>(ref optionsAddress, options);
+			GetTransactionCountOptionsInternal optionsInternal = new GetTransactionCountOptionsInternal();
+			optionsInternal.Set(ref options);
 
-			var funcResult = Bindings.EOS_Ecom_GetTransactionCount(InnerHandle, optionsAddress);
+			var funcResult = Bindings.EOS_Ecom_GetTransactionCount(InnerHandle, ref optionsInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 
 			return funcResult;
+		}
+
+		/// <summary>
+		/// Query the entitlement verification status defined with Epic Online Services.
+		/// An optional set of entitlement names can be provided to filter the set of entitlements associated with the account.
+		/// The data is return via the callback in the form of a signed JWT that should be verified by an external backend server using a public key for authenticity.
+		/// </summary>
+		/// <param name="options">structure containing the account and catalog item IDs to retrieve in token form</param>
+		/// <param name="clientData">arbitrary data that is passed back to you in the CompletionDelegate</param>
+		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
+		public void QueryEntitlementToken(ref QueryEntitlementTokenOptions options, object clientData, OnQueryEntitlementTokenCallback completionDelegate)
+		{
+			QueryEntitlementTokenOptionsInternal optionsInternal = new QueryEntitlementTokenOptionsInternal();
+			optionsInternal.Set(ref options);
+
+			var clientDataAddress = System.IntPtr.Zero;
+
+			var completionDelegateInternal = new OnQueryEntitlementTokenCallbackInternal(OnQueryEntitlementTokenCallbackInternalImplementation);
+			Helper.AddCallback(out clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
+
+			Bindings.EOS_Ecom_QueryEntitlementToken(InnerHandle, ref optionsInternal, clientDataAddress, completionDelegateInternal);
+
+			Helper.Dispose(ref optionsInternal);
 		}
 
 		/// <summary>
@@ -785,19 +908,19 @@ namespace Epic.OnlineServices.Ecom
 		/// <param name="options">structure containing the account and entitlement names to retrieve</param>
 		/// <param name="clientData">arbitrary data that is passed back to you in the CompletionDelegate</param>
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
-		public void QueryEntitlements(QueryEntitlementsOptions options, object clientData, OnQueryEntitlementsCallback completionDelegate)
+		public void QueryEntitlements(ref QueryEntitlementsOptions options, object clientData, OnQueryEntitlementsCallback completionDelegate)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<QueryEntitlementsOptionsInternal, QueryEntitlementsOptions>(ref optionsAddress, options);
+			QueryEntitlementsOptionsInternal optionsInternal = new QueryEntitlementsOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var clientDataAddress = System.IntPtr.Zero;
 
 			var completionDelegateInternal = new OnQueryEntitlementsCallbackInternal(OnQueryEntitlementsCallbackInternalImplementation);
-			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
+			Helper.AddCallback(out clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			Bindings.EOS_Ecom_QueryEntitlements(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Ecom_QueryEntitlements(InnerHandle, ref optionsInternal, clientDataAddress, completionDelegateInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 		}
 
 		/// <summary>
@@ -807,19 +930,19 @@ namespace Epic.OnlineServices.Ecom
 		/// <param name="options">structure containing filter criteria</param>
 		/// <param name="clientData">arbitrary data that is passed back to you in the CompletionDelegate</param>
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
-		public void QueryOffers(QueryOffersOptions options, object clientData, OnQueryOffersCallback completionDelegate)
+		public void QueryOffers(ref QueryOffersOptions options, object clientData, OnQueryOffersCallback completionDelegate)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<QueryOffersOptionsInternal, QueryOffersOptions>(ref optionsAddress, options);
+			QueryOffersOptionsInternal optionsInternal = new QueryOffersOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var clientDataAddress = System.IntPtr.Zero;
 
 			var completionDelegateInternal = new OnQueryOffersCallbackInternal(OnQueryOffersCallbackInternalImplementation);
-			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
+			Helper.AddCallback(out clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			Bindings.EOS_Ecom_QueryOffers(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Ecom_QueryOffers(InnerHandle, ref optionsInternal, clientDataAddress, completionDelegateInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 		}
 
 		/// <summary>
@@ -829,19 +952,19 @@ namespace Epic.OnlineServices.Ecom
 		/// <param name="options">structure containing the account and catalog item IDs to retrieve</param>
 		/// <param name="clientData">arbitrary data that is passed back to you in the CompletionDelegate</param>
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
-		public void QueryOwnership(QueryOwnershipOptions options, object clientData, OnQueryOwnershipCallback completionDelegate)
+		public void QueryOwnership(ref QueryOwnershipOptions options, object clientData, OnQueryOwnershipCallback completionDelegate)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<QueryOwnershipOptionsInternal, QueryOwnershipOptions>(ref optionsAddress, options);
+			QueryOwnershipOptionsInternal optionsInternal = new QueryOwnershipOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var clientDataAddress = System.IntPtr.Zero;
 
 			var completionDelegateInternal = new OnQueryOwnershipCallbackInternal(OnQueryOwnershipCallbackInternalImplementation);
-			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
+			Helper.AddCallback(out clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			Bindings.EOS_Ecom_QueryOwnership(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Ecom_QueryOwnership(InnerHandle, ref optionsInternal, clientDataAddress, completionDelegateInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 		}
 
 		/// <summary>
@@ -851,19 +974,19 @@ namespace Epic.OnlineServices.Ecom
 		/// <param name="options">structure containing the account and catalog item IDs to retrieve in token form</param>
 		/// <param name="clientData">arbitrary data that is passed back to you in the CompletionDelegate</param>
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
-		public void QueryOwnershipToken(QueryOwnershipTokenOptions options, object clientData, OnQueryOwnershipTokenCallback completionDelegate)
+		public void QueryOwnershipToken(ref QueryOwnershipTokenOptions options, object clientData, OnQueryOwnershipTokenCallback completionDelegate)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<QueryOwnershipTokenOptionsInternal, QueryOwnershipTokenOptions>(ref optionsAddress, options);
+			QueryOwnershipTokenOptionsInternal optionsInternal = new QueryOwnershipTokenOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var clientDataAddress = System.IntPtr.Zero;
 
 			var completionDelegateInternal = new OnQueryOwnershipTokenCallbackInternal(OnQueryOwnershipTokenCallbackInternalImplementation);
-			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
+			Helper.AddCallback(out clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			Bindings.EOS_Ecom_QueryOwnershipToken(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Ecom_QueryOwnershipToken(InnerHandle, ref optionsInternal, clientDataAddress, completionDelegateInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 		}
 
 		/// <summary>
@@ -873,84 +996,95 @@ namespace Epic.OnlineServices.Ecom
 		/// <param name="options">structure containing entitlement to redeem</param>
 		/// <param name="clientData">arbitrary data that is passed back to you in the CompletionDelegate</param>
 		/// <param name="completionDelegate">a callback that is fired when the async operation completes, either successfully or in error</param>
-		public void RedeemEntitlements(RedeemEntitlementsOptions options, object clientData, OnRedeemEntitlementsCallback completionDelegate)
+		public void RedeemEntitlements(ref RedeemEntitlementsOptions options, object clientData, OnRedeemEntitlementsCallback completionDelegate)
 		{
-			var optionsAddress = System.IntPtr.Zero;
-			Helper.TryMarshalSet<RedeemEntitlementsOptionsInternal, RedeemEntitlementsOptions>(ref optionsAddress, options);
+			RedeemEntitlementsOptionsInternal optionsInternal = new RedeemEntitlementsOptionsInternal();
+			optionsInternal.Set(ref options);
 
 			var clientDataAddress = System.IntPtr.Zero;
 
 			var completionDelegateInternal = new OnRedeemEntitlementsCallbackInternal(OnRedeemEntitlementsCallbackInternalImplementation);
-			Helper.AddCallback(ref clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
+			Helper.AddCallback(out clientDataAddress, clientData, completionDelegate, completionDelegateInternal);
 
-			Bindings.EOS_Ecom_RedeemEntitlements(InnerHandle, optionsAddress, clientDataAddress, completionDelegateInternal);
+			Bindings.EOS_Ecom_RedeemEntitlements(InnerHandle, ref optionsInternal, clientDataAddress, completionDelegateInternal);
 
-			Helper.TryMarshalDispose(ref optionsAddress);
+			Helper.Dispose(ref optionsInternal);
 		}
 
 		[MonoPInvokeCallback(typeof(OnCheckoutCallbackInternal))]
-		internal static void OnCheckoutCallbackInternalImplementation(System.IntPtr data)
+		internal static void OnCheckoutCallbackInternalImplementation(ref CheckoutCallbackInfoInternal data)
 		{
 			OnCheckoutCallback callback;
 			CheckoutCallbackInfo callbackInfo;
-			if (Helper.TryGetAndRemoveCallback<OnCheckoutCallback, CheckoutCallbackInfoInternal, CheckoutCallbackInfo>(data, out callback, out callbackInfo))
+			if (Helper.TryGetAndRemoveCallback(ref data, out callback, out callbackInfo))
 			{
-				callback(callbackInfo);
+				callback(ref callbackInfo);
+			}
+		}
+
+		[MonoPInvokeCallback(typeof(OnQueryEntitlementTokenCallbackInternal))]
+		internal static void OnQueryEntitlementTokenCallbackInternalImplementation(ref QueryEntitlementTokenCallbackInfoInternal data)
+		{
+			OnQueryEntitlementTokenCallback callback;
+			QueryEntitlementTokenCallbackInfo callbackInfo;
+			if (Helper.TryGetAndRemoveCallback(ref data, out callback, out callbackInfo))
+			{
+				callback(ref callbackInfo);
 			}
 		}
 
 		[MonoPInvokeCallback(typeof(OnQueryEntitlementsCallbackInternal))]
-		internal static void OnQueryEntitlementsCallbackInternalImplementation(System.IntPtr data)
+		internal static void OnQueryEntitlementsCallbackInternalImplementation(ref QueryEntitlementsCallbackInfoInternal data)
 		{
 			OnQueryEntitlementsCallback callback;
 			QueryEntitlementsCallbackInfo callbackInfo;
-			if (Helper.TryGetAndRemoveCallback<OnQueryEntitlementsCallback, QueryEntitlementsCallbackInfoInternal, QueryEntitlementsCallbackInfo>(data, out callback, out callbackInfo))
+			if (Helper.TryGetAndRemoveCallback(ref data, out callback, out callbackInfo))
 			{
-				callback(callbackInfo);
+				callback(ref callbackInfo);
 			}
 		}
 
 		[MonoPInvokeCallback(typeof(OnQueryOffersCallbackInternal))]
-		internal static void OnQueryOffersCallbackInternalImplementation(System.IntPtr data)
+		internal static void OnQueryOffersCallbackInternalImplementation(ref QueryOffersCallbackInfoInternal data)
 		{
 			OnQueryOffersCallback callback;
 			QueryOffersCallbackInfo callbackInfo;
-			if (Helper.TryGetAndRemoveCallback<OnQueryOffersCallback, QueryOffersCallbackInfoInternal, QueryOffersCallbackInfo>(data, out callback, out callbackInfo))
+			if (Helper.TryGetAndRemoveCallback(ref data, out callback, out callbackInfo))
 			{
-				callback(callbackInfo);
+				callback(ref callbackInfo);
 			}
 		}
 
 		[MonoPInvokeCallback(typeof(OnQueryOwnershipCallbackInternal))]
-		internal static void OnQueryOwnershipCallbackInternalImplementation(System.IntPtr data)
+		internal static void OnQueryOwnershipCallbackInternalImplementation(ref QueryOwnershipCallbackInfoInternal data)
 		{
 			OnQueryOwnershipCallback callback;
 			QueryOwnershipCallbackInfo callbackInfo;
-			if (Helper.TryGetAndRemoveCallback<OnQueryOwnershipCallback, QueryOwnershipCallbackInfoInternal, QueryOwnershipCallbackInfo>(data, out callback, out callbackInfo))
+			if (Helper.TryGetAndRemoveCallback(ref data, out callback, out callbackInfo))
 			{
-				callback(callbackInfo);
+				callback(ref callbackInfo);
 			}
 		}
 
 		[MonoPInvokeCallback(typeof(OnQueryOwnershipTokenCallbackInternal))]
-		internal static void OnQueryOwnershipTokenCallbackInternalImplementation(System.IntPtr data)
+		internal static void OnQueryOwnershipTokenCallbackInternalImplementation(ref QueryOwnershipTokenCallbackInfoInternal data)
 		{
 			OnQueryOwnershipTokenCallback callback;
 			QueryOwnershipTokenCallbackInfo callbackInfo;
-			if (Helper.TryGetAndRemoveCallback<OnQueryOwnershipTokenCallback, QueryOwnershipTokenCallbackInfoInternal, QueryOwnershipTokenCallbackInfo>(data, out callback, out callbackInfo))
+			if (Helper.TryGetAndRemoveCallback(ref data, out callback, out callbackInfo))
 			{
-				callback(callbackInfo);
+				callback(ref callbackInfo);
 			}
 		}
 
 		[MonoPInvokeCallback(typeof(OnRedeemEntitlementsCallbackInternal))]
-		internal static void OnRedeemEntitlementsCallbackInternalImplementation(System.IntPtr data)
+		internal static void OnRedeemEntitlementsCallbackInternalImplementation(ref RedeemEntitlementsCallbackInfoInternal data)
 		{
 			OnRedeemEntitlementsCallback callback;
 			RedeemEntitlementsCallbackInfo callbackInfo;
-			if (Helper.TryGetAndRemoveCallback<OnRedeemEntitlementsCallback, RedeemEntitlementsCallbackInfoInternal, RedeemEntitlementsCallbackInfo>(data, out callback, out callbackInfo))
+			if (Helper.TryGetAndRemoveCallback(ref data, out callback, out callbackInfo))
 			{
-				callback(callbackInfo);
+				callback(ref callbackInfo);
 			}
 		}
 	}

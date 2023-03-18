@@ -3,7 +3,7 @@
 
 namespace Epic.OnlineServices.AntiCheatServer
 {
-	public class RegisterClientOptions
+	public struct RegisterClientOptions
 	{
 		/// <summary>
 		/// Locally unique value describing the remote user (e.g. a player object pointer)
@@ -21,30 +21,38 @@ namespace Epic.OnlineServices.AntiCheatServer
 		public AntiCheatCommon.AntiCheatCommonClientPlatform ClientPlatform { get; set; }
 
 		/// <summary>
+		/// DEPRECATED - New code should set this to null and specify UserId instead.
+		/// 
 		/// Identifier for the remote user. This is typically a string representation of an
 		/// account ID, but it can be any string which is both unique (two different users will never
 		/// have the same string) and consistent (if the same user connects to this game session
 		/// twice, the same string will be used) in the scope of a single protected game session.
 		/// </summary>
-		public string AccountId { get; set; }
+		public Utf8String AccountId_DEPRECATED { get; set; }
 
 		/// <summary>
 		/// Optional IP address for the remote user. May be null if not available.
 		/// IPv4 format: "0.0.0.0"
 		/// IPv6 format: "0:0:0:0:0:0:0:0"
 		/// </summary>
-		public string IpAddress { get; set; }
+		public Utf8String IpAddress { get; set; }
+
+		/// <summary>
+		/// The Product User ID for the remote user who is being registered.
+		/// </summary>
+		public ProductUserId UserId { get; set; }
 	}
 
 	[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 8)]
-	internal struct RegisterClientOptionsInternal : ISettable, System.IDisposable
+	internal struct RegisterClientOptionsInternal : ISettable<RegisterClientOptions>, System.IDisposable
 	{
 		private int m_ApiVersion;
 		private System.IntPtr m_ClientHandle;
 		private AntiCheatCommon.AntiCheatCommonClientType m_ClientType;
 		private AntiCheatCommon.AntiCheatCommonClientPlatform m_ClientPlatform;
-		private System.IntPtr m_AccountId;
+		private System.IntPtr m_AccountId_DEPRECATED;
 		private System.IntPtr m_IpAddress;
+		private System.IntPtr m_UserId;
 
 		public System.IntPtr ClientHandle
 		{
@@ -70,45 +78,61 @@ namespace Epic.OnlineServices.AntiCheatServer
 			}
 		}
 
-		public string AccountId
+		public Utf8String AccountId_DEPRECATED
 		{
 			set
 			{
-				Helper.TryMarshalSet(ref m_AccountId, value);
+				Helper.Set(value, ref m_AccountId_DEPRECATED);
 			}
 		}
 
-		public string IpAddress
+		public Utf8String IpAddress
 		{
 			set
 			{
-				Helper.TryMarshalSet(ref m_IpAddress, value);
+				Helper.Set(value, ref m_IpAddress);
 			}
 		}
 
-		public void Set(RegisterClientOptions other)
+		public ProductUserId UserId
 		{
-			if (other != null)
+			set
+			{
+				Helper.Set(value, ref m_UserId);
+			}
+		}
+
+		public void Set(ref RegisterClientOptions other)
+		{
+			m_ApiVersion = AntiCheatServerInterface.RegisterclientApiLatest;
+			ClientHandle = other.ClientHandle;
+			ClientType = other.ClientType;
+			ClientPlatform = other.ClientPlatform;
+			AccountId_DEPRECATED = other.AccountId_DEPRECATED;
+			IpAddress = other.IpAddress;
+			UserId = other.UserId;
+		}
+
+		public void Set(ref RegisterClientOptions? other)
+		{
+			if (other.HasValue)
 			{
 				m_ApiVersion = AntiCheatServerInterface.RegisterclientApiLatest;
-				ClientHandle = other.ClientHandle;
-				ClientType = other.ClientType;
-				ClientPlatform = other.ClientPlatform;
-				AccountId = other.AccountId;
-				IpAddress = other.IpAddress;
+				ClientHandle = other.Value.ClientHandle;
+				ClientType = other.Value.ClientType;
+				ClientPlatform = other.Value.ClientPlatform;
+				AccountId_DEPRECATED = other.Value.AccountId_DEPRECATED;
+				IpAddress = other.Value.IpAddress;
+				UserId = other.Value.UserId;
 			}
-		}
-
-		public void Set(object other)
-		{
-			Set(other as RegisterClientOptions);
 		}
 
 		public void Dispose()
 		{
-			Helper.TryMarshalDispose(ref m_ClientHandle);
-			Helper.TryMarshalDispose(ref m_AccountId);
-			Helper.TryMarshalDispose(ref m_IpAddress);
+			Helper.Dispose(ref m_ClientHandle);
+			Helper.Dispose(ref m_AccountId_DEPRECATED);
+			Helper.Dispose(ref m_IpAddress);
+			Helper.Dispose(ref m_UserId);
 		}
 	}
 }

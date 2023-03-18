@@ -38,22 +38,23 @@ namespace EpicTransport {
             nextConnectionID = 1;
         }
 
-        protected override void OnNewConnection(OnIncomingConnectionRequestInfo result) {
+        protected override void OnNewConnection(ref OnIncomingConnectionRequestInfo result) {
             if (ignoreAllMessages) {
                 return;
             }
 
-            if (deadSockets.Contains(result.SocketId.SocketName)) {
+            if (deadSockets.Contains(result.SocketId?.SocketName)) {
                 Debug.LogError("Received incoming connection request from dead socket");
                 return;
             }
 
-            EOSSDKComponent.GetP2PInterface().AcceptConnection(
-                new AcceptConnectionOptions() {
+            var acceptConnectionOptions = new AcceptConnectionOptions() {
                 LocalUserId = EOSSDKComponent.LocalUserProductId,
                 RemoteUserId = result.RemoteUserId,
                 SocketId = result.SocketId
-                });
+            };
+            EOSSDKComponent.GetP2PInterface().AcceptConnection(
+                ref acceptConnectionOptions);
         }
 
         protected override void OnReceiveInternalData(InternalMessages type, ProductUserId clientUserId, SocketId socketId) {
@@ -77,7 +78,7 @@ namespace EpicTransport {
                     epicToSocketIds.Add(clientUserId, socketId);
                     OnConnected.Invoke(connectionId);
 
-                    string clientUserIdString;
+                    Utf8String clientUserIdString;
                     clientUserId.ToString(out clientUserIdString);
                     Debug.Log($"Client with Product User ID {clientUserIdString} connected. Assigning connection id {connectionId}");
                     break;
@@ -111,7 +112,7 @@ namespace EpicTransport {
                 epicToSocketIds.TryGetValue(clientUserId, out socketId);
                 CloseP2PSessionWithUser(clientUserId, socketId);
 
-                string productId;
+                Utf8String productId;
                 clientUserId.ToString(out productId);
 
                 Debug.LogError("Data received from epic client thats not known " + productId);
@@ -159,7 +160,7 @@ namespace EpicTransport {
 
         public string ServerGetClientAddress(int connectionId) {
             if (epicToMirrorIds.TryGetValue(connectionId, out ProductUserId userId)) {
-                string userIdString;
+                Utf8String userIdString;
                 userId.ToString(out userIdString);
                 return userIdString;
             } else {

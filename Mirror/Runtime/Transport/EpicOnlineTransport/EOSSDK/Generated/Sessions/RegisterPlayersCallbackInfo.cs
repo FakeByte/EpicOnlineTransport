@@ -3,49 +3,62 @@
 
 namespace Epic.OnlineServices.Sessions
 {
-	public class RegisterPlayersCallbackInfo : ICallbackInfo, ISettable
+	public struct RegisterPlayersCallbackInfo : ICallbackInfo
 	{
 		/// <summary>
 		/// The <see cref="Result" /> code for the operation. <see cref="Result.Success" /> indicates that the operation succeeded; other codes indicate errors.
 		/// </summary>
-		public Result ResultCode { get; private set; }
+		public Result ResultCode { get; set; }
 
 		/// <summary>
 		/// Context that was passed into <see cref="SessionsInterface.RegisterPlayers" />
 		/// </summary>
-		public object ClientData { get; private set; }
+		public object ClientData { get; set; }
+
+		/// <summary>
+		/// The players that were successfully registered
+		/// </summary>
+		public ProductUserId[] RegisteredPlayers { get; set; }
+
+		/// <summary>
+		/// The players that failed to register because they are sanctioned
+		/// </summary>
+		public ProductUserId[] SanctionedPlayers { get; set; }
 
 		public Result? GetResultCode()
 		{
 			return ResultCode;
 		}
 
-		internal void Set(RegisterPlayersCallbackInfoInternal? other)
+		internal void Set(ref RegisterPlayersCallbackInfoInternal other)
 		{
-			if (other != null)
-			{
-				ResultCode = other.Value.ResultCode;
-				ClientData = other.Value.ClientData;
-			}
-		}
-
-		public void Set(object other)
-		{
-			Set(other as RegisterPlayersCallbackInfoInternal?);
+			ResultCode = other.ResultCode;
+			ClientData = other.ClientData;
+			RegisteredPlayers = other.RegisteredPlayers;
+			SanctionedPlayers = other.SanctionedPlayers;
 		}
 	}
 
 	[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 8)]
-	internal struct RegisterPlayersCallbackInfoInternal : ICallbackInfoInternal
+	internal struct RegisterPlayersCallbackInfoInternal : ICallbackInfoInternal, IGettable<RegisterPlayersCallbackInfo>, ISettable<RegisterPlayersCallbackInfo>, System.IDisposable
 	{
 		private Result m_ResultCode;
 		private System.IntPtr m_ClientData;
+		private System.IntPtr m_RegisteredPlayers;
+		private uint m_RegisteredPlayersCount;
+		private System.IntPtr m_SanctionedPlayers;
+		private uint m_SanctionedPlayersCount;
 
 		public Result ResultCode
 		{
 			get
 			{
 				return m_ResultCode;
+			}
+
+			set
+			{
+				m_ResultCode = value;
 			}
 		}
 
@@ -54,8 +67,13 @@ namespace Epic.OnlineServices.Sessions
 			get
 			{
 				object value;
-				Helper.TryMarshalGet(m_ClientData, out value);
+				Helper.Get(m_ClientData, out value);
 				return value;
+			}
+
+			set
+			{
+				Helper.Set(value, ref m_ClientData);
 			}
 		}
 
@@ -65,6 +83,68 @@ namespace Epic.OnlineServices.Sessions
 			{
 				return m_ClientData;
 			}
+		}
+
+		public ProductUserId[] RegisteredPlayers
+		{
+			get
+			{
+				ProductUserId[] value;
+				Helper.GetHandle(m_RegisteredPlayers, out value, m_RegisteredPlayersCount);
+				return value;
+			}
+
+			set
+			{
+				Helper.Set(value, ref m_RegisteredPlayers, out m_RegisteredPlayersCount);
+			}
+		}
+
+		public ProductUserId[] SanctionedPlayers
+		{
+			get
+			{
+				ProductUserId[] value;
+				Helper.GetHandle(m_SanctionedPlayers, out value, m_SanctionedPlayersCount);
+				return value;
+			}
+
+			set
+			{
+				Helper.Set(value, ref m_SanctionedPlayers, out m_SanctionedPlayersCount);
+			}
+		}
+
+		public void Set(ref RegisterPlayersCallbackInfo other)
+		{
+			ResultCode = other.ResultCode;
+			ClientData = other.ClientData;
+			RegisteredPlayers = other.RegisteredPlayers;
+			SanctionedPlayers = other.SanctionedPlayers;
+		}
+
+		public void Set(ref RegisterPlayersCallbackInfo? other)
+		{
+			if (other.HasValue)
+			{
+				ResultCode = other.Value.ResultCode;
+				ClientData = other.Value.ClientData;
+				RegisteredPlayers = other.Value.RegisteredPlayers;
+				SanctionedPlayers = other.Value.SanctionedPlayers;
+			}
+		}
+
+		public void Dispose()
+		{
+			Helper.Dispose(ref m_ClientData);
+			Helper.Dispose(ref m_RegisteredPlayers);
+			Helper.Dispose(ref m_SanctionedPlayers);
+		}
+
+		public void Get(out RegisterPlayersCallbackInfo output)
+		{
+			output = new RegisterPlayersCallbackInfo();
+			output.Set(ref this);
 		}
 	}
 }

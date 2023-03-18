@@ -6,7 +6,7 @@ namespace Epic.OnlineServices.Sanctions
 	/// <summary>
 	/// Contains information about a single player sanction.
 	/// </summary>
-	public class PlayerSanction : ISettable
+	public struct PlayerSanction
 	{
 		/// <summary>
 		/// The POSIX timestamp when the sanction was placed
@@ -16,29 +16,35 @@ namespace Epic.OnlineServices.Sanctions
 		/// <summary>
 		/// The action associated with this sanction
 		/// </summary>
-		public string Action { get; set; }
+		public Utf8String Action { get; set; }
 
-		internal void Set(PlayerSanctionInternal? other)
-		{
-			if (other != null)
-			{
-				TimePlaced = other.Value.TimePlaced;
-				Action = other.Value.Action;
-			}
-		}
+		/// <summary>
+		/// The POSIX timestamp when the sanction will expire. If the sanction is permanent, this will be 0.
+		/// </summary>
+		public long TimeExpires { get; set; }
 
-		public void Set(object other)
+		/// <summary>
+		/// A unique identifier for this specific sanction
+		/// </summary>
+		public Utf8String ReferenceId { get; set; }
+
+		internal void Set(ref PlayerSanctionInternal other)
 		{
-			Set(other as PlayerSanctionInternal?);
+			TimePlaced = other.TimePlaced;
+			Action = other.Action;
+			TimeExpires = other.TimeExpires;
+			ReferenceId = other.ReferenceId;
 		}
 	}
 
 	[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 8)]
-	internal struct PlayerSanctionInternal : ISettable, System.IDisposable
+	internal struct PlayerSanctionInternal : IGettable<PlayerSanction>, ISettable<PlayerSanction>, System.IDisposable
 	{
 		private int m_ApiVersion;
 		private long m_TimePlaced;
 		private System.IntPtr m_Action;
+		private long m_TimeExpires;
+		private System.IntPtr m_ReferenceId;
 
 		public long TimePlaced
 		{
@@ -53,39 +59,80 @@ namespace Epic.OnlineServices.Sanctions
 			}
 		}
 
-		public string Action
+		public Utf8String Action
 		{
 			get
 			{
-				string value;
-				Helper.TryMarshalGet(m_Action, out value);
+				Utf8String value;
+				Helper.Get(m_Action, out value);
 				return value;
 			}
 
 			set
 			{
-				Helper.TryMarshalSet(ref m_Action, value);
+				Helper.Set(value, ref m_Action);
 			}
 		}
 
-		public void Set(PlayerSanction other)
+		public long TimeExpires
 		{
-			if (other != null)
+			get
+			{
+				return m_TimeExpires;
+			}
+
+			set
+			{
+				m_TimeExpires = value;
+			}
+		}
+
+		public Utf8String ReferenceId
+		{
+			get
+			{
+				Utf8String value;
+				Helper.Get(m_ReferenceId, out value);
+				return value;
+			}
+
+			set
+			{
+				Helper.Set(value, ref m_ReferenceId);
+			}
+		}
+
+		public void Set(ref PlayerSanction other)
+		{
+			m_ApiVersion = SanctionsInterface.PlayersanctionApiLatest;
+			TimePlaced = other.TimePlaced;
+			Action = other.Action;
+			TimeExpires = other.TimeExpires;
+			ReferenceId = other.ReferenceId;
+		}
+
+		public void Set(ref PlayerSanction? other)
+		{
+			if (other.HasValue)
 			{
 				m_ApiVersion = SanctionsInterface.PlayersanctionApiLatest;
-				TimePlaced = other.TimePlaced;
-				Action = other.Action;
+				TimePlaced = other.Value.TimePlaced;
+				Action = other.Value.Action;
+				TimeExpires = other.Value.TimeExpires;
+				ReferenceId = other.Value.ReferenceId;
 			}
-		}
-
-		public void Set(object other)
-		{
-			Set(other as PlayerSanction);
 		}
 
 		public void Dispose()
 		{
-			Helper.TryMarshalDispose(ref m_Action);
+			Helper.Dispose(ref m_Action);
+			Helper.Dispose(ref m_ReferenceId);
+		}
+
+		public void Get(out PlayerSanction output)
+		{
+			output = new PlayerSanction();
+			output.Set(ref this);
 		}
 	}
 }
