@@ -44,6 +44,16 @@ This is our [Epic Online Services](https://dev.epicgames.com/en-US/services) (EO
 2. In Unity -> Edit -> Project Settings... -> Player -> Android -> Other Settings -> Identification set Minimum API Level to Android 6.0 'Marshmallow' (API Level 23) as required by the EOS Android SDK
 3. (Optional) Install Android Logcat through Package Manager to see logs when running on Android device over USB (Window -> Package Manager -> Packages: Unity Registry -> Android Logcat -> Install) then open with Alt+6 or Window -> Analysis -> Android Logcat
 
+## Building for iOS
+0. Install the iOS Module through Unity Hub
+1. Switch platform to iOS in Build Settings
+2. In Unity -> Edit -> Project Settings -> Player -> set Target minimum iOS Version to 11.0 as required by the EOS iOS SDK
+3. Download EOSSDK.framework from Epic Developer Portal -> SDK -> iOSSDK
+4. Extract the .zip file, and navigate to the folder ->  SDK -> Bin -> IOS to find EOSSDK.framework (appears as a folder)
+5. Copy EOSSDK.framework or move it into the EOSSDK folder (EpicOnlineTransport/EOSSDK)
+6. In Unity Editor, select EOSSDK.framework and in Inspector, check Add to Embedded Binaries and Load on startup
+7. (Optional) In the generated XCode Project, verify bitcode is set to NO on Unity-iPhone and UnityFramework, which should be automatically completed by iOSPostProcessBuild.cs
+
 ## Testing multiplayer on one device
 Running multiple instances of your game on one device for testing requires you to have multiple epic accounts.
 Even if your game doesn't use epic accounts you will need them for testing.
