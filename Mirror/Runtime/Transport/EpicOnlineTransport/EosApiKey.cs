@@ -20,4 +20,5 @@ public class EosApiKey : ScriptableObject {
     public string epicDeploymentId = "";
     public string epicClientId = "";
     public string epicClientSecret = "";
+    public string encryptionKey = "";
 }
